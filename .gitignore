@@ -1,0 +1,19 @@
+# QRキャッシュ
+qr_cache/
+
+# データファイル
+data/
+
+# SQLバックアップ
+*.sql
+
+# XAMPPログ・一時ファイル
+*.log
+*.tmp
+
+# OS系
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/

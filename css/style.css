@@ -1,0 +1,316 @@
+/* ==============================================
+   B-Care Manager - スタイルシート
+   配置先: css/style.css
+   ============================================== */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* CSS変数（カラーテーマ） */
+:root {
+    --green-dark:        #1e5c2e;
+    --green-mid:         #2e7d42;
+    --green-light:       #e8f5ec;
+    --risk-bg:           #fdecea;
+    --risk-text:         #c0392b;
+    --safe-bg:           #e8f5ec;
+    --safe-text:         #1e5c2e;
+    --transfer-bg:       #fff3cd;
+    --transfer-text:     #7d5a00;
+    --color-male:        #2563eb;
+    --color-female:      #db2777;
+    --sidebar-w:         220px;
+    --header-h:          54px;
+    --bg:                #f4f6f4;
+    --text:              #333;
+    --border:            #eef0ee;
+    --shadow:            0 1px 4px rgba(0,0,0,0.07);
+}
+
+body {
+    font-family: 'Meiryo', 'メイリオ', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ===== ヘッダー ===== */
+header {
+    background: var(--green-dark);
+    color: #fff;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 10px;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+header .logo {
+    font-size: 1.1rem;
+    font-weight: bold;
+    letter-spacing: 0.04em;
+    flex: 1;
+}
+header .user {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.88rem;
+    color: #fff;
+    cursor: pointer;
+}
+
+/* ===== レイアウト ===== */
+.layout {
+    display: flex;
+    margin-top: var(--header-h);
+    flex: 1;
+}
+
+/* ===== サイドバー ===== */
+aside {
+    width: var(--sidebar-w);
+    background: var(--green-dark);
+    min-height: calc(100vh - var(--header-h));
+    position: fixed;
+    top: var(--header-h);
+    left: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+}
+aside nav {
+    flex: 1;
+    padding: 16px 0;
+}
+aside nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 0.92rem;
+    transition: background 0.15s;
+}
+aside nav a:hover { background: rgba(255,255,255,0.08); }
+aside nav a.active {
+    background: var(--green-mid);
+    color: #fff;
+    font-weight: bold;
+}
+aside .logout {
+    padding: 16px 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+aside .logout a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    font-size: 0.88rem;
+}
+aside .logout a:hover { color: #fff; }
+
+/* ===== メインコンテンツ ===== */
+main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 28px;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.page-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--green-dark);
+}
+
+/* ===== フィルターバー ===== */
+.filter-bar {
+    background: #fff;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+}
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.filter-group label {
+    font-size: 0.75rem;
+    color: #666;
+}
+.filter-group select {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    min-width: 130px;
+    background: #fafafa;
+}
+.filter-group select:focus {
+    outline: none;
+    border-color: var(--green-mid);
+}
+.btn-filter {
+    padding: 7px 18px;
+    background: var(--green-dark);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    align-self: flex-end;
+}
+.btn-filter:hover { background: var(--green-mid); }
+.btn-clear {
+    padding: 7px 14px;
+    background: #fff;
+    color: #666;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    align-self: flex-end;
+    text-decoration: none;
+}
+.btn-clear:hover { background: #f0f0f0; }
+
+/* ===== テーブル ===== */
+.table-wrap {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+.table-meta {
+    padding: 10px 16px;
+    font-size: 0.82rem;
+    color: #666;
+    border-bottom: 1px solid #eee;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+thead {
+    background: var(--green-dark);
+    color: #fff;
+}
+thead th {
+    padding: 11px 14px;
+    font-size: 0.82rem;
+    text-align: left;
+    font-weight: normal;
+    white-space: nowrap;
+}
+tbody tr:nth-child(even) { background: #f9fbf9; }
+tbody tr:hover { background: var(--green-light); }
+tbody td {
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+/* ===== バッジ ===== */
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: bold;
+}
+.badge-risk     { background: var(--risk-bg);     color: var(--risk-text); }
+.badge-safe     { background: var(--safe-bg);     color: var(--safe-text); }
+.badge-transfer { background: var(--transfer-bg); color: var(--transfer-text); }
+
+/* ===== 性別 ===== */
+.gender-male   { color: var(--color-male);   font-weight: bold; }
+.gender-female { color: var(--color-female); font-weight: bold; }
+
+/* ===== ボタン ===== */
+.btn-select {
+    padding: 4px 14px;
+    background: #fff;
+    border: 1px solid var(--green-dark);
+    color: var(--green-dark);
+    border-radius: 4px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    text-decoration: none;
+}
+.btn-select:hover {
+    background: var(--green-dark);
+    color: #fff;
+}
+
+/* ===== ページネーション ===== */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 16px;
+}
+.pagination a, .pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px; height: 34px;
+    border-radius: 5px;
+    font-size: 0.88rem;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    color: #333;
+    background: #fff;
+}
+.pagination a:hover {
+    background: var(--green-light);
+    border-color: var(--green-mid);
+}
+.pagination .current {
+    background: var(--green-dark);
+    color: #fff;
+    border-color: var(--green-dark);
+}
+.pagination .disabled { color: #ccc; pointer-events: none; }
+
+/* ===== その他 ===== */
+.no-data {
+    text-align: center;
+    padding: 50px;
+    color: #999;
+    font-size: 0.95rem;
+}
+
+footer {
+    margin-left: var(--sidebar-w);
+    text-align: center;
+    padding: 16px;
+    font-size: 0.75rem;
+    color: #aaa;
+}
