@@ -1,5 +1,5 @@
 /* ==============================================
-   B-Care Manager - スタイルシート
+   B-Care Manager - 共通スタイルシート
    配置先: css/style.css
    ============================================== */
 
@@ -25,15 +25,55 @@
     --sidebar-w:         220px;
     --header-h:          54px;
     --bg:                #f4f6f4;
-    --text:              #333;
-    --border:            #eef0ee;
-    --shadow:            0 1px 4px rgba(0,0,0,0.07);
+
+    /* ステータス系 */
+    --status-ok: #22c55e;
+    --status-ng: #ef4444;
+
+    /* テキスト系 */
+    --text-heading: #111;
+    --text-body: #333;
+    --text-sub: #555;
+    --text-muted: #888;
+    --text-faint: #aaa;
+    --text-label: #999;
+
+    /* 背景・ボーダー系 */
+    --bg-card: #fff;
+    --bg-subtle: #f9f9f9;
+    --border-light: #eee;
+    --border-faint: #f0f0f0;
+    --border-dark: #333;
+
+    /* シャドウ */
+    --shadow-card: 0 1px 4px rgba(0,0,0,0.07);
+
+    --text-on-dark: #fff;
+
+    --border-medium: #ddd;
+    --border-lighter: #ccc;
+    --border-subtle: #f5f5f5;
+    --text-dark: #444;
+    --text-strong: #222;
+    --text-lighter: #bbb;
+    --bg-hover-light: #f5f5f5;
+
+    --danger: #e55;
+    --danger-bg: #fff0f0;
+
+    --success-bg: #e8f5ec;
+    --success-border: #a3d9b0;
+    --success-text: var(--green-dark);
+}
+
+html {
+    font-size: 18px;
 }
 
 body {
     font-family: 'Meiryo', 'メイリオ', sans-serif;
     background: var(--bg);
-    color: var(--text);
+    color: var(--text-body);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -42,7 +82,7 @@ body {
 /* ===== ヘッダー ===== */
 header {
     background: var(--green-dark);
-    color: #fff;
+    color: var(--text-on-dark);
     height: var(--header-h);
     display: flex;
     align-items: center;
@@ -64,7 +104,7 @@ header .user {
     align-items: center;
     gap: 6px;
     font-size: 0.88rem;
-    color: #fff;
+    color: var(--text-on-dark);
     cursor: pointer;
 }
 
@@ -104,7 +144,7 @@ aside nav a {
 aside nav a:hover { background: rgba(255,255,255,0.08); }
 aside nav a.active {
     background: var(--green-mid);
-    color: #fff;
+    color: var(--text-on-dark);
     font-weight: bold;
 }
 aside .logout {
@@ -120,7 +160,7 @@ aside .logout a {
     text-decoration: none;
     font-size: 0.88rem;
 }
-aside .logout a:hover { color: #fff; }
+aside .logout a:hover { color: var(--text-on-dark); }
 
 /* ===== メインコンテンツ ===== */
 main {
@@ -141,176 +181,10 @@ main {
     color: var(--green-dark);
 }
 
-/* ===== フィルターバー ===== */
-.filter-bar {
-    background: #fff;
-    border-radius: 8px;
-    padding: 14px 18px;
-    margin-bottom: 18px;
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    align-items: flex-end;
-}
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-.filter-group label {
-    font-size: 0.75rem;
-    color: #666;
-}
-.filter-group select {
-    padding: 6px 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 0.85rem;
-    min-width: 130px;
-    background: #fafafa;
-}
-.filter-group select:focus {
-    outline: none;
-    border-color: var(--green-mid);
-}
-.btn-filter {
-    padding: 7px 18px;
-    background: var(--green-dark);
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    align-self: flex-end;
-}
-.btn-filter:hover { background: var(--green-mid); }
-.btn-clear {
-    padding: 7px 14px;
-    background: #fff;
-    color: #666;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    align-self: flex-end;
-    text-decoration: none;
-}
-.btn-clear:hover { background: #f0f0f0; }
-
-/* ===== テーブル ===== */
-.table-wrap {
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    overflow: hidden;
-}
-.table-meta {
-    padding: 10px 16px;
-    font-size: 0.82rem;
-    color: #666;
-    border-bottom: 1px solid #eee;
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-thead {
-    background: var(--green-dark);
-    color: #fff;
-}
-thead th {
-    padding: 11px 14px;
-    font-size: 0.82rem;
-    text-align: left;
-    font-weight: normal;
-    white-space: nowrap;
-}
-tbody tr:nth-child(even) { background: #f9fbf9; }
-tbody tr:hover { background: var(--green-light); }
-tbody td {
-    padding: 10px 14px;
-    font-size: 0.88rem;
-    border-bottom: 1px solid var(--border);
-    vertical-align: middle;
-    white-space: nowrap;
-}
-
-/* ===== バッジ ===== */
-.badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.78rem;
-    font-weight: bold;
-}
-.badge-risk     { background: var(--risk-bg);     color: var(--risk-text); }
-.badge-safe     { background: var(--safe-bg);     color: var(--safe-text); }
-.badge-transfer { background: var(--transfer-bg); color: var(--transfer-text); }
-
-/* ===== 性別 ===== */
-.gender-male   { color: var(--color-male);   font-weight: bold; }
-.gender-female { color: var(--color-female); font-weight: bold; }
-
-/* ===== ボタン ===== */
-.btn-select {
-    padding: 4px 14px;
-    background: #fff;
-    border: 1px solid var(--green-dark);
-    color: var(--green-dark);
-    border-radius: 4px;
-    font-size: 0.82rem;
-    cursor: pointer;
-    text-decoration: none;
-}
-.btn-select:hover {
-    background: var(--green-dark);
-    color: #fff;
-}
-
-/* ===== ページネーション ===== */
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    padding: 16px;
-}
-.pagination a, .pagination span {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 34px; height: 34px;
-    border-radius: 5px;
-    font-size: 0.88rem;
-    text-decoration: none;
-    border: 1px solid #ddd;
-    color: #333;
-    background: #fff;
-}
-.pagination a:hover {
-    background: var(--green-light);
-    border-color: var(--green-mid);
-}
-.pagination .current {
-    background: var(--green-dark);
-    color: #fff;
-    border-color: var(--green-dark);
-}
-.pagination .disabled { color: #ccc; pointer-events: none; }
-
-/* ===== その他 ===== */
-.no-data {
-    text-align: center;
-    padding: 50px;
-    color: #999;
-    font-size: 0.95rem;
-}
-
 footer {
     margin-left: var(--sidebar-w);
     text-align: center;
     padding: 16px;
     font-size: 0.75rem;
-    color: #aaa;
+    color: var(--text-faint);
 }
