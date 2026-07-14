@@ -17,3 +17,12 @@ Thumbs.db
 
 # VSCode
 .vscode/
+
+# 機密情報を含む設定ファイル(config.php.example を参照してコピー作成)
+includes/config.php
+
+# デバッグ用(サーバー情報漏洩のため)
+phpinfo.php
+
+# Claude Code ローカル設定
+.claude/settings.local.json

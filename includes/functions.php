@@ -1,17 +1,8 @@
 <?php
 /**
- * B-Care Manager - 設定ファイル
- * 配置先: includes/config.php
+ * B-Care Manager - 共通関数・定数
+ * 配置先: includes/functions.php
  */
-
-// ---------------------------------------------------
-// DB接続設定
-// ---------------------------------------------------
-define('DB_HOST', 'localhost');
-define('DB_USER', 'cueing');
-define('DB_PASS', 'cueing');        // ← ご自身のパスワードを入力
-define('DB_NAME', 'bcare');
-define('DB_PORT', 3306);
 
 // ---------------------------------------------------
 // カラー定数
@@ -76,16 +67,4 @@ function getTransferColor(): array {
         'bg'   => COLOR_TRANSFER_BG,
         'text' => COLOR_TRANSFER_TEXT,
     ];
-}
-
-// ---------------------------------------------------
-// DB接続関数
-// ---------------------------------------------------
-function getDB(): mysqli {
-    $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
-    if ($mysqli->connect_error) {
-        die('<p style="color:red;">DB接続エラー: ' . htmlspecialchars($mysqli->connect_error) . '</p>');
-    }
-    $mysqli->set_charset('utf8mb4');
-    return $mysqli;
 }
