@@ -60,7 +60,7 @@ $mysqli->close();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>B-Care Mobile｜患者ホーム</title>
-  <link rel="stylesheet" href="css/sp_common.css?v=1">
+  <link rel="stylesheet" href="css/sp_common.css?v=2">
   <link rel="stylesheet" href="css/sp_patient_home.css?v=1">
 </head>
 <body>

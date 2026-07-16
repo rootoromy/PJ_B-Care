@@ -74,7 +74,9 @@ img {
    ============================================== */
 
 .patient-header {
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 15;
   min-height: 84px;
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr) auto;

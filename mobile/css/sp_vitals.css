@@ -471,6 +471,9 @@ tbody th {
   }
 
   .patient-panel {
+    position: sticky;
+    top: 0;
+    z-index: 15;
     flex: none;
     flex-direction: row;
     align-items: center;
