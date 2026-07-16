@@ -1,0 +1,486 @@
+/* ==============================================
+   B-Care Mobile - バイタル画面専用スタイル
+   配置先: css/sp_vitals.css
+   ============================================== */
+
+/* ==============================================
+   画面ヘッダー
+   ============================================== */
+
+.content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.breadcrumb {
+  margin: 0 0 4px;
+  color: var(--green-800);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.content-header h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+/* ==============================================
+   日付操作
+   ============================================== */
+
+.date-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.date-controls button {
+  min-height: 36px;
+  border: 1px solid #cfd8d1;
+  border-radius: 7px;
+  background: #ffffff;
+  color: var(--green-900);
+  font-weight: 700;
+}
+
+.date-controls > button:not(.date-display) {
+  width: 36px;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.date-display {
+  min-width: 150px;
+  padding: 0 12px;
+}
+
+/* ==============================================
+   バイタルカード
+   ============================================== */
+
+.vital-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+}
+
+.card-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 16px 10px;
+}
+
+.eyebrow {
+  margin: 0 0 2px;
+  color: var(--green-800);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.card-head h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+/* ==============================================
+   グラフ凡例
+   ============================================== */
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px 13px;
+  color: #566159;
+  font-size: 11px;
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.line {
+  width: 18px;
+  height: 3px;
+  display: inline-block;
+  border-radius: 999px;
+}
+
+.temp {
+  background: #e47537;
+}
+
+.sys {
+  background: #3478d1;
+}
+
+.dia {
+  background: #39a0ca;
+}
+
+.pulse {
+  background: #3f8d4d;
+}
+
+.spo2 {
+  background: #d54f4f;
+}
+
+/* ==============================================
+   バイタルグラフ
+   ============================================== */
+
+.chart-wrap {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  height: clamp(260px, 46vh, 430px);
+  padding: 4px 14px 0;
+}
+
+/* ==============================================
+   グラフ左側の基準値表
+   ============================================== */
+
+.chart-scale {
+  flex: 0 0 140px;
+  display: flex;
+  border-right: 1px solid #eef2ef;
+}
+
+.scale-rows {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 6px 42px 0;
+}
+
+.scale-row {
+  display: grid;
+  grid-template-columns: 26px 24px 24px 22px 24px;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.15;
+}
+
+.chart-canvas-area {
+  flex: 1;
+  min-width: 0;
+}
+
+#vitalChart {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ==============================================
+   バイタル一覧表
+   ============================================== */
+
+.table-wrap {
+  overflow-x: auto;
+  border-top: 1px solid var(--line);
+}
+
+table {
+  width: 100%;
+  min-width: 650px;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 8px 10px;
+  border-right: 1px solid #e5ebe6;
+  border-bottom: 1px solid #e5ebe6;
+  text-align: center;
+  font-size: 12px;
+}
+
+th:last-child,
+td:last-child {
+  border-right: 0;
+}
+
+thead th {
+  background: #f4f7f5;
+  color: #59645c;
+  font-weight: 700;
+}
+
+tbody th {
+  padding-left: 16px;
+  text-align: left;
+  background: #fbfcfb;
+}
+
+/* バイタル値の文字色 */
+.value-temp {
+  color: #c25b22;
+}
+
+.value-sys {
+  color: #2468bd;
+}
+
+.value-dia {
+  color: #228fb8;
+}
+
+.value-pulse {
+  color: #377f43;
+}
+
+.value-spo2 {
+  color: #c23f3f;
+}
+
+/* ==============================================
+   バイタル画面用レスポンシブ
+   ============================================== */
+
+@media (max-width: 760px) {
+  .card-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .legend {
+    justify-content: flex-start;
+  }
+
+  .content-header {
+    align-items: flex-start;
+  }
+
+  .date-display {
+    min-width: 126px;
+  }
+
+  .chart-scale {
+    flex-basis: 118px;
+  }
+
+  .scale-row {
+    grid-template-columns: 22px 20px 20px 19px 20px;
+    font-size: 9px;
+  }
+}
+
+/* ==============================================
+   バイタル画面専用：ハンバーガーメニュー・ドロワー
+   sp_vitals.php では独自の .vitals-menu-button / .vitals-drawer
+   を使用しており、sp_common.css の .menu-button / .drawer とは別クラス
+   ============================================== */
+
+.vitals-menu-button {
+  width: 38px;
+  height: 38px;
+  margin-bottom: 2px;
+  display: grid;
+  place-content: center;
+  gap: 5px;
+  border: 0;
+  border-radius: 6px;
+  background: #e7ece8;
+  box-shadow: inset 0 0 0 1px #d9dfda;
+}
+
+.vitals-menu-button span {
+  width: 20px;
+  height: 3px;
+  border-radius: 99px;
+  background: var(--green-900);
+}
+
+.vitals-drawer {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 30;
+  width: min(290px, 82vw);
+  padding: 68px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--green-900);
+  transform: translateX(-105%);
+  transition: transform 0.22s ease;
+  box-shadow: 12px 0 30px rgba(0, 0, 0, 0.22);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.vitals-drawer.open {
+  transform: translateX(0);
+}
+
+.vitals-drawer a {
+  padding: 13px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.vitals-drawer a.active {
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.vitals-drawer-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  font-size: 32px;
+  line-height: 1;
+}
+
+.vitals-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.38);
+}
+
+.vitals-drawer-backdrop[hidden] {
+  display: none;
+}
+
+/* ==============================================
+   バイタル画面専用：患者情報パネル（左サイド固定）
+   sp_vitals.php では aside.patient-panel を使用しており、
+   sp_common.css の .patient-header（他画面用）とは別レイアウト
+   ============================================== */
+
+.vitals-shell {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: min(100%, 980px);
+}
+
+@media (min-width: 700px) {
+  .vitals-shell {
+    margin-top: 0;
+    margin-bottom: 0;
+    min-height: 100vh;
+    border-radius: 0;
+  }
+}
+
+.patient-panel {
+  flex: 0 0 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 12px;
+  border-right: 1px solid #e5e8e6;
+  background: var(--white);
+}
+
+.patient-panel .patient-block {
+  min-width: 0;
+}
+
+.patient-panel .patient-kana {
+  margin: 0 0 2px;
+  color: #26352b;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.patient-panel h1 {
+  margin: 0;
+  color: #123c22;
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.patient-panel h1 span {
+  margin-left: 3px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.patient-panel .patient-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+  color: #101510;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.patient-panel .duplicate-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #ffffff;
+  background: var(--green-800);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.patient-panel .login-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: auto;
+  padding: 3px 7px;
+  border: 1px solid #cdd6d0;
+  border-radius: 2px;
+  background: #f4f7f5;
+  color: #22352a;
+  font-size: 11px;
+  white-space: nowrap;
+  align-self: flex-start;
+}
+
+.vitals-shell .main-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 画面幅が狭い場合は、サイドバーではなく上部の帯として横並びに */
+@media (max-width: 580px) {
+  .vitals-shell {
+    flex-direction: column;
+  }
+
+  .patient-panel {
+    flex: none;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    border-right: 0;
+    border-bottom: 1px solid #e5e8e6;
+  }
+
+  .patient-panel .login-user {
+    margin-top: 0;
+    margin-left: auto;
+  }
+}

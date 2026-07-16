@@ -1,0 +1,295 @@
+/* ==============================================
+   B-Care Mobile - スマホ画面共通スタイル
+   配置先: css/sp_common.css
+   ============================================== */
+
+:root {
+  --green-900: #174f2b;
+  --green-800: #1e6337;
+  --green-100: #e8f1eb;
+  --line: #d9e1db;
+  --text: #172019;
+  --muted: #68736b;
+  --panel: #f4f7f5;
+  --white: #ffffff;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* リセット・基本設定 */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Hiragino Kaku Gothic ProN",
+    "Yu Gothic",
+    Meiryo,
+    sans-serif;
+  color: var(--text);
+  background: #dfe4e1;
+  -webkit-text-size-adjust: 100%;
+}
+
+body.drawer-open {
+  overflow: hidden;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* ==============================================
+   画面全体
+   ============================================== */
+
+.app-shell {
+  width: min(100%, 430px);
+  min-height: 100vh;
+  margin: 0 auto;
+  background: #edf0ee;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.10);
+}
+
+/* ==============================================
+   患者情報ヘッダー
+   ============================================== */
+
+.patient-header {
+  position: relative;
+  min-height: 84px;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+  padding: 7px 7px 8px;
+  border-bottom: 1px solid #e5e8e6;
+  background: var(--white);
+}
+
+.menu-button {
+  width: 42px;
+  height: 42px;
+  margin-top: 1px;
+  display: grid;
+  place-content: center;
+  gap: 5px;
+  border: 0;
+  border-radius: 6px;
+  background: #e7ece8;
+  box-shadow: inset 0 0 0 1px #d9dfda;
+}
+
+.menu-button span {
+  width: 22px;
+  height: 3px;
+  border-radius: 99px;
+  background: var(--green-900);
+}
+
+.patient-block {
+  min-width: 0;
+}
+
+.patient-kana {
+  margin: 0 0 1px;
+  color: #26352b;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.patient-block h1 {
+  margin: 0;
+  color: #123c22;
+  font-size: clamp(22px, 6.4vw, 28px);
+  line-height: 1.12;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.patient-block h1 span {
+  margin-left: 3px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.patient-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 5px;
+  color: #101510;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.patient-meta a {
+  color: #135dd4;
+  text-decoration: none;
+}
+
+.duplicate-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  color: #ffffff;
+  background: var(--green-800);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.login-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 24px;
+  margin-top: -3px;
+  padding: 3px 7px;
+  border: 1px solid #cdd6d0;
+  border-radius: 2px;
+  background: #f4f7f5;
+  color: #22352a;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.user-icon {
+  width: 13px;
+  height: 13px;
+  display: grid;
+  place-content: center;
+  border-radius: 50%;
+  color: var(--green-900);
+  font-size: 8px;
+}
+
+/* ==============================================
+   メインコンテンツ共通
+   ============================================== */
+
+.main-content {
+  min-width: 0;
+  padding: 6px 8px 12px;
+}
+
+.card {
+  border-radius: 12px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+/* ==============================================
+   ドロワーメニュー
+   ============================================== */
+
+.drawer {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 30;
+  width: min(290px, 82vw);
+  padding: 68px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--green-900);
+  transform: translateX(-105%);
+  transition: transform 0.22s ease;
+  box-shadow: 12px 0 30px rgba(0, 0, 0, 0.22);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.drawer.open {
+  transform: translateX(0);
+}
+
+.drawer a {
+  padding: 13px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.drawer a.active {
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.drawer-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  font-size: 32px;
+  line-height: 1;
+}
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.38);
+}
+
+.drawer-backdrop[hidden] {
+  display: none;
+}
+
+/* ==============================================
+   共通レスポンシブ
+   ============================================== */
+
+@media (min-width: 700px) {
+  .app-shell {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    min-height: calc(100vh - 40px);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 360px) {
+  .patient-header {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+
+  .login-user {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+
+  .patient-block h1 {
+    font-size: 21px;
+  }
+
+  .patient-meta {
+    gap: 5px;
+    font-size: 12px;
+  }
+}

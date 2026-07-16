@@ -1,0 +1,250 @@
+/* ==============================================
+   B-Care Mobile - 患者ホーム画面
+   配置先: css/sp_patient_home.css
+   ============================================== */
+
+.page-name {
+  margin: 0 0 5px 5px;
+  color: var(--green-800);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* 患者基本情報 */
+.patient-summary {
+  padding: 4px 14px;
+}
+
+.summary-list {
+  margin: 0;
+}
+
+.summary-row {
+  display: grid;
+  grid-template-columns: 42% 58%;
+  align-items: center;
+  min-height: 39px;
+  border-bottom: 1px solid #bfc5c1;
+}
+
+.summary-row:last-child {
+  border-bottom: 0;
+}
+
+.summary-row dt,
+.summary-row dd {
+  margin: 0;
+  font-size: 15px;
+}
+
+.summary-row dt {
+  font-weight: 500;
+}
+
+.summary-row dd {
+  text-align: right;
+}
+
+/* 共通セクション */
+.home-section {
+  margin-top: 6px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.section-heading {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 13px 5px 17px;
+  color: var(--white);
+  background: var(--green-800);
+  font-size: 16px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.section-arrow {
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.section-body {
+  background: var(--white);
+}
+
+.memo-body {
+  min-height: 104px;
+  padding: 8px 10px 9px;
+}
+
+.memo-body p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* リスク情報 */
+.risk-card {
+  margin-top: 6px;
+  padding: 7px 7px 6px;
+}
+
+.risk-row {
+  display: grid;
+  grid-template-columns: 42% minmax(0, 1fr);
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 6px;
+}
+
+.risk-row:last-child {
+  margin-bottom: 0;
+}
+
+.risk-label {
+  min-height: 37px;
+  display: grid;
+  place-content: center;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.risk-label--danger {
+  color: #ffffff;
+  background: #ff3d43;
+}
+
+.risk-label--safe {
+  color: #172019;
+  background: var(--green-100);
+}
+
+.risk-row strong {
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+/* ピクトグラム */
+.pictogram-panel {
+  margin-top: 6px;
+  padding: 8px 7px 5px;
+  overflow: hidden;
+}
+
+.pictogram-scroll {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 88px;
+  gap: 5px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pictogram-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.pictogram-item {
+  min-height: 102px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #edf0ee;
+  background: #ffffff;
+  scroll-snap-align: start;
+}
+
+.pictogram-image {
+  min-height: 70px;
+  display: grid;
+  place-content: center;
+  overflow: hidden;
+}
+
+.pictogram-image--emoji {
+  font-size: 43px;
+  filter: grayscale(1) sepia(0.55) hue-rotate(75deg) saturate(2.8) brightness(0.63);
+}
+
+.pictogram-item p {
+  margin: 0;
+  padding: 5px 2px 6px;
+  color: #37443b;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.scroll-guide {
+  height: 10px;
+  margin-top: 5px;
+  padding: 3px 4px;
+  background: #eef3ef;
+}
+
+.scroll-guide span {
+  width: 76%;
+  height: 4px;
+  display: block;
+  border-radius: 99px;
+  background: #d7dcd8;
+}
+
+/* 今日の予定 */
+.schedule-section {
+  margin-bottom: 0;
+}
+
+.schedule-body {
+  min-height: 130px;
+  padding: 9px 12px 14px;
+}
+
+.schedule-body ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.schedule-body li {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.schedule-body li:last-child {
+  margin-bottom: 0;
+}
+
+/* 小さい端末 */
+@media (max-width: 360px) {
+  .summary-row dt,
+  .summary-row dd,
+  .memo-body p,
+  .risk-row strong,
+  .risk-label,
+  .schedule-body li {
+    font-size: 14px;
+  }
+
+  .risk-row {
+    grid-template-columns: 41% minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .pictogram-scroll {
+    grid-auto-columns: 82px;
+  }
+}
