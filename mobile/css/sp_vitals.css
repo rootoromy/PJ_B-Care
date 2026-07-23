@@ -24,7 +24,7 @@
 }
 .breadcrumb a {
   color: inherit;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .content-header h2 {
