@@ -91,8 +91,8 @@ $active_menu = 'home';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜患者ホーム</title>
-  <link rel="stylesheet" href="css/sp_common.css?v=5">
-  <link rel="stylesheet" href="css/sp_patient_home.css?v=3">
+  <link rel="stylesheet" href="css/sp_common.css?v=6">
+  <link rel="stylesheet" href="css/sp_patient_home.css?v=6">
 </head>
 <body>
   <!-- SVG icon sprite（外部ライブラリ不要） -->
@@ -145,10 +145,15 @@ $active_menu = 'home';
             <p style="padding:10px; font-size:12px; color:var(--muted);">ピクトグラムが設定されていません</p>
           <?php else: ?>
             <div class="pictogram-grid">
-              <?php foreach ($pictograms as $pic):
+              <?php foreach ($pictograms as $i => $pic):
                 $is_prohibited = strpos(basename($pic['image_path']), 'no_') === 0;
+                // 2段×4列を1ページとして、行優先（左→右、あふれたら次ページへ横スクロール）で配置する
+                $page          = intdiv($i, 8);
+                $pos_in_page   = $i % 8;
+                $grid_row      = intdiv($pos_in_page, 4) + 1;
+                $grid_column   = $page * 4 + ($pos_in_page % 4) + 1;
               ?>
-                <div class="pictogram-item<?= $is_prohibited ? ' prohibited' : '' ?>">
+                <div class="pictogram-item<?= $is_prohibited ? ' prohibited' : '' ?>" style="grid-row:<?= $grid_row ?>; grid-column:<?= $grid_column ?>;">
                   <img class="pictogram" src="../<?= h($pic['image_path']) ?>" alt="" onerror="this.style.visibility='hidden'">
                   <?php if ($is_prohibited): ?><span class="ban-mark" aria-hidden="true"></span><?php endif; ?>
                   <span><?= h($pic['name']) ?></span>
@@ -176,6 +181,20 @@ $active_menu = 'home';
           <svg><use href="#i-chevron"></use></svg>
         </button>
         <div class="section-body" id="schedulePanel">
+          <ul class="schedule-list">
+            <li>ここにテキストが入ります。</li>
+            <li>ここにテキストが入ります。</li>
+            <li>ここにテキストが入ります。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card section-card">
+        <button class="section-title" type="button" data-toggle="scheduleTomorrowPanel">
+          <span><b></b>明日の予定</span>
+          <svg><use href="#i-chevron"></use></svg>
+        </button>
+        <div class="section-body" id="scheduleTomorrowPanel">
           <ul class="schedule-list">
             <li>ここにテキストが入ります。</li>
             <li>ここにテキストが入ります。</li>

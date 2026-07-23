@@ -150,7 +150,7 @@ function buildDateQs($patient_id, $date) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>B-Care Mobile｜バイタル</title>
-  <link rel="stylesheet" href="css/sp_common.css?v=5" />
+  <link rel="stylesheet" href="css/sp_common.css?v=6" />
   <link rel="stylesheet" href="css/sp_vitals.css?v=3" />
 </head>
 <body>
