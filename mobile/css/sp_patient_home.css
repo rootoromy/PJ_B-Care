@@ -31,7 +31,7 @@ body {
   min-height: 100vh;
   margin: 0 auto;
   padding: calc(env(safe-area-inset-top) + 15px) 9px calc(env(safe-area-inset-bottom) + 20px);
-  overflow: hidden;
+  overflow: clip;
   background: #fff;
 }
 
@@ -82,13 +82,13 @@ body {
   border-radius: 5px;
   background: var(--green-100);
   color: var(--green-900);
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
-.login-user svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; }
 
-.home-label { margin: 10px 1px 5px; font-size: 10px; color: var(--green-900); font-weight: 800; }
+.home-label { margin: 10px 1px 5px; font-size: 10px; font-weight: 800; }
+.home-label a { color: var(--green-900); text-decoration: underline; }
 
 /* ==============================================
    メインコンテンツ
@@ -106,7 +106,7 @@ main { display: grid; gap: 7px; }
   gap: 12px;
   padding: 0 13px;
   border-bottom: 1px solid var(--line-soft);
-  font-size: 11px;
+  font-size: 13px;
 }
 .info-row:last-child { border-bottom: 0; }
 .info-label { display: inline-flex; align-items: center; gap: 9px; }
@@ -201,7 +201,7 @@ main { display: grid; gap: 7px; }
    ============================================== */
 
 .schedule-list { margin: 0; padding: 0 7px 0 19px; list-style: none; }
-.schedule-list li { position: relative; padding: 7px 0 7px 7px; border-bottom: 1px solid var(--line-soft); font-size: 9px; color: #4b554f; }
+.schedule-list li { position: relative; padding: 7px 0 7px 7px; border-bottom: 1px solid var(--line-soft); font-size: 12px; color: #4b554f; }
 .schedule-list li:last-child { border-bottom: 0; }
 .schedule-list li::before { content: "•"; position: absolute; left: -6px; color: var(--green-800); font-weight: 900; }
 
@@ -212,20 +212,21 @@ main { display: grid; gap: 7px; }
 .vital-card .section-body { padding: 5px 8px 7px; }
 .vitals-grid { display: grid; grid-template-columns: 1fr 1fr; }
 .vitals-grid > div {
-  min-height: 27px;
+  min-height: 34px;
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto;
   align-items: center;
   gap: 4px;
   padding: 0 7px;
   border-right: 1px solid var(--line-soft);
   border-bottom: 1px solid var(--line-soft);
-  font-size: 9px;
+  font-size: 12px;
 }
 .vitals-grid > div:nth-child(even) { border-right: 0; }
 .vitals-grid > div:nth-last-child(-n+2) { border-bottom: 0; }
-.vitals-grid strong { font-size: 12px; }
-.vitals-grid small { color: #4f5953; font-size: 7px; }
+.vitals-grid > div > span { display: inline-flex; align-items: baseline; gap: 3px; }
+.vitals-grid strong { font-size: 16px; }
+.vitals-grid small { color: #4f5953; font-size: 10px; }
 .vitals-grid .empty { visibility: hidden; }
 
 .vital-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 7px; }

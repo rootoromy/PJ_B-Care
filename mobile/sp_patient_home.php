@@ -91,8 +91,8 @@ $active_menu = 'home';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜患者ホーム</title>
-  <link rel="stylesheet" href="css/sp_common.css?v=6">
-  <link rel="stylesheet" href="css/sp_patient_home.css?v=7">
+  <link rel="stylesheet" href="css/sp_common.css?v=8">
+  <link rel="stylesheet" href="css/sp_patient_home.css?v=14">
 </head>
 <body>
   <!-- SVG icon sprite（外部ライブラリ不要） -->
@@ -113,7 +113,7 @@ $active_menu = 'home';
 
     <?php include __DIR__ . '/includes/sp_drawer.php'; ?>
 
-    <div class="home-label">HOME</div>
+    <p class="home-label"><a href="sp_patient_home.php?patient_id=<?= urlencode($patient_id) ?>">HOME</a></p>
 
     <main>
       <section class="card info-card" aria-label="患者基本情報">
@@ -217,12 +217,12 @@ $active_menu = 'home';
             $spo2   = vitalValue($latest_vital, 'spo2');
           ?>
           <div class="vitals-grid">
-            <div><span>血圧(上)</span><strong><?= $bp_sys !== null ? h($bp_sys) : '－' ?></strong><small>mmHg</small></div>
-            <div><span>体温</span><strong><?= $temp !== null ? h($temp) : '－' ?></strong><small>℃</small></div>
-            <div><span>血圧(下)</span><strong><?= $bp_dia !== null ? h($bp_dia) : '－' ?></strong><small>mmHg</small></div>
-            <div><span>脈拍</span><strong><?= $pulse !== null ? h($pulse) : '－' ?></strong><small>bpm</small></div>
+            <div><span>血圧(上)<small>mmHg</small></span><strong><?= $bp_sys !== null ? h($bp_sys) : '－' ?></strong></div>
+            <div><span>体温<small>℃</small></span><strong><?= $temp !== null ? h($temp) : '－' ?></strong></div>
+            <div><span>血圧(下)<small>mmHg</small></span><strong><?= $bp_dia !== null ? h($bp_dia) : '－' ?></strong></div>
+            <div><span>脈拍<small>bpm</small></span><strong><?= $pulse !== null ? h($pulse) : '－' ?></strong></div>
             <div class="empty"></div>
-            <div><span>SPO2</span><strong><?= $spo2 !== null ? h($spo2) : '－' ?></strong><small>%</small></div>
+            <div><span>SPO2<small>%</small></span><strong><?= $spo2 !== null ? h($spo2) : '－' ?></strong></div>
           </div>
           <div class="vital-footer">
             <p><svg><use href="#i-clock"></use></svg>最終更新：<span><?= $latest_vital ? h(date('Y/m/d H:i', strtotime($latest_vital['measured_at']))) : '記録なし' ?></span></p>

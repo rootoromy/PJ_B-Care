@@ -9,9 +9,10 @@
 
 .content-header {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
+  padding-right: 10px;
   margin-bottom: 12px;
 }
 
@@ -20,6 +21,10 @@
   color: var(--green-800);
   font-size: 11px;
   font-weight: 700;
+}
+.breadcrumb a {
+  color: inherit;
+  text-decoration: underline;
 }
 
 .content-header h2 {
@@ -34,27 +39,38 @@
 .date-controls {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
-.date-controls button {
-  min-height: 36px;
+.date-nav {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  display: grid;
+  place-items: center;
   border: 1px solid #cfd8d1;
-  border-radius: 7px;
+  border-radius: 50%;
   background: #ffffff;
   color: var(--green-900);
-  font-weight: 700;
 }
 
-.date-controls > button:not(.date-display) {
-  width: 36px;
-  font-size: 24px;
-  line-height: 1;
+.date-nav svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.date-nav--prev svg {
+  transform: rotate(180deg);
 }
 
 .date-display {
   min-width: 150px;
   padding: 0 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* ==============================================
@@ -265,11 +281,25 @@ tbody th {
   }
 
   .content-header {
+    flex-direction: column;
     align-items: flex-start;
+    padding-right: 0;
+    gap: 10px;
+  }
+
+  .date-controls {
+    align-self: stretch;
+    justify-content: flex-end;
+  }
+
+  .date-nav {
+    width: 30px;
+    height: 30px;
   }
 
   .date-display {
-    min-width: 126px;
+    min-width: 0;
+    padding: 0 4px;
   }
 
   .chart-scale {
@@ -329,7 +359,7 @@ tbody th {
 .patient-panel h1 {
   margin: 0;
   color: #123c22;
-  font-size: 20px;
+  font-size: 22px;
   line-height: 1.2;
   letter-spacing: 0.01em;
 }
@@ -369,11 +399,10 @@ tbody th {
   gap: 5px;
   margin-top: auto;
   padding: 3px 7px;
-  border: 1px solid #cdd6d0;
   border-radius: 2px;
-  background: #f4f7f5;
-  color: #22352a;
-  font-size: 11px;
+  background: var(--green-100);
+  color: var(--green-900);
+  font-size: 12px;
   white-space: nowrap;
   align-self: flex-start;
 }

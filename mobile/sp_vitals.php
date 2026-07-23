@@ -150,12 +150,14 @@ function buildDateQs($patient_id, $date) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>B-Care Mobile｜バイタル</title>
-  <link rel="stylesheet" href="css/sp_common.css?v=6" />
-  <link rel="stylesheet" href="css/sp_vitals.css?v=3" />
+  <link rel="stylesheet" href="css/sp_common.css?v=8" />
+  <link rel="stylesheet" href="css/sp_vitals.css?v=11" />
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M5 20c.8-4.2 3.2-6 7-6s6.2 1.8 7 6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
   </svg>
 
   <div class="app-shell vitals-shell">
@@ -170,7 +172,7 @@ function buildDateQs($patient_id, $date) {
         <div class="patient-meta">
           <strong><?= htmlspecialchars($patient['age'] ?? '-') ?>歳</strong>
           <span style="color:<?= $gender['color'] ?>; font-weight:700;">
-            <?= $gender['icon'] ?> <?= htmlspecialchars($patient['gender'] ?? '-') ?>
+            <?= htmlspecialchars($patient['gender'] ?? '-') ?>
           </span>
         </div>
         <?php if ($dup_count > 0): ?>
@@ -179,7 +181,7 @@ function buildDateQs($patient_id, $date) {
       </div>
 
       <div class="login-user">
-        <span class="user-icon" aria-hidden="true">●</span>
+        <svg><use href="#i-user"></use></svg>
         <span><?= htmlspecialchars($_SESSION['user_name'] ?? 'ナース') ?></span>
       </div>
     </aside>
@@ -187,14 +189,18 @@ function buildDateQs($patient_id, $date) {
     <main class="main-content">
       <header class="content-header">
         <div>
-          <p class="breadcrumb">HOME &gt; バイタル</p>
+          <p class="breadcrumb"><a href="sp_patient_home.php?patient_id=<?= urlencode($patient_id) ?>">HOME</a> &gt; バイタル</p>
           <h2>バイタル</h2>
         </div>
 
         <div class="date-controls" aria-label="日付切り替え">
-          <a href="sp_vitals.php<?= buildDateQs($patient_id, $prev_date) ?>" role="button" aria-label="前日">‹</a>
+          <a class="date-nav date-nav--prev" href="sp_vitals.php<?= buildDateQs($patient_id, $prev_date) ?>" aria-label="前日">
+            <svg><use href="#i-chevron"></use></svg>
+          </a>
           <span class="date-display" id="dateDisplay"><?= htmlspecialchars($date_display) ?></span>
-          <a href="sp_vitals.php<?= buildDateQs($patient_id, $next_date) ?>" role="button" aria-label="翌日">›</a>
+          <a class="date-nav" href="sp_vitals.php<?= buildDateQs($patient_id, $next_date) ?>" aria-label="翌日">
+            <svg><use href="#i-chevron"></use></svg>
+          </a>
         </div>
       </header>
 

@@ -33,7 +33,7 @@ $dup_count = $dup_count ?? 0;
     </div>
     <div class="patient-meta">
       <span><?= htmlspecialchars($patient['age'] ?? '-') ?>歳</span>
-      <span class="sex" style="color:<?= htmlspecialchars($gender['color']) ?>;"><?= htmlspecialchars($gender['icon']) ?> <?= htmlspecialchars($patient['gender'] ?? '-') ?></span>
+      <span class="sex" style="color:<?= htmlspecialchars($gender['color']) ?>;"><?= htmlspecialchars($patient['gender'] ?? '-') ?></span>
       <?php if ($dup_count > 0): ?>
         <span class="same-name">同姓同名あり</span>
       <?php endif; ?>
