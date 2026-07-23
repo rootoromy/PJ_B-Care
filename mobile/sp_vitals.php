@@ -150,14 +150,18 @@ function buildDateQs($patient_id, $date) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>B-Care Mobile｜バイタル</title>
-  <link rel="stylesheet" href="css/sp_common.css?v=2" />
-  <link rel="stylesheet" href="css/sp_vitals.css?v=2" />
+  <link rel="stylesheet" href="css/sp_common.css?v=5" />
+  <link rel="stylesheet" href="css/sp_vitals.css?v=3" />
 </head>
 <body>
+  <svg class="svg-sprite" aria-hidden="true">
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  </svg>
+
   <div class="app-shell vitals-shell">
     <aside class="patient-panel" aria-label="患者情報">
-      <button class="vitals-menu-button" type="button" aria-label="メニューを開く" id="menuButton">
-        <span></span><span></span><span></span>
+      <button class="icon-button" type="button" aria-label="メニューを開く" id="menuButton" aria-controls="drawer" aria-expanded="false">
+        <svg><use href="#i-menu"></use></svg>
       </button>
 
       <div class="patient-block">
@@ -256,18 +260,7 @@ function buildDateQs($patient_id, $date) {
     </main>
   </div>
 
-  <div class="vitals-drawer-backdrop" id="drawerBackdrop" hidden></div>
-  <nav class="vitals-drawer" id="drawer" aria-label="メインメニュー" aria-hidden="true" inert>
-    <button type="button" class="vitals-drawer-close" id="drawerClose" aria-label="メニューを閉じる">×</button>
-    <a href="sp_patient_home.php?patient_id=<?= urlencode($patient_id) ?>">患者情報</a>
-    <a href="#">申し送り</a>
-    <a href="#">預かり品</a>
-    <a href="#">今日の予定</a>
-    <a href="#">明日の予定</a>
-    <a href="sp_vitals.php<?= buildDateQs($patient_id, $target_date) ?>" class="active">バイタル</a>
-    <a href="#">入力履歴</a>
-    <a href="#">ログアウト</a>
-  </nav>
+  <?php $active_menu = 'vitals'; include __DIR__ . '/includes/sp_drawer.php'; ?>
 
   <script>
     window.vitalData = {
@@ -275,6 +268,7 @@ function buildDateQs($patient_id, $date) {
       datasets: <?= json_encode($chart_datasets, JSON_UNESCAPED_UNICODE) ?>
     };
   </script>
-  <script src="js/sp_vitals.js?v=1"></script>
+  <script src="js/sp_drawer.js?v=1"></script>
+  <script src="js/sp_vitals.js?v=2"></script>
 </body>
 </html>

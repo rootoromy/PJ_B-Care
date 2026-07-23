@@ -1,6 +1,6 @@
 <?php
 /**
- * 共通パーツ：患者ヘッダー（縦向きページ用・上部バー型）
+ * 共通パーツ：患者ヘッダー（患者ホーム画面用）
  * 配置先: mobile/includes/sp_header.php
  *
  * 【呼び出し側で用意しておく変数】
@@ -12,9 +12,9 @@
  *   includes/functions.php の getGenderStyle()
  *   セッション変数 $_SESSION['user_name']（未設定時は「ナース」表示）
  *
- * 【対応CSS】css/sp_common.css の .patient-header 系クラス
+ * 【対応CSS】css/sp_patient_home.css の .patient-header 系クラス
  *
- * ※ sp_vitals.php は横向きサイドバー型（.patient-panel）のため、
+ * ※ sp_vitals.php は独自の患者情報パネル（.patient-panel）のため、
  *    このファイルを使用しません。
  */
 
@@ -22,28 +22,26 @@ $gender    = getGenderStyle($patient['gender'] ?? '');
 $dup_count = $dup_count ?? 0;
 ?>
 <header class="patient-header">
-  <button class="menu-button" type="button" aria-label="メニューを開く" id="menuButton" aria-controls="drawer" aria-expanded="false">
-    <span></span>
-    <span></span>
-    <span></span>
+  <button class="icon-button" type="button" aria-label="メニューを開く" id="menuButton" aria-controls="drawer" aria-expanded="false">
+    <svg><use href="#i-menu"></use></svg>
   </button>
 
-  <div class="patient-block">
-    <p class="patient-kana"><?= htmlspecialchars($patient['patient_kana'] ?? '') ?></p>
-    <h1><?= htmlspecialchars($patient['patient_name'] ?? '') ?><span>様</span></h1>
+  <div class="patient-heading">
+    <p class="kana"><?= htmlspecialchars($patient['patient_kana'] ?? '') ?></p>
+    <div class="name-row">
+      <h1><?= htmlspecialchars($patient['patient_name'] ?? '') ?><span>様</span></h1>
+    </div>
     <div class="patient-meta">
       <span><?= htmlspecialchars($patient['age'] ?? '-') ?>歳</span>
-      <span style="color:<?= $gender['color'] ?>; font-weight:700;">
-        <?= $gender['icon'] ?> <?= htmlspecialchars($patient['gender'] ?? '-') ?>
-      </span>
+      <span class="sex" style="color:<?= htmlspecialchars($gender['color']) ?>;"><?= htmlspecialchars($gender['icon']) ?> <?= htmlspecialchars($patient['gender'] ?? '-') ?></span>
       <?php if ($dup_count > 0): ?>
-        <span class="duplicate-badge">同姓同名あり</span>
+        <span class="same-name">同姓同名あり</span>
       <?php endif; ?>
     </div>
   </div>
 
   <div class="login-user">
-    <span class="user-icon" aria-hidden="true">●</span>
+    <svg><use href="#i-user"></use></svg>
     <span><?= htmlspecialchars($_SESSION['user_name'] ?? 'ナース') ?></span>
   </div>
 </header>

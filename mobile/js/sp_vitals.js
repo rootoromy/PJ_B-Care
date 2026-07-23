@@ -83,30 +83,7 @@ function drawChart(width, height) {
   });
 }
 
-const drawer = document.getElementById("drawer");
-const backdrop = document.getElementById("drawerBackdrop");
-
-function setDrawer(open) {
-  if (!open && drawer.contains(document.activeElement)) {
-    document.getElementById("menuButton").focus();
-  }
-  drawer.classList.toggle("open", open);
-  drawer.setAttribute("aria-hidden", String(!open));
-  if (open) {
-    drawer.removeAttribute("inert");
-  } else {
-    drawer.setAttribute("inert", "");
-  }
-  backdrop.hidden = !open;
-  document.body.classList.toggle("drawer-open", open);
-}
-
-document.getElementById("menuButton").addEventListener("click", () => setDrawer(true));
-document.getElementById("drawerClose").addEventListener("click", () => setDrawer(false));
-backdrop.addEventListener("click", () => setDrawer(false));
-window.addEventListener("keydown", event => {
-  if (event.key === "Escape") setDrawer(false);
-});
+// ドロワー（ハンバーガーメニュー）の開閉は js/sp_drawer.js が担当
 
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);

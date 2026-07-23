@@ -1,250 +1,256 @@
 /* ==============================================
    B-Care Mobile - 患者ホーム画面
-   配置先: css/sp_patient_home.css
+   配置先: mobile/css/sp_patient_home.css
+
+   sp_common.css を読み込んだ後にこのファイルを読み込む前提で、
+   このページでのみ使うクラス（.patient-header / .card 系など）
+   の見た目をこのページ用に上書きする。
+   .icon-button / .drawer 系は sp_vitals.php とも共通のため
+   css/sp_common.css 側で定義している（このファイルでは上書きしない）。
    ============================================== */
 
-.page-name {
-  margin: 0 0 5px 5px;
-  color: var(--green-800);
-  font-size: 13px;
-  font-weight: 800;
+:root {
+  --green-900: #145c35;
+  --green-800: #1d7245;
+  --green-700: #248453;
+  --green-100: #eaf5ee;
+  --green-050: #f5faf7;
+  --line: #dce4df;
+  --line-soft: #e9eeeb;
+  --danger: #ff1f2d;
+  --danger-bg: #fff2f2;
 }
 
-/* 患者基本情報 */
-.patient-summary {
-  padding: 4px 14px;
+body {
+  background: #edf0ee;
 }
 
-.summary-list {
-  margin: 0;
+.phone-shell {
+  position: relative;
+  width: min(100%, 430px);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top) + 15px) 9px calc(env(safe-area-inset-bottom) + 20px);
+  overflow: hidden;
+  background: #fff;
 }
 
-.summary-row {
+@media (min-width: 431px) {
+  .phone-shell {
+    min-height: 850px;
+    border-radius: 30px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .16);
+  }
+}
+
+/* ==============================================
+   患者情報ヘッダー
+   ============================================== */
+
+.patient-header {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  min-height: 0;
   display: grid;
-  grid-template-columns: 42% 58%;
-  align-items: center;
-  min-height: 39px;
-  border-bottom: 1px solid #bfc5c1;
-}
-
-.summary-row:last-child {
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 9px;
+  padding: 0 0 8px;
+  margin: 0 0 -8px;
   border-bottom: 0;
+  background: #fff;
 }
 
-.summary-row dt,
-.summary-row dd {
-  margin: 0;
-  font-size: 15px;
-}
+.patient-header .icon-button { margin-top: 8px; }
 
-.summary-row dt {
-  font-weight: 500;
-}
+.patient-heading { min-width: 0; }
+.kana { margin: 0 0 1px; font-size: 9px; font-weight: 700; letter-spacing: .05em; color: #536058; }
+.name-row { display: flex; align-items: center; }
+.patient-heading h1 { margin: 0; font-size: 22px; line-height: 1.12; letter-spacing: .01em; }
+.patient-heading h1 span { margin-left: 2px; font-size: 12px; }
+.patient-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 5px; font-size: 11px; }
+.patient-meta .sex { font-weight: 700; }
+.same-name { padding: 3px 8px; border-radius: 999px; color: #fff; background: var(--green-800); font-size: 9px; }
 
-.summary-row dd {
-  text-align: right;
-}
-
-/* 共通セクション */
-.home-section {
-  margin-top: 6px;
-  overflow: hidden;
-  border-radius: 12px;
-  background: var(--white);
-  box-shadow: var(--shadow);
-}
-
-.section-heading {
-  min-height: 34px;
+.login-user {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 5px 13px 5px 17px;
-  color: var(--white);
-  background: var(--green-800);
-  font-size: 16px;
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.section-arrow {
-  font-size: 25px;
-  font-weight: 400;
-  line-height: 1;
-}
-
-.section-body {
-  background: var(--white);
-}
-
-.memo-body {
-  min-height: 104px;
-  padding: 8px 10px 9px;
-}
-
-.memo-body p {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-/* リスク情報 */
-.risk-card {
-  margin-top: 6px;
-  padding: 7px 7px 6px;
-}
-
-.risk-row {
-  display: grid;
-  grid-template-columns: 42% minmax(0, 1fr);
-  align-items: center;
-  gap: 11px;
-  margin-bottom: 6px;
-}
-
-.risk-row:last-child {
-  margin-bottom: 0;
-}
-
-.risk-label {
-  min-height: 37px;
-  display: grid;
-  place-content: center;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.risk-label--danger {
-  color: #ffffff;
-  background: #ff3d43;
-}
-
-.risk-label--safe {
-  color: #172019;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 5px 8px;
+  border-radius: 5px;
   background: var(--green-100);
-}
-
-.risk-row strong {
-  font-size: 15px;
-  line-height: 1.25;
-}
-
-/* ピクトグラム */
-.pictogram-panel {
-  margin-top: 6px;
-  padding: 8px 7px 5px;
-  overflow: hidden;
-}
-
-.pictogram-scroll {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 88px;
-  gap: 5px;
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  scrollbar-width: none;
-  scroll-snap-type: x proximity;
-  -webkit-overflow-scrolling: touch;
-}
-
-.pictogram-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.pictogram-item {
-  min-height: 102px;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border: 1px solid #edf0ee;
-  background: #ffffff;
-  scroll-snap-align: start;
-}
-
-.pictogram-image {
-  min-height: 70px;
-  display: grid;
-  place-content: center;
-  overflow: hidden;
-}
-
-.pictogram-image--emoji {
-  font-size: 43px;
-  filter: grayscale(1) sepia(0.55) hue-rotate(75deg) saturate(2.8) brightness(0.63);
-}
-
-.pictogram-item p {
-  margin: 0;
-  padding: 5px 2px 6px;
-  color: #37443b;
-  font-size: 11px;
+  color: var(--green-900);
+  font-size: 9px;
   font-weight: 700;
-  text-align: center;
   white-space: nowrap;
 }
+.login-user svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; }
 
-.scroll-guide {
-  height: 10px;
-  margin-top: 5px;
-  padding: 3px 4px;
-  background: #eef3ef;
+.home-label { margin: 10px 1px 5px; font-size: 10px; color: var(--green-900); font-weight: 800; }
+
+/* ==============================================
+   メインコンテンツ
+   ============================================== */
+
+main { display: grid; gap: 7px; }
+.card { border: 1px solid var(--line-soft); border-radius: 6px; background: #fff; box-shadow: 0 1px 3px rgba(20, 92, 53, .08); }
+
+.info-card { overflow: hidden; }
+.info-row {
+  min-height: 37px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 13px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 11px;
 }
+.info-row:last-child { border-bottom: 0; }
+.info-label { display: inline-flex; align-items: center; gap: 9px; }
+.info-label svg { width: 17px; height: 17px; fill: none; stroke: var(--green-800); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.info-value { white-space: nowrap; }
 
-.scroll-guide span {
-  width: 76%;
-  height: 4px;
+.section-card { overflow: hidden; }
+.section-title {
+  width: 100%;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  border: 0;
+  background: var(--green-050);
+  color: var(--green-900);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.section-title span { display: flex; align-items: center; gap: 7px; }
+.section-title b { display: block; width: 3px; height: 15px; border-radius: 3px; background: var(--green-800); }
+.section-title svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; transition: transform .2s ease; }
+.section-card.collapsed .section-title svg { transform: rotate(90deg); }
+.section-card.collapsed .section-body { display: none; }
+.section-body { padding: 6px; }
+
+/* ==============================================
+   ピクトグラム
+   ============================================== */
+
+.pictogram-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+.pictogram-item {
+  position: relative;
+  min-width: 0;
+  min-height: 68px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 4px 2px;
+  border: 1px solid var(--line-soft);
+  border-radius: 5px;
+  background: #fff;
+  color: var(--green-900);
+}
+.pictogram { width: 42px; height: 42px; object-fit: contain; }
+.pictogram-item > span:last-child { color: #303833; font-size: 9px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.ban-mark {
+  position: absolute;
+  top: 7px;
+  right: 5px;
+  width: 29px;
+  height: 29px;
   display: block;
-  border-radius: 99px;
-  background: #d7dcd8;
+  border: 2px solid var(--danger);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .55);
+  transform: rotate(-3deg);
 }
+.ban-mark::after { content: ""; position: absolute; top: 12px; left: 1px; width: 26px; height: 2px; background: var(--danger); transform: rotate(45deg); }
 
-/* 今日の予定 */
-.schedule-section {
-  margin-bottom: 0;
+/* ==============================================
+   リスク情報
+   ============================================== */
+
+.risk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.risk-card {
+  height: 58px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
 }
+.risk-card small { font-size: 10px; font-weight: 700; }
+.risk-card strong { margin-top: 2px; font-size: 21px; line-height: 1; }
+.fall-risk { border: 1px solid #ffc9c9; background: var(--danger-bg); color: var(--danger); }
+.transport { border: 1px solid #d5e6da; background: var(--green-050); color: var(--green-900); }
+.transport strong { color: #161b18; font-size: 19px; }
 
-.schedule-body {
-  min-height: 130px;
-  padding: 9px 12px 14px;
+/* ==============================================
+   今日の予定
+   ============================================== */
+
+.schedule-list { margin: 0; padding: 0 7px 0 19px; list-style: none; }
+.schedule-list li { position: relative; padding: 7px 0 7px 7px; border-bottom: 1px solid var(--line-soft); font-size: 9px; color: #4b554f; }
+.schedule-list li:last-child { border-bottom: 0; }
+.schedule-list li::before { content: "•"; position: absolute; left: -6px; color: var(--green-800); font-weight: 900; }
+
+/* ==============================================
+   バイタル
+   ============================================== */
+
+.vital-card .section-body { padding: 5px 8px 7px; }
+.vitals-grid { display: grid; grid-template-columns: 1fr 1fr; }
+.vitals-grid > div {
+  min-height: 27px;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 4px;
+  padding: 0 7px;
+  border-right: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 9px;
 }
+.vitals-grid > div:nth-child(even) { border-right: 0; }
+.vitals-grid > div:nth-last-child(-n+2) { border-bottom: 0; }
+.vitals-grid strong { font-size: 12px; }
+.vitals-grid small { color: #4f5953; font-size: 7px; }
+.vitals-grid .empty { visibility: hidden; }
 
-.schedule-body ul {
-  margin: 0;
-  padding-left: 20px;
+.vital-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 7px; }
+.vital-footer p { display: flex; align-items: center; gap: 3px; margin: 0; color: #6b756f; font-size: 8px; white-space: nowrap; }
+.vital-footer p svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.vital-update-btn {
+  min-width: 54px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 0;
+  border-radius: 4px;
+  color: #fff;
+  background: var(--green-800);
+  font-size: 9px;
+  font-weight: 700;
+  text-decoration: none;
 }
+.vital-update-btn svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; }
 
-.schedule-body li {
-  margin: 0 0 6px;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.25;
-}
+/* ドロワーメニューの見た目は css/sp_common.css の .drawer 系クラスを使用（sp_vitals.php と共通） */
 
-.schedule-body li:last-child {
-  margin-bottom: 0;
-}
+/* ==============================================
+   小さい端末
+   ============================================== */
 
-/* 小さい端末 */
-@media (max-width: 360px) {
-  .summary-row dt,
-  .summary-row dd,
-  .memo-body p,
-  .risk-row strong,
-  .risk-label,
-  .schedule-body li {
-    font-size: 14px;
-  }
-
-  .risk-row {
-    grid-template-columns: 41% minmax(0, 1fr);
-    gap: 8px;
-  }
-
-  .pictogram-scroll {
-    grid-auto-columns: 82px;
-  }
+@media (max-width: 350px) {
+  .patient-heading h1 { font-size: 19px; }
+  .patient-meta { gap: 7px; }
+  .login-user { padding-inline: 6px; }
+  .pictogram-item > span:last-child { font-size: 8px; }
 }
