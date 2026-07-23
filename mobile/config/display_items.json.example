@@ -1,0 +1,12 @@
+{
+    "_comment": "配置先: mobile/config/display_items.json （このファイル自体は .gitignore 対象）。導入する病院ごとに、このテンプレートをコピーして必要な項目だけ書き換えてください。配列に書かれていないブロックは非表示になります。設定ファイル自体が無い場合は全ブロックがデフォルト順で表示されます。",
+
+    "patient_home_blocks": [
+        "info",
+        "pictogram",
+        "risk",
+        "schedule_today",
+        "schedule_tomorrow",
+        "vitals"
+    ]
+}

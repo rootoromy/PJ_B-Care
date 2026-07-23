@@ -5,6 +5,11 @@
  * 患者基本情報(ふりがな/氏名/年齢/性別/病棟/ベッド)は patients テーブル、
  * ピクトグラムは pictograms / patient_pictograms テーブル、
  * バイタルの最新値は vitals テーブルから取得します。
+ *
+ * 画面内の各セクションは mobile/includes/blocks/block_*.php に分割されており、
+ * mobile/config/display_items.json（病院ごとに用意、.gitignore対象）で
+ * 表示するブロックと並び順をカスタマイズできます。
+ * 設定例: mobile/config/display_items.json.example
  */
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -83,6 +88,45 @@ function vitalValue($latest_vital, $field) {
     return $latest_vital[$field];
 }
 
+// ---------------------------------------------------
+// 表示ブロックの構成（病院ごとのJSON設定で表示/非表示・並び順を変更可能）
+// ---------------------------------------------------
+// デフォルトの並び順（config/display_items.json が無い/書かれていないブロックは
+// この順序のまま末尾に追加され、常に表示される）
+$default_block_order = [
+    'info',
+    'pictogram',
+    'risk',
+    'schedule_today',
+    'schedule_tomorrow',
+    'vitals',
+];
+
+/**
+ * config/display_items.json の設定を反映したブロック表示順を返す。
+ * - JSON の配列に書かれているブロックキーだけを、その並び順で表示する
+ *   （配列に書かれていないブロックはデフォルト非表示）
+ * - JSON 設定ファイル自体が無い/壊れている場合は、フェイルセーフとして
+ *   $default_order のブロックを全て表示する（未設定時に画面が空にならないように）
+ */
+function resolveBlockOrder(string $config_key, array $default_order): array {
+    $config_file = __DIR__ . '/config/display_items.json';
+
+    if (!is_file($config_file)) {
+        return $default_order;
+    }
+
+    $json = json_decode((string)file_get_contents($config_file), true);
+    if (!is_array($json) || !isset($json[$config_key]) || !is_array($json[$config_key])) {
+        return $default_order;
+    }
+
+    // 未知のキー（ブロックとして存在しないもの）は無視し、既知のブロックのみ残す
+    return array_values(array_intersect($json[$config_key], $default_order));
+}
+
+$block_order = resolveBlockOrder('patient_home_blocks', $default_block_order);
+
 $active_menu = 'home';
 ?>
 <!DOCTYPE html>
@@ -116,120 +160,9 @@ $active_menu = 'home';
     <p class="home-label"><a href="sp_patient_home.php?patient_id=<?= urlencode($patient_id) ?>">HOME</a></p>
 
     <main>
-      <section class="card info-card" aria-label="患者基本情報">
-        <div class="info-row">
-          <span class="info-label"><svg><use href="#i-stethoscope"></use></svg>主治医</span>
-          <span class="info-value">テスト 次郎</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label"><svg><use href="#i-nurse"></use></svg>受持看護師</span>
-          <span class="info-value">テスト 次郎</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label"><svg><use href="#i-building"></use></svg>病棟・病室</span>
-          <span class="info-value"><?= h($patient['ward_name'] ?? '') ?><?= !empty($patient['room_no']) ? ' ' . h($patient['room_no']) . '号室' : '' ?></span>
-        </div>
-        <div class="info-row">
-          <span class="info-label"><svg><use href="#i-bed"></use></svg>ベッド</span>
-          <span class="info-value"><?= h($patient['bed_no'] ?? '') ?><?= !empty($patient['bed_no']) ? 'ベッド' : '' ?></span>
-        </div>
-      </section>
-
-      <section class="card section-card">
-        <a class="section-title" href="#">
-          <span><b></b>ピクトグラム</span>
-          <svg><use href="#i-chevron"></use></svg>
-        </a>
-        <div class="section-body">
-          <?php if (empty($pictograms)): ?>
-            <p style="padding:10px; font-size:12px; color:var(--muted);">ピクトグラムが設定されていません</p>
-          <?php else: ?>
-            <div class="pictogram-grid">
-              <?php foreach ($pictograms as $i => $pic):
-                $is_prohibited = strpos(basename($pic['image_path']), 'no_') === 0;
-                // 2段×4列を1ページとして、行優先（左→右、あふれたら次ページへ横スクロール）で配置する
-                $page          = intdiv($i, 8);
-                $pos_in_page   = $i % 8;
-                $grid_row      = intdiv($pos_in_page, 4) + 1;
-                $grid_column   = $page * 4 + ($pos_in_page % 4) + 1;
-              ?>
-                <div class="pictogram-item<?= $is_prohibited ? ' prohibited' : '' ?>" style="grid-row:<?= $grid_row ?>; grid-column:<?= $grid_column ?>;">
-                  <img class="pictogram" src="../<?= h($pic['image_path']) ?>" alt="" onerror="this.style.visibility='hidden'">
-                  <?php if ($is_prohibited): ?><span class="ban-mark" aria-hidden="true"></span><?php endif; ?>
-                  <span><?= h($pic['name']) ?></span>
-                </div>
-              <?php endforeach; ?>
-            </div>
-          <?php endif; ?>
-        </div>
-      </section>
-
-      <section class="risk-grid" aria-label="患者リスク情報">
-        <article class="risk-card fall-risk">
-          <small>転倒危険度</small>
-          <strong><?= h($patient['fall_risk'] ?? 0) ?></strong>
-        </article>
-        <article class="risk-card transport">
-          <small>移送区分</small>
-          <strong><?= h($patient['transfer_type'] ?? '-') ?></strong>
-        </article>
-      </section>
-
-      <section class="card section-card">
-        <a class="section-title" href="#">
-          <span><b></b>今日の予定</span>
-          <svg><use href="#i-chevron"></use></svg>
-        </a>
-        <div class="section-body">
-          <ul class="schedule-list">
-            <li>ここにテキストが入ります。</li>
-            <li>ここにテキストが入ります。</li>
-            <li>ここにテキストが入ります。</li>
-          </ul>
-        </div>
-      </section>
-
-      <section class="card section-card">
-        <a class="section-title" href="#">
-          <span><b></b>明日の予定</span>
-          <svg><use href="#i-chevron"></use></svg>
-        </a>
-        <div class="section-body">
-          <ul class="schedule-list">
-            <li>ここにテキストが入ります。</li>
-            <li>ここにテキストが入ります。</li>
-            <li>ここにテキストが入ります。</li>
-          </ul>
-        </div>
-      </section>
-
-      <section class="card section-card vital-card">
-        <a class="section-title" href="sp_vitals.php?patient_id=<?= urlencode($patient_id) ?>">
-          <span><b></b>バイタル</span>
-          <svg><use href="#i-chevron"></use></svg>
-        </a>
-        <div class="section-body">
-          <?php
-            $bp_sys = vitalValue($latest_vital, 'systolic_bp');
-            $bp_dia = vitalValue($latest_vital, 'diastolic_bp');
-            $temp   = vitalValue($latest_vital, 'temperature');
-            $pulse  = vitalValue($latest_vital, 'pulse');
-            $spo2   = vitalValue($latest_vital, 'spo2');
-          ?>
-          <div class="vitals-grid">
-            <div><span>血圧(上)<small>mmHg</small></span><strong><?= $bp_sys !== null ? h($bp_sys) : '－' ?></strong></div>
-            <div><span>体温<small>℃</small></span><strong><?= $temp !== null ? h($temp) : '－' ?></strong></div>
-            <div><span>血圧(下)<small>mmHg</small></span><strong><?= $bp_dia !== null ? h($bp_dia) : '－' ?></strong></div>
-            <div><span>脈拍<small>bpm</small></span><strong><?= $pulse !== null ? h($pulse) : '－' ?></strong></div>
-            <div class="empty"></div>
-            <div><span>SPO2<small>%</small></span><strong><?= $spo2 !== null ? h($spo2) : '－' ?></strong></div>
-          </div>
-          <div class="vital-footer">
-            <p><svg><use href="#i-clock"></use></svg>最終更新：<span><?= $latest_vital ? h(date('Y/m/d H:i', strtotime($latest_vital['measured_at']))) : '記録なし' ?></span></p>
-            <a class="vital-update-btn" href="sp_vitals.php?patient_id=<?= urlencode($patient_id) ?>"><svg><use href="#i-refresh"></use></svg>更新</a>
-          </div>
-        </div>
-      </section>
+      <?php foreach ($block_order as $block_key): ?>
+        <?php include __DIR__ . '/includes/blocks/block_' . $block_key . '.php'; ?>
+      <?php endforeach; ?>
     </main>
   </div>
 

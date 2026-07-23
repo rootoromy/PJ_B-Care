@@ -21,6 +21,9 @@ Thumbs.db
 # 機密情報を含む設定ファイル(config.php.example を参照してコピー作成)
 includes/config.php
 
+# 病院ごとのUIカスタマイズ設定(display_items.json.example を参照してコピー作成)
+mobile/config/display_items.json
+
 # デバッグ用(サーバー情報漏洩のため)
 phpinfo.php
 
