@@ -126,13 +126,12 @@ main { display: grid; gap: 7px; }
   color: var(--green-900);
   font-size: 11px;
   font-weight: 800;
+  text-decoration: none;
   cursor: pointer;
 }
 .section-title span { display: flex; align-items: center; gap: 7px; }
 .section-title b { display: block; width: 3px; height: 15px; border-radius: 3px; background: var(--green-800); }
-.section-title svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; transition: transform .2s ease; }
-.section-card.collapsed .section-title svg { transform: rotate(90deg); }
-.section-card.collapsed .section-body { display: none; }
+.section-title svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
 .section-body { padding: 6px; }
 
 /* ==============================================

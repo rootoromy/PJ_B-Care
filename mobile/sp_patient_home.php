@@ -92,7 +92,7 @@ $active_menu = 'home';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜患者ホーム</title>
   <link rel="stylesheet" href="css/sp_common.css?v=6">
-  <link rel="stylesheet" href="css/sp_patient_home.css?v=6">
+  <link rel="stylesheet" href="css/sp_patient_home.css?v=7">
 </head>
 <body>
   <!-- SVG icon sprite（外部ライブラリ不要） -->
@@ -136,11 +136,11 @@ $active_menu = 'home';
       </section>
 
       <section class="card section-card">
-        <button class="section-title" type="button" data-toggle="pictogramPanel">
+        <a class="section-title" href="#">
           <span><b></b>ピクトグラム</span>
           <svg><use href="#i-chevron"></use></svg>
-        </button>
-        <div class="section-body" id="pictogramPanel">
+        </a>
+        <div class="section-body">
           <?php if (empty($pictograms)): ?>
             <p style="padding:10px; font-size:12px; color:var(--muted);">ピクトグラムが設定されていません</p>
           <?php else: ?>
@@ -176,11 +176,11 @@ $active_menu = 'home';
       </section>
 
       <section class="card section-card">
-        <button class="section-title" type="button" data-toggle="schedulePanel">
+        <a class="section-title" href="#">
           <span><b></b>今日の予定</span>
           <svg><use href="#i-chevron"></use></svg>
-        </button>
-        <div class="section-body" id="schedulePanel">
+        </a>
+        <div class="section-body">
           <ul class="schedule-list">
             <li>ここにテキストが入ります。</li>
             <li>ここにテキストが入ります。</li>
@@ -190,11 +190,11 @@ $active_menu = 'home';
       </section>
 
       <section class="card section-card">
-        <button class="section-title" type="button" data-toggle="scheduleTomorrowPanel">
+        <a class="section-title" href="#">
           <span><b></b>明日の予定</span>
           <svg><use href="#i-chevron"></use></svg>
-        </button>
-        <div class="section-body" id="scheduleTomorrowPanel">
+        </a>
+        <div class="section-body">
           <ul class="schedule-list">
             <li>ここにテキストが入ります。</li>
             <li>ここにテキストが入ります。</li>
@@ -204,11 +204,11 @@ $active_menu = 'home';
       </section>
 
       <section class="card section-card vital-card">
-        <button class="section-title" type="button" data-toggle="vitalPanel">
+        <a class="section-title" href="sp_vitals.php?patient_id=<?= urlencode($patient_id) ?>">
           <span><b></b>バイタル</span>
           <svg><use href="#i-chevron"></use></svg>
-        </button>
-        <div class="section-body" id="vitalPanel">
+        </a>
+        <div class="section-body">
           <?php
             $bp_sys = vitalValue($latest_vital, 'systolic_bp');
             $bp_dia = vitalValue($latest_vital, 'diastolic_bp');
@@ -234,6 +234,5 @@ $active_menu = 'home';
   </div>
 
   <script src="js/sp_drawer.js?v=1"></script>
-  <script src="js/sp_patient_home.js?v=1"></script>
 </body>
 </html>
