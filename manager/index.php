@@ -1,10 +1,10 @@
 <?php
 /**
  * B-Care Manager - 患者一覧
- * 配置先: index.php
+ * 配置先: manager/index.php
  */
 
-require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/../includes/config.php';
 
 // ---------------------------------------------------
 // DB接続
@@ -107,6 +107,7 @@ function buildQuery(array $extra = []): string {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>B-Care Manager - 患者一覧</title>
+    <link rel="icon" href="../favicon.ico">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/index.css">

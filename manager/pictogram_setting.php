@@ -1,10 +1,10 @@
 <?php
 /**
  * B-Care Manager - ピクトグラム設定画面
- * 配置先: pictogram_setting.php
+ * 配置先: manager/pictogram_setting.php
  */
 
-require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/../includes/config.php';
 
 // ---------------------------------------------------
 // 患者ID取得
@@ -91,6 +91,7 @@ $gender   = getGenderStyle($patient['gender'] ?? '');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>B-Care Manager - ピクトグラム設定</title>
+    <link rel="icon" href="../favicon.ico">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/pictogram_setting.css">
@@ -194,15 +195,15 @@ $gender   = getGenderStyle($patient['gender'] ?? '');
                             <div class="pic-item <?= in_array($pic['pictogram_id'], $current_ids) ? 'selected' : '' ?>"
                                 data-id="<?= $pic['pictogram_id'] ?>"
                                 data-name="<?= htmlspecialchars($pic['name']) ?>"
-                                data-img="<?= htmlspecialchars($pic['image_path']) ?>"
+                                data-img="../<?= htmlspecialchars($pic['image_path']) ?>"
                                 data-cat="<?= htmlspecialchars($pic['category']) ?>"
                                 onclick="togglePic(this)">
                                 <div class="pic-check">
                                     <svg fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
                                 </div>
-                                <img src="<?= htmlspecialchars($pic['image_path']) ?>"
+                                <img src="../<?= htmlspecialchars($pic['image_path']) ?>"
                                     alt="<?= htmlspecialchars($pic['name']) ?>"
-                                    onerror="this.src='img/pictograms/default.png'">
+                                    onerror="this.src='../img/pictograms/default.png'">
                                 <span><?= htmlspecialchars($pic['name']) ?></span>
                             </div>
                         <?php endforeach; ?>
@@ -273,7 +274,7 @@ const initialSelected = <?= json_encode(array_values(array_map(function($pic) {
     return [
         'id'   => (int)$pic['pictogram_id'],
         'name' => $pic['name'],
-        'img'  => $pic['image_path'],
+        'img'  => '../' . $pic['image_path'],
     ];
 }, array_filter($all_pictograms, function($pic) use ($current_ids) {
     return in_array($pic['pictogram_id'], $current_ids);

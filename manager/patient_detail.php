@@ -1,10 +1,10 @@
 <?php
 /**
  * B-Care Manager - 患者詳細画面
- * 配置先: patient_detail.php
+ * 配置先: manager/patient_detail.php
  */
 
-require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/../includes/config.php';
 
 // ---------------------------------------------------
 // 患者ID取得
@@ -33,8 +33,8 @@ if (!$patient) {
 // ---------------------------------------------------
 // QRコード生成
 // ---------------------------------------------------
-require_once __DIR__ . '/lib/phpqrcode/qrlib.php';
-define('CACHE_DIR', __DIR__ . '/qr_cache/');
+require_once __DIR__ . '/../lib/phpqrcode/qrlib.php';
+define('CACHE_DIR', __DIR__ . '/../qr_cache/');
 define('QR_SIZE',   5);
 define('QR_MARGIN', 1);
 
@@ -81,6 +81,7 @@ $transfer = getTransferColor();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>B-Care Manager - 患者詳細</title>
+    <link rel="icon" href="../favicon.ico">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/patient_detail.css">
@@ -245,7 +246,7 @@ $transfer = getTransferColor();
                         <div class="pictogram-grid">
                             <?php foreach ($pictograms as $pic): ?>
                                 <div class="pictogram-item">
-                                    <img src="<?= htmlspecialchars($pic['image_path']) ?>"
+                                    <img src="../<?= htmlspecialchars($pic['image_path']) ?>"
                                          alt="<?= htmlspecialchars($pic['name']) ?>"
                                          onerror="this.style.display='none'">
                                     <span><?= htmlspecialchars($pic['name']) ?></span>
@@ -286,7 +287,7 @@ $transfer = getTransferColor();
                     <?php if (!empty($pictograms)): ?>
                         <div class="esl-preview-pics">
                             <?php foreach ($pictograms as $pic): ?>
-                                <img src="<?= htmlspecialchars($pic['image_path']) ?>"
+                                <img src="../<?= htmlspecialchars($pic['image_path']) ?>"
                                      alt="<?= htmlspecialchars($pic['name']) ?>"
                                      title="<?= htmlspecialchars($pic['name']) ?>"
                                      onerror="this.style.display='none'">
