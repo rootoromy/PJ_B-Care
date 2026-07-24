@@ -3,10 +3,11 @@
    配置先: mobile/css/sp_patient_home.css
 
    sp_common.css を読み込んだ後にこのファイルを読み込む前提で、
-   このページでのみ使うクラス（.patient-header / .card 系など）
-   の見た目をこのページ用に上書きする。
-   .icon-button / .drawer 系は sp_vitals.php とも共通のため
-   css/sp_common.css 側で定義している（このファイルでは上書きしない）。
+   このページでのみ使うクラス（.card 系など）の見た目をこのページ用に
+   上書きする。
+   .phone-shell / .patient-header / .icon-button / .drawer 系は
+   sp_vitals.php とも共通のため css/sp_common.css 側で定義している
+   （このファイルでは上書きしない）。
    ============================================== */
 
 :root {
@@ -25,66 +26,12 @@ body {
   background: #edf0ee;
 }
 
-.phone-shell {
-  position: relative;
-  width: min(100%, 430px);
-  min-height: 100vh;
-  margin: 0 auto;
-  padding: calc(env(safe-area-inset-top) + 15px) 9px calc(env(safe-area-inset-bottom) + 20px);
-  overflow: clip;
-  background: #fff;
-}
-
-@media (min-width: 431px) {
-  .phone-shell {
-    min-height: 850px;
-    border-radius: 30px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, .16);
-  }
-}
-
-/* ==============================================
-   患者情報ヘッダー
-   ============================================== */
-
-.patient-header {
-  position: sticky;
-  top: 0;
-  z-index: 15;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) auto;
-  align-items: start;
-  gap: 9px;
-  padding: 0 0 8px;
-  margin: 0 0 -8px;
-  border-bottom: 0;
-  background: #fff;
-}
-
-.patient-header .icon-button { margin-top: 8px; }
-
-.patient-heading { min-width: 0; }
-.kana { margin: 0 0 1px; font-size: 9px; font-weight: 700; letter-spacing: .05em; color: #536058; }
-.name-row { display: flex; align-items: center; }
-.patient-heading h1 { margin: 0; font-size: 22px; line-height: 1.12; letter-spacing: .01em; }
-.patient-heading h1 span { margin-left: 2px; font-size: 12px; }
-.patient-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 5px; font-size: 11px; }
-.patient-meta .sex { font-weight: 700; }
-.same-name { padding: 3px 8px; border-radius: 999px; color: #fff; background: var(--green-800); font-size: 9px; }
+/* .phone-shell / .patient-header 系は sp_vitals.php とも共通のため
+   css/sp_common.css 側で定義している（このファイルでは上書きしない） */
 
 .login-user {
-  display: flex;
-  align-items: center;
-  gap: 4px;
   margin-top: 8px;
-  padding: 5px 8px;
-  border-radius: 5px;
-  background: var(--green-100);
-  color: var(--green-900);
-  font-size: 12px;
   font-weight: 700;
-  white-space: nowrap;
 }
 
 .home-label { margin: 10px 1px 5px; font-size: 10px; font-weight: 800; }
@@ -204,6 +151,18 @@ main { display: grid; gap: 7px; }
 .schedule-list li { position: relative; padding: 7px 0 7px 7px; border-bottom: 1px solid var(--line-soft); font-size: 12px; color: #4b554f; }
 .schedule-list li:last-child { border-bottom: 0; }
 .schedule-list li::before { content: "•"; position: absolute; left: -6px; color: var(--green-800); font-weight: 900; }
+
+/* ==============================================
+   預かり品
+   ============================================== */
+
+.deposit-list { margin: 0; padding: 0 7px; list-style: none; }
+.deposit-list li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 3px; border-bottom: 1px solid var(--line-soft); }
+.deposit-list li:last-child { border-bottom: 0; }
+.deposit-name { font-size: 12px; color: #23302a; }
+.deposit-status { padding: 3px 9px; border-radius: 999px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.deposit-status--stored { color: var(--green-900); background: var(--green-100); }
+.deposit-status--returned { color: #68736b; background: #eef1ef; }
 
 /* ==============================================
    バイタル

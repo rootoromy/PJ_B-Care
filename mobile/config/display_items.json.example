@@ -7,6 +7,7 @@
         "risk",
         "schedule_today",
         "schedule_tomorrow",
+        "deposit",
         "vitals"
     ]
 }

@@ -69,13 +69,22 @@ img {
    画面全体
    ============================================== */
 
-.app-shell {
+.phone-shell {
   position: relative;
   width: min(100%, 430px);
   min-height: 100vh;
   margin: 0 auto;
-  background: #edf0ee;
-  box-shadow: 0 0 24px rgba(0, 0, 0, 0.10);
+  padding: calc(env(safe-area-inset-top) + 15px) 9px calc(env(safe-area-inset-bottom) + 20px);
+  overflow: clip;
+  background: #fff;
+}
+
+@media (min-width: 431px) {
+  .phone-shell {
+    min-height: 850px;
+    border-radius: 30px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .16);
+  }
 }
 
 /* ==============================================
@@ -86,15 +95,18 @@ img {
   position: sticky;
   top: 0;
   z-index: 15;
-  min-height: 84px;
+  min-height: 0;
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) auto;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
   align-items: start;
-  gap: 10px;
-  padding: 7px 7px 8px;
-  border-bottom: 1px solid #e5e8e6;
+  gap: 9px;
+  padding: 0 0 8px;
+  margin: 0 0 -8px;
+  border-bottom: 0;
   background: var(--white);
 }
+
+.patient-header .icon-button { margin-top: 8px; }
 
 .icon-button {
   width: 34px;
@@ -116,60 +128,15 @@ img {
   stroke-linecap: round;
 }
 
-.patient-block {
-  min-width: 0;
-}
-
-.patient-kana {
-  margin: 0 0 1px;
-  color: #26352b;
-  font-size: 9px;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.patient-block h1 {
-  margin: 0;
-  color: #123c22;
-  font-size: clamp(22px, 6.4vw, 28px);
-  line-height: 1.12;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-}
-
-.patient-block h1 span {
-  margin-left: 3px;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.patient-meta {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-top: 5px;
-  color: #101510;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.patient-meta a {
-  color: #135dd4;
-  text-decoration: none;
-}
-
-.duplicate-badge {
-  display: inline-flex;
-  align-items: center;
-  min-height: 24px;
-  padding: 3px 9px;
-  border-radius: 4px;
-  color: #ffffff;
-  background: var(--green-800);
-  font-size: 12px;
-  font-weight: 700;
-}
+.patient-heading { min-width: 0; }
+.kana { margin: 0 0 1px; font-size: 9px; font-weight: 700; letter-spacing: .05em; color: #536058; }
+.name-row { display: flex; align-items: center; }
+.patient-heading h1 { margin: 0; font-size: 22px; line-height: 1.12; letter-spacing: .01em; }
+.patient-heading h1 span { margin-left: 2px; font-size: 12px; }
+.patient-id { margin-left: 5px; color: #68736b; font-size: 11px; white-space: nowrap; }
+.patient-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 5px; font-size: 11px; }
+.patient-meta .sex { font-weight: 700; }
+.same-name { padding: 3px 8px; border-radius: 999px; color: #fff; background: var(--green-800); font-size: 9px; }
 
 .login-user {
   display: inline-flex;
@@ -191,15 +158,6 @@ img {
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
-}
-
-/* ==============================================
-   メインコンテンツ共通
-   ============================================== */
-
-.main-content {
-  min-width: 0;
-  padding: 6px 8px 12px;
 }
 
 .card {
@@ -282,16 +240,6 @@ img {
    共通レスポンシブ
    ============================================== */
 
-@media (min-width: 700px) {
-  .app-shell {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    min-height: calc(100vh - 40px);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-}
-
 @media (max-width: 360px) {
   .patient-header {
     grid-template-columns: 40px minmax(0, 1fr);
@@ -303,12 +251,11 @@ img {
     right: 5px;
   }
 
-  .patient-block h1 {
+  .patient-heading h1 {
     font-size: 21px;
   }
 
   .patient-meta {
     gap: 5px;
-    font-size: 12px;
   }
 }

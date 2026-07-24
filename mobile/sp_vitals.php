@@ -1,10 +1,21 @@
 <?php
 /**
  * B-Care Mobile - バイタル画面
- * 配置先: sp_vitals.php
+ * 配置先: mobile/sp_vitals.php
+ *
+ * 1日分のバイタル推移をグラフと表で表示する。スマホ縦画面（iPhone 14相当の
+ * 390px幅）を基準にしたレイアウト。共通の .phone-shell / sp_header.php /
+ * sp_drawer.php を患者ホーム画面と共通利用する。
  */
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 require_once __DIR__ . '/../includes/config.php';
+
+function h($value) {
+    return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+}
 
 // ---------------------------------------------------
 // パラメータ取得
@@ -54,7 +65,7 @@ $stmt_dup->close();
 // バイタル取得（指定日）
 // ---------------------------------------------------
 $stmt_v = $mysqli->prepare("
-    SELECT measured_at, temperature, systolic_bp, diastolic_bp, pulse, spo2, respiratory_rate
+    SELECT measured_at, temperature, systolic_bp, diastolic_bp, pulse, spo2
     FROM vitals
     WHERE patient_id = ? AND DATE(measured_at) = ?
     ORDER BY measured_at
@@ -67,11 +78,12 @@ $stmt_v->close();
 $mysqli->close();
 
 // ---------------------------------------------------
-// 固定枠（6/9/12/15/18時）にマッピング
+// 3時間おきの固定枠（0/3/6/9/12/15/18/21時）にマッピング
+// 24:00は見た目上の右端ラベルのみで、実データは対応させない
 // ---------------------------------------------------
-$slot_times = ['06:00', '09:00', '12:00', '15:00', '18:00'];
-$slot_labels = ['6:00', '9:00', '12:00', '15:00', '18:00'];
-$slot_map = array_fill_keys($slot_times, null);
+$slot_times  = ['00:00', '03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'];
+$slot_labels = ['0:00', '3:00', '6:00', '9:00', '12:00', '15:00', '18:00', '21:00', '24:00'];
+$slot_map    = array_fill_keys($slot_times, null);
 
 foreach ($vital_rows as $row) {
     $hm = date('H:i', strtotime($row['measured_at']));
@@ -87,49 +99,28 @@ function pickVals(array $slot_map, string $field): array {
             ? (float)$row[$field]
             : null;
     }
+    $out[] = null; // 24:00（右端の見た目上の枠。実データは対応させない）
     return $out;
 }
 
-$vital_defs = [
-    ['key' => 'temp',  'label' => '体温',       'unit' => '℃',     'field' => 'temperature',   'min' => 35, 'max' => 40,  'css' => 'value-temp',  'color' => '#e47537'],
-    ['key' => 'sys',   'label' => '血圧（上）', 'unit' => 'mmHg',  'field' => 'systolic_bp',   'min' => 80, 'max' => 180, 'css' => 'value-sys',   'color' => '#3478d1'],
-    ['key' => 'dia',   'label' => '血圧（下）', 'unit' => 'mmHg',  'field' => 'diastolic_bp',  'min' => 40, 'max' => 110, 'css' => 'value-dia',   'color' => '#39a0ca'],
-    ['key' => 'pulse', 'label' => '脈拍',       'unit' => '回/分', 'field' => 'pulse',         'min' => 40, 'max' => 130, 'css' => 'value-pulse', 'color' => '#3f8d4d'],
-    ['key' => 'spo2',  'label' => 'SpO₂',      'unit' => '%',     'field' => 'spo2',          'min' => 85, 'max' => 100, 'css' => 'value-spo2',  'color' => '#d54f4f'],
+$vital_data = [
+    'labels'      => $slot_labels,
+    'temperature' => pickVals($slot_map, 'temperature'),
+    'systolic'    => pickVals($slot_map, 'systolic_bp'),
+    'diastolic'   => pickVals($slot_map, 'diastolic_bp'),
+    'pulse'       => pickVals($slot_map, 'pulse'),
+    'spo2'        => pickVals($slot_map, 'spo2'),
 ];
 
-$chart_datasets = [];
-foreach ($vital_defs as $def) {
-    $chart_datasets[] = [
-        'key'   => $def['key'],
-        'label' => $def['label'],
-        'unit'  => $def['unit'],
-        'values'=> pickVals($slot_map, $def['field']),
-        'min'   => $def['min'],
-        'max'   => $def['max'],
-        'css'   => $def['css'],
-        'color' => $def['color'],
-    ];
-}
-
 // ---------------------------------------------------
-// グラフ左側の基準値表（横線と同じ本数で min→max を分割）
+// 最終更新（その日の最新の測定時刻）
 // ---------------------------------------------------
-$scale_row_count = 6; // drawChart() の横線本数(i=0..5)と合わせる
-$scale_rows = [];
-for ($i = 0; $i < $scale_row_count; $i++) {
-    $ratio = ($scale_row_count > 1) ? $i / ($scale_row_count - 1) : 0;
-    $row = [];
-    foreach ($vital_defs as $def) {
-        $val = $def['max'] - ($def['max'] - $def['min']) * $ratio;
-        $row[$def['key']] = ($def['key'] === 'temp')
-            ? number_format($val, 1)
-            : (string)(int)round($val);
+$last_updated = null;
+foreach ($vital_rows as $row) {
+    if ($last_updated === null || strtotime($row['measured_at']) > strtotime($last_updated)) {
+        $last_updated = $row['measured_at'];
     }
-    $scale_rows[] = $row;
 }
-
-$gender = getGenderStyle($patient['gender'] ?? '');
 
 // ---------------------------------------------------
 // 日付表示・前日/翌日リンク
@@ -143,61 +134,45 @@ $date_display = $dt->format('Y/m/d') . '（' . $weekdays_jp[(int)$dt->format('w'
 function buildDateQs($patient_id, $date) {
     return '?' . http_build_query(['patient_id' => $patient_id, 'date' => $date]);
 }
+
+$active_menu = 'vitals';
 ?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>B-Care Mobile｜バイタル</title>
-  <link rel="stylesheet" href="css/sp_common.css?v=8" />
-  <link rel="stylesheet" href="css/sp_vitals.css?v=12" />
+  <link rel="stylesheet" href="css/sp_common.css?v=10" />
+  <link rel="stylesheet" href="css/sp_vitals.css?v=14" />
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
     <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M5 20c.8-4.2 3.2-6 7-6s6.2 1.8 7 6"/></symbol>
     <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 6v5h-5M4 18v-5h5M18 10a7 7 0 0 0-12-2M6 14a7 7 0 0 0 12 2"/></symbol>
+    <symbol id="i-thermometer" viewBox="0 0 24 24"><path d="M12 14.5V5a2 2 0 1 0-4 0v9.5a4 4 0 1 0 4 0z"/><path d="M10 8h1"/></symbol>
+    <symbol id="i-bp" viewBox="0 0 24 24"><circle cx="12" cy="13" r="7"/><path d="M12 13l3.5-3.5M9 5h6"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21s-7-4.35-9.5-8.5C1 9 2.5 5 6 5c2 0 3.5 1.5 4 3 .5-1.5 2-3 4-3 3.5 0 5 4 3.5 7.5C19 16.65 12 21 12 21z"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3c4 5 7 8.5 7 12a7 7 0 0 1-14 0c0-3.5 3-7 7-12z"/></symbol>
   </svg>
 
-  <div class="app-shell vitals-shell">
-    <aside class="patient-panel" aria-label="患者情報">
-      <button class="icon-button" type="button" aria-label="メニューを開く" id="menuButton" aria-controls="drawer" aria-expanded="false">
-        <svg><use href="#i-menu"></use></svg>
-      </button>
+  <div class="phone-shell">
+    <?php include __DIR__ . '/includes/sp_header.php'; ?>
 
-      <div class="patient-block">
-        <p class="patient-kana"><?= htmlspecialchars($patient['patient_kana'] ?? '') ?></p>
-        <h1><?= htmlspecialchars($patient['patient_name']) ?><span>様</span></h1>
-        <div class="patient-meta">
-          <strong><?= htmlspecialchars($patient['age'] ?? '-') ?>歳</strong>
-          <span style="color:<?= $gender['color'] ?>; font-weight:700;">
-            <?= htmlspecialchars($patient['gender'] ?? '-') ?>
-          </span>
-        </div>
-        <?php if ($dup_count > 0): ?>
-          <span class="duplicate-badge">同姓同名あり</span>
-        <?php endif; ?>
-      </div>
+    <?php include __DIR__ . '/includes/sp_drawer.php'; ?>
 
-      <div class="login-user">
-        <svg><use href="#i-user"></use></svg>
-        <span><?= htmlspecialchars($_SESSION['user_name'] ?? 'ナース') ?></span>
-      </div>
-    </aside>
-
-    <main class="main-content">
-      <header class="content-header">
-        <div>
-          <p class="breadcrumb"><a href="sp_patient_home.php?patient_id=<?= urlencode($patient_id) ?>">HOME</a> &gt; バイタル</p>
-          <h2>バイタル</h2>
-        </div>
+    <main class="vitals-main">
+      <header class="page-header">
+        <p class="breadcrumb"><a href="sp_patient_home.php?patient_id=<?= urlencode($patient_id) ?>">HOME</a> &gt; バイタル</p>
+        <h1>バイタル</h1>
 
         <div class="date-controls" aria-label="日付切り替え">
           <a class="date-nav date-nav--prev" href="sp_vitals.php<?= buildDateQs($patient_id, $prev_date) ?>" aria-label="前日">
             <svg><use href="#i-chevron"></use></svg>
           </a>
-          <span class="date-display" id="dateDisplay"><?= htmlspecialchars($date_display) ?></span>
+          <span class="date-display"><?= h($date_display) ?></span>
           <a class="date-nav" href="sp_vitals.php<?= buildDateQs($patient_id, $next_date) ?>" aria-label="翌日">
             <svg><use href="#i-chevron"></use></svg>
           </a>
@@ -205,76 +180,70 @@ function buildDateQs($patient_id, $date) {
       </header>
 
       <section class="vital-card" aria-labelledby="vitalTitle">
-        <div class="card-head">
+        <div class="card-topbar">
           <div>
-            <p class="eyebrow">1日表示</p>
-            <h3 id="vitalTitle">バイタル推移</h3>
+            <span class="eyebrow">1日表示</span>
+            <h2 id="vitalTitle">バイタル推移</h2>
           </div>
-          <div class="legend" aria-label="グラフ凡例">
-            <span><i class="line temp"></i>体温</span>
-            <span><i class="line sys"></i>血圧（上）</span>
-            <span><i class="line dia"></i>血圧（下）</span>
-            <span><i class="line pulse"></i>脈拍</span>
-            <span><i class="line spo2"></i>SpO₂</span>
+
+          <div class="update-area">
+            <span>最終更新：<?= $last_updated ? h(date('Y/m/d H:i', strtotime($last_updated))) : '記録なし' ?></span>
+            <a class="refresh-button" href="sp_vitals.php<?= buildDateQs($patient_id, $target_date) ?>">
+              <svg><use href="#i-refresh"></use></svg>
+              更新
+            </a>
           </div>
+        </div>
+
+        <div class="metric-tabs" role="tablist" aria-label="表示するバイタル">
+          <button class="metric-tab is-active" type="button" data-series="temperature">
+            <span class="metric-icon"><svg><use href="#i-thermometer"></use></svg></span>
+            <span><strong>体温</strong><small>℃</small></span>
+          </button>
+          <button class="metric-tab is-active" type="button" data-series="systolic,diastolic">
+            <span class="metric-icon"><svg><use href="#i-bp"></use></svg></span>
+            <span><strong>血圧（上/下）</strong><small>mmHg</small></span>
+          </button>
+          <button class="metric-tab is-active" type="button" data-series="pulse">
+            <span class="metric-icon"><svg><use href="#i-heart"></use></svg></span>
+            <span><strong>脈拍</strong><small>回/分</small></span>
+          </button>
+          <button class="metric-tab is-active" type="button" data-series="spo2">
+            <span class="metric-icon"><svg><use href="#i-drop"></use></svg></span>
+            <span><strong>SpO₂</strong><small>%</small></span>
+          </button>
         </div>
 
         <div class="chart-wrap">
-          <div class="chart-scale" aria-hidden="true">
-            <div class="scale-rows">
-              <?php foreach ($scale_rows as $row): ?>
-                <div class="scale-row">
-                  <span class="value-temp"><?= htmlspecialchars($row['temp']) ?></span>
-                  <span class="value-sys"><?= htmlspecialchars($row['sys']) ?></span>
-                  <span class="value-dia"><?= htmlspecialchars($row['dia']) ?></span>
-                  <span class="value-pulse"><?= htmlspecialchars($row['pulse']) ?></span>
-                  <span class="value-spo2"><?= htmlspecialchars($row['spo2']) ?></span>
-                </div>
-              <?php endforeach; ?>
-            </div>
-          </div>
-          <div class="chart-canvas-area">
-            <canvas id="vitalChart" aria-label="6時から18時までのバイタルグラフ"></canvas>
-          </div>
+          <svg id="vitalChart" class="vital-chart" role="img" aria-labelledby="chartTitle chartDesc">
+            <title id="chartTitle">1日分のバイタル推移</title>
+            <desc id="chartDesc">0時から24時までの体温、血圧、脈拍、SpO2の推移を示します。</desc>
+          </svg>
         </div>
 
         <div class="table-wrap">
-          <table>
+          <table class="vital-table">
             <thead>
               <tr>
-                <th scope="col">項目</th>
+                <th scope="col">時刻</th>
                 <?php foreach ($slot_labels as $label): ?>
-                  <th scope="col"><?= htmlspecialchars($label) ?></th>
+                  <th scope="col"><?= h($label) ?></th>
                 <?php endforeach; ?>
               </tr>
             </thead>
-            <tbody id="vitalTableBody">
-              <?php foreach ($chart_datasets as $ds): ?>
-                <tr>
-                  <th scope="row" class="<?= $ds['css'] ?>">
-                    <?= htmlspecialchars($ds['label']) ?><small> <?= htmlspecialchars($ds['unit']) ?></small>
-                  </th>
-                  <?php foreach ($ds['values'] as $v): ?>
-                    <td class="<?= $ds['css'] ?>"><?= $v === null ? '－' : htmlspecialchars((string)$v) ?></td>
-                  <?php endforeach; ?>
-                </tr>
-              <?php endforeach; ?>
-            </tbody>
+            <tbody id="vitalTableBody"></tbody>
           </table>
         </div>
+
+        <p class="chart-note">※ グラフ上の数値は測定値を表示しています。</p>
       </section>
     </main>
   </div>
 
-  <?php $active_menu = 'vitals'; include __DIR__ . '/includes/sp_drawer.php'; ?>
-
   <script>
-    window.vitalData = {
-      times: <?= json_encode($slot_labels, JSON_UNESCAPED_UNICODE) ?>,
-      datasets: <?= json_encode($chart_datasets, JSON_UNESCAPED_UNICODE) ?>
-    };
+    window.vitalData = <?= json_encode($vital_data, JSON_UNESCAPED_UNICODE) ?>;
   </script>
   <script src="js/sp_drawer.js?v=1"></script>
-  <script src="js/sp_vitals.js?v=2"></script>
+  <script src="js/sp_vitals.js?v=5"></script>
 </body>
 </html>

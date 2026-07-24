@@ -91,14 +91,15 @@ function vitalValue($latest_vital, $field) {
 // ---------------------------------------------------
 // 表示ブロックの構成（病院ごとのJSON設定で表示/非表示・並び順を変更可能）
 // ---------------------------------------------------
-// デフォルトの並び順（config/display_items.json が無い/書かれていないブロックは
-// この順序のまま末尾に追加され、常に表示される）
+// デフォルトの並び順（config/display_items.json 自体が無い場合のみ、
+// この順序のまま全ブロックを表示するフェイルセーフとして使う）
 $default_block_order = [
     'info',
     'pictogram',
     'risk',
     'schedule_today',
     'schedule_tomorrow',
+    'deposit',
     'vitals',
 ];
 
@@ -135,8 +136,8 @@ $active_menu = 'home';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜患者ホーム</title>
-  <link rel="stylesheet" href="css/sp_common.css?v=8">
-  <link rel="stylesheet" href="css/sp_patient_home.css?v=15">
+  <link rel="stylesheet" href="css/sp_common.css?v=10">
+  <link rel="stylesheet" href="css/sp_patient_home.css?v=18">
 </head>
 <body>
   <!-- SVG icon sprite（外部ライブラリ不要） -->
