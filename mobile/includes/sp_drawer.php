@@ -24,7 +24,7 @@ $menu_items = [
     'home'      => ['label' => 'HOME',        'href' => 'sp_patient_home.php?patient_id=' . urlencode($patient_id)],
     'pictogram' => ['label' => 'ピクトグラム', 'href' => '#'],
     'vitals'    => ['label' => 'バイタル',     'href' => 'sp_vitals.php?patient_id=' . urlencode($patient_id)],
-    'deposit'   => ['label' => '預かり品',     'href' => '#'],
+    'deposit'   => ['label' => '預かり品',     'href' => 'sp_deposit_list.php?patient_id=' . urlencode($patient_id)],
     'schedule'  => ['label' => '予定',         'href' => '#'],
 ];
 ?>
@@ -33,10 +33,13 @@ $menu_items = [
     <strong>B-Care Mobile</strong>
     <button class="drawer-close" id="drawerClose" type="button" aria-label="メニューを閉じる">×</button>
   </div>
-  <?php foreach ($menu_items as $key => $item): ?>
-    <a href="<?= htmlspecialchars($item['href']) ?>"<?= $key === $active_menu ? ' class="active"' : '' ?>>
-      <?= htmlspecialchars($item['label']) ?>
-    </a>
-  <?php endforeach; ?>
+  <div class="drawer-links">
+    <?php foreach ($menu_items as $key => $item): ?>
+      <a href="<?= htmlspecialchars($item['href']) ?>"<?= $key === $active_menu ? ' class="active"' : '' ?>>
+        <?= htmlspecialchars($item['label']) ?>
+      </a>
+    <?php endforeach; ?>
+  </div>
+  <a href="sp_logout.php" class="drawer-logout">ログアウト</a>
 </nav>
 <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>

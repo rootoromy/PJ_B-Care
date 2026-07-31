@@ -56,6 +56,30 @@ form.addEventListener('submit', (event) => {
     return;
   }
 
-  // モック用。実際の認証処理はPHP側で実装してください。
-  formStatus.textContent = '入力内容を確認しました。';
+  const submitButton = form.querySelector('.login-button');
+  submitButton.disabled = true;
+  formStatus.textContent = 'ログイン中...';
+
+  const params = new URLSearchParams();
+  params.set('userId', userId.value.trim());
+  params.set('password', password.value);
+
+  fetch('sp_login_process.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        window.location.href = data.redirect;
+        return;
+      }
+      submitButton.disabled = false;
+      formStatus.textContent = data.message || 'ログインに失敗しました。';
+    })
+    .catch(() => {
+      submitButton.disabled = false;
+      formStatus.textContent = '通信エラーが発生しました。時間をおいて再度お試しください。';
+    });
 });

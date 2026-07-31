@@ -6,6 +6,8 @@ data/
 
 # SQLバックアップ
 *.sql
+# ただしDBマイグレーション記録は管理下に置く
+!db/migrations/*.sql
 
 # XAMPPログ・一時ファイル
 *.log

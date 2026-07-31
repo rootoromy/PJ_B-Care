@@ -15,6 +15,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once __DIR__ . '/includes/sp_auth.php';
+sp_require_login();
+
 require_once __DIR__ . '/../includes/config.php';
 
 function h($value) {
@@ -78,6 +81,17 @@ $stmt_vital->bind_param('s', $patient_id);
 $stmt_vital->execute();
 $latest_vital = $stmt_vital->get_result()->fetch_assoc();
 $stmt_vital->close();
+
+$stmt_deposit = $mysqli->prepare("
+    SELECT item_name, status
+    FROM patient_deposits
+    WHERE patient_id = ? AND status = 'stored'
+    ORDER BY stored_at DESC
+");
+$stmt_deposit->bind_param('s', $patient_id);
+$stmt_deposit->execute();
+$deposit_items = $stmt_deposit->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt_deposit->close();
 
 $mysqli->close();
 
@@ -159,7 +173,7 @@ $active_menu = 'home';
 
     <?php include __DIR__ . '/includes/sp_drawer.php'; ?>
 
-    <p class="home-label"><a href="sp_patient_home.php?patient_id=<?= urlencode($patient_id) ?>">HOME</a></p>
+    <p class="home-label"><a href="sp_patient_home.php?patient_id=<?= urlencode($patient_id) ?>">TOP</a></p>
 
     <main>
       <?php foreach ($block_order as $block_key): ?>

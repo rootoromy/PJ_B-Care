@@ -3,6 +3,14 @@
  * B-Care Manager - モバイル版ログイン画面
  * 配置先: mobile/sp_login.php
  */
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (!empty($_SESSION['sp_logged_in'])) {
+    header('Location: sp_patient_home.php');
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="ja">

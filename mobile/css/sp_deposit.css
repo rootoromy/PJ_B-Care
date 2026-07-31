@@ -1,0 +1,284 @@
+/* ==============================================
+   B-Care Mobile - 預かり品画面（一覧・登録・返却）
+   配置先: css/sp_deposit.css
+
+   .phone-shell / .patient-header / .icon-button / .drawer 系は
+   css/sp_common.css 側で定義済みのためここでは上書きしない。
+   ============================================== */
+
+:root {
+  --green-900: #145c35;
+  --green-800: #1d7245;
+  --green-100: #eaf5ee;
+  --green-050: #f5faf7;
+  --line-soft: #e9eeeb;
+  --danger: #ff1f2d;
+}
+
+body { background: #edf0ee; }
+
+.deposit-main { display: block; }
+
+/* ==============================================
+   ページ見出し
+   ============================================== */
+
+.page-header { margin: 14px 0 12px; }
+.breadcrumb { margin: 0 0 6px; }
+.breadcrumb a { display: inline-flex; align-items: center; gap: 2px; color: var(--green-800); font-size: 12px; font-weight: 700; text-decoration: none; }
+.inline-chevron { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+.page-header h1 { margin: 0; font-size: 20px; letter-spacing: .02em; }
+.page-header-row { display: flex; align-items: center; justify-content: center; text-align: center; }
+
+.form-lead { margin: 0 0 12px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+/* ==============================================
+   一覧画面：登録／返却ボタン
+   ============================================== */
+
+.deposit-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.deposit-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 46px;
+  border: 1px solid var(--green-800);
+  border-radius: 8px;
+  background: var(--green-050);
+  color: var(--green-900);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.deposit-action-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
+.deposit-action-btn.is-disabled { opacity: .4; pointer-events: none; }
+
+/* ==============================================
+   カード共通（section-title / section-body）
+   ============================================== */
+
+.card { border: 1px solid var(--line-soft); border-radius: 8px; background: #fff; box-shadow: 0 1px 3px rgba(20, 92, 53, .08); margin-bottom: 10px; }
+
+.section-title {
+  width: 100%;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 0;
+  background: var(--green-050);
+  color: var(--green-900);
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  list-style: none;
+}
+.section-title::-webkit-details-marker { display: none; }
+.section-title svg { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; transition: transform .15s ease; }
+.returned-section[open] .section-title svg { transform: rotate(90deg); }
+.section-body { padding: 8px 10px; }
+
+.select-all-btn {
+  border: 1px solid var(--green-800);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--green-800);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+}
+
+.empty-note { margin: 6px 2px; color: var(--muted); font-size: 12px; }
+
+/* ==============================================
+   預かり品の詳細リスト（一覧画面）
+   ============================================== */
+
+.deposit-detail-list { margin: 0; padding: 0; list-style: none; }
+.deposit-detail-list li { padding: 10px 4px; border-bottom: 1px solid var(--line-soft); }
+.deposit-detail-list li:last-child { border-bottom: 0; }
+.deposit-detail-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.deposit-detail-head strong { font-size: 14px; }
+.deposit-detail-list p { margin: 2px 0; color: var(--muted); font-size: 11px; }
+
+.deposit-status { padding: 3px 9px; border-radius: 999px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.deposit-status--stored { color: var(--green-900); background: var(--green-100); }
+.deposit-status--returned { color: #68736b; background: #eef1ef; }
+
+.deposit-notice {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--green-050);
+  color: var(--green-900);
+}
+.deposit-notice svg { width: 28px; height: 28px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.deposit-notice strong { display: block; margin-bottom: 3px; font-size: 12px; }
+.deposit-notice p { margin: 0; font-size: 11px; line-height: 1.6; color: #345540; }
+
+/* ==============================================
+   登録フォーム：品目テーブル
+   ============================================== */
+
+.deposit-item-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.deposit-item-table th, .deposit-item-table td { padding: 8px 6px; border-bottom: 1px solid var(--line-soft); text-align: left; }
+.deposit-item-table thead th { background: var(--green-050); color: var(--green-900); font-size: 11px; }
+.deposit-item-table tbody tr:last-child td { border-bottom: 0; }
+.select-cell { text-align: center; width: 40px; }
+.select-cell input { width: 18px; height: 18px; }
+
+.qty-stepper { display: inline-flex; align-items: center; gap: 8px; }
+.qty-btn {
+  box-sizing: border-box;
+  width: 30px;
+  height: 32px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #c3d3ca;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--green-050);
+  color: var(--green-900);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: top;
+}
+.qty-btn:active { background: var(--green-100); }
+.qty-minus { border-radius: 8px 0 0 8px; }
+.qty-plus { border-radius: 0 8px 8px 0; }
+.qty-input {
+  width: 56px;
+  height: 32px;
+  border-top: 1px solid #c3d3ca;
+  border-bottom: 1px solid #c3d3ca;
+  border-left: 0;
+  border-right: 0;
+  background: #fff;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.qty-unit { color: #26362c; font-size: 14px; font-weight: 700; }
+
+#quantity { text-align: right; padding-right: 8px; }
+
+.other-register-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #f0c36d;
+  border-radius: 8px;
+  background: #fff8ec;
+  color: #a15c00;
+  text-decoration: none;
+}
+.other-register-btn svg { width: 24px; height: 24px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.other-register-btn span { font-size: 13px; font-weight: 700; }
+.other-register-btn small { color: #a97a2c; font-size: 10px; font-weight: 400; }
+
+/* ==============================================
+   共通フォーム部品
+   ============================================== */
+
+.form-section { padding: 12px; }
+.form-section-title { margin: 0 0 10px; font-size: 13px; color: var(--green-900); }
+
+.form-row { margin-bottom: 12px; }
+.form-row:last-child { margin-bottom: 0; }
+.form-row label { display: block; margin-bottom: 5px; font-size: 12px; font-weight: 700; color: #23302a; }
+.required { margin-left: 5px; padding: 1px 6px; border-radius: 4px; background: var(--danger); color: #fff; font-size: 9px; font-weight: 700; vertical-align: middle; }
+
+.form-row input[type="text"],
+.form-row input[type="datetime-local"],
+.form-row select,
+.form-row textarea {
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid #ccd8d1;
+  border-radius: 7px;
+  background: #fff;
+  font-size: 13px;
+  color: var(--text);
+}
+.form-row textarea { height: 72px; padding: 8px 10px; resize: vertical; }
+
+.radio-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 12px; }
+.radio-row:last-child { margin-bottom: 0; }
+.radio-row input[type="text"] { flex: 1; height: 32px; padding: 0 8px; border: 1px solid #ccd8d1; border-radius: 6px; font-size: 12px; }
+.radio-row input[type="text"]:disabled { background: #f2f4f3; color: var(--muted); }
+
+.master-register-card { padding: 12px; }
+.master-register-title { margin: 0 0 4px; font-size: 12px; font-weight: 700; color: #23302a; }
+.master-register-note { margin: 0 0 10px; color: var(--muted); font-size: 11px; }
+
+.form-status { min-height: 16px; margin: 8px 2px; color: var(--danger); font-size: 12px; }
+
+.form-actions { display: grid; grid-template-columns: 1fr 1.4fr; gap: 8px; margin-top: 4px; }
+.btn-primary, .btn-secondary {
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  border: 0;
+}
+.btn-primary { background: var(--green-800); color: #fff; }
+.btn-primary:disabled { opacity: .5; }
+.btn-primary svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+.btn-secondary { border: 1px solid #ccd8d1; background: #fff; color: #23302a; }
+.btn-block { width: 100%; margin-top: 6px; }
+
+/* ==============================================
+   返却画面
+   ============================================== */
+
+.return-item-list { margin: 0; padding: 0; list-style: none; }
+.return-item-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 4px; border-bottom: 1px solid var(--line-soft); cursor: pointer; }
+.return-item-list li:last-child .return-item-row { border-bottom: 0; }
+.return-item-row input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; flex: none; }
+.return-item-info { display: block; }
+.return-item-info strong { display: block; margin-bottom: 3px; font-size: 13px; }
+.return-item-info small { display: block; color: var(--muted); font-size: 11px; line-height: 1.5; }
+
+.selected-count-note { margin: 0 0 10px 2px; color: var(--green-900); font-size: 12px; font-weight: 700; }
+
+.return-to-options { display: block; }
+.return-to-other-row { align-items: center; }
+
+.return-warning {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 7px;
+  background: #fff8ec;
+  color: #a15c00;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* ==============================================
+   小さい端末
+   ============================================== */
+
+@media (max-width: 350px) {
+  .page-header h1 { font-size: 18px; }
+  .deposit-item-table { font-size: 11px; }
+  .qty-input { width: 38px; }
+}
