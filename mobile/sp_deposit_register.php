@@ -53,8 +53,8 @@ $now_local = date('Y-m-d\TH:i');
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜預かり品登録</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=10">
-  <link rel="stylesheet" href="css/sp_deposit.css?v=1">
+  <link rel="stylesheet" href="css/sp_common.css?v=15">
+  <link rel="stylesheet" href="css/sp_deposit.css?v=13">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">

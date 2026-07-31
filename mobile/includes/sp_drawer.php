@@ -21,7 +21,7 @@ $active_menu = $active_menu ?? '';
 $patient_id  = $patient_id ?? '';
 
 $menu_items = [
-    'home'      => ['label' => 'HOME',        'href' => 'sp_patient_home.php?patient_id=' . urlencode($patient_id)],
+    'home'      => ['label' => 'TOP',         'href' => 'sp_patient_home.php?patient_id=' . urlencode($patient_id)],
     'pictogram' => ['label' => 'ピクトグラム', 'href' => '#'],
     'vitals'    => ['label' => 'バイタル',     'href' => 'sp_vitals.php?patient_id=' . urlencode($patient_id)],
     'deposit'   => ['label' => '預かり品',     'href' => 'sp_deposit_list.php?patient_id=' . urlencode($patient_id)],

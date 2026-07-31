@@ -151,8 +151,8 @@ $active_menu = 'home';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜患者ホーム</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=10">
-  <link rel="stylesheet" href="css/sp_patient_home.css?v=18">
+  <link rel="stylesheet" href="css/sp_common.css?v=15">
+  <link rel="stylesheet" href="css/sp_patient_home.css?v=29">
 </head>
 <body>
   <!-- SVG icon sprite（外部ライブラリ不要） -->

@@ -68,8 +68,8 @@ $now_local = date('Y-m-d\TH:i');
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜預かり品返却</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=10">
-  <link rel="stylesheet" href="css/sp_deposit.css?v=1">
+  <link rel="stylesheet" href="css/sp_common.css?v=15">
+  <link rel="stylesheet" href="css/sp_deposit.css?v=13">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
@@ -87,10 +87,12 @@ $now_local = date('Y-m-d\TH:i');
     <main class="deposit-main">
       <header class="page-header">
         <p class="breadcrumb"><a href="sp_deposit_list.php?patient_id=<?= urlencode($patient_id) ?>"><svg class="inline-chevron"><use href="#i-chevron-left"></use></svg>戻る</a></p>
-        <h1>預かり品返却</h1>
+        <div class="page-header-row">
+          <h1>預かり品返却</h1>
+        </div>
       </header>
 
-      <p class="form-lead">預かり中の預かり品をまとめて返却します。返却する預かり品にチェックを入れて、返却情報を入力してください。</p>
+      <p class="form-lead">返却する預かり品にチェックを入れて、返却情報を入力してください。</p>
 
       <form id="returnForm">
         <section class="card">

@@ -78,8 +78,8 @@ $active_menu = 'deposit';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜預かり品一覧</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=10">
-  <link rel="stylesheet" href="css/sp_deposit.css?v=1">
+  <link rel="stylesheet" href="css/sp_common.css?v=15">
+  <link rel="stylesheet" href="css/sp_deposit.css?v=13">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
@@ -120,14 +120,14 @@ $active_menu = 'deposit';
         </div>
         <div class="section-body">
           <?php if (empty($stored_items)): ?>
-            <p class="empty-note">預かり中の品はありません</p>
+            <p class="empty-note">保管中の預かり品はありません</p>
           <?php else: ?>
             <ul class="deposit-detail-list">
               <?php foreach ($stored_items as $item): ?>
                 <li>
                   <div class="deposit-detail-head">
                     <strong><?= h($item['item_name']) ?></strong>
-                    <span class="deposit-status deposit-status--stored">預かり中</span>
+                    <span class="deposit-status deposit-status--stored">保管中</span>
                   </div>
                   <p>数量：<?= h($item['quantity']) ?>個</p>
                   <p>預かり日時：<?= h(date('Y/m/d H:i', strtotime($item['stored_at']))) ?></p>

@@ -147,14 +147,15 @@ $active_menu = 'vitals';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>B-Care Mobile｜バイタル</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=10" />
-  <link rel="stylesheet" href="css/sp_vitals.css?v=14" />
+  <link rel="stylesheet" href="css/sp_common.css?v=15" />
+  <link rel="stylesheet" href="css/sp_vitals.css?v=18" />
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
     <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M5 20c.8-4.2 3.2-6 7-6s6.2 1.8 7 6"/></symbol>
     <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
     <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 6v5h-5M4 18v-5h5M18 10a7 7 0 0 0-12-2M6 14a7 7 0 0 0 12 2"/></symbol>
     <symbol id="i-thermometer" viewBox="0 0 24 24"><path d="M12 14.5V5a2 2 0 1 0-4 0v9.5a4 4 0 1 0 4 0z"/><path d="M10 8h1"/></symbol>
     <symbol id="i-bp" viewBox="0 0 24 24"><circle cx="12" cy="13" r="7"/><path d="M12 13l3.5-3.5M9 5h6"/></symbol>
@@ -169,7 +170,7 @@ $active_menu = 'vitals';
 
     <main class="vitals-main">
       <header class="page-header">
-        <p class="breadcrumb"><a href="sp_patient_home.php?patient_id=<?= urlencode($patient_id) ?>">HOME</a> &gt; バイタル</p>
+        <p class="breadcrumb"><a href="sp_patient_home.php?patient_id=<?= urlencode($patient_id) ?>"><svg class="inline-chevron"><use href="#i-chevron-left"></use></svg>戻る</a></p>
         <h1>バイタル</h1>
 
         <div class="date-controls" aria-label="日付切り替え">

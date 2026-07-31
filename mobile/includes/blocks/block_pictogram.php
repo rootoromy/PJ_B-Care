@@ -21,16 +21,14 @@
     <?php else: ?>
       <div class="pictogram-grid">
         <?php foreach ($pictograms as $i => $pic):
-          $is_prohibited = strpos(basename($pic['image_path']), 'no_') === 0;
           // 2段×4列を1ページとして、行優先（左→右、あふれたら次ページへ横スクロール）で配置する
           $page          = intdiv($i, 8);
           $pos_in_page   = $i % 8;
           $grid_row      = intdiv($pos_in_page, 4) + 1;
           $grid_column   = $page * 4 + ($pos_in_page % 4) + 1;
         ?>
-          <div class="pictogram-item<?= $is_prohibited ? ' prohibited' : '' ?>" style="grid-row:<?= $grid_row ?>; grid-column:<?= $grid_column ?>;">
+          <div class="pictogram-item" style="grid-row:<?= $grid_row ?>; grid-column:<?= $grid_column ?>;">
             <img class="pictogram" src="../<?= h($pic['image_path']) ?>" alt="" onerror="this.style.visibility='hidden'">
-            <?php if ($is_prohibited): ?><span class="ban-mark" aria-hidden="true"></span><?php endif; ?>
             <span><?= h($pic['name']) ?></span>
           </div>
         <?php endforeach; ?>

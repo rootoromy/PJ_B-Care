@@ -29,7 +29,7 @@ $dup_count = $dup_count ?? 0;
     <p class="kana"><?= htmlspecialchars($patient['patient_kana'] ?? '') ?></p>
     <div class="name-row">
       <h1><?= htmlspecialchars($patient['patient_name'] ?? '') ?><span>様</span></h1>
-      <span class="patient-id">(<?= htmlspecialchars($patient['patient_id'] ?? '') ?>)</span>
+      <span class="patient-id">[<?= htmlspecialchars($patient['patient_id'] ?? '') ?>]</span>
     </div>
     <div class="patient-meta">
       <span><?= htmlspecialchars($patient['age'] ?? '-') ?>歳</span>

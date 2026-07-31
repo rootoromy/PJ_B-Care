@@ -129,12 +129,12 @@ img {
 }
 
 .patient-heading { min-width: 0; }
-.kana { margin: 0 0 1px; font-size: 9px; font-weight: 700; letter-spacing: .05em; color: #536058; }
+.kana { margin: 0 0 1px; font-size: 11px; font-weight: 700; letter-spacing: .05em; color: #536058; }
 .name-row { display: flex; align-items: center; }
 .patient-heading h1 { margin: 0; font-size: 22px; line-height: 1.12; letter-spacing: .01em; }
 .patient-heading h1 span { margin-left: 2px; font-size: 12px; }
-.patient-id { margin-left: 5px; color: #68736b; font-size: 11px; white-space: nowrap; }
-.patient-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 5px; font-size: 11px; }
+.patient-id { margin-left: 5px; color: #68736b; font-size: 16px; font-weight: 700; white-space: nowrap; }
+.patient-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 5px; font-size: 11px; font-weight: 700; }
 .patient-meta .sex { font-weight: 700; }
 .same-name { padding: 3px 8px; border-radius: 999px; color: #fff; background: var(--green-800); font-size: 9px; }
 
@@ -148,7 +148,7 @@ img {
   border-radius: 2px;
   background: var(--green-100);
   color: var(--green-900);
-  font-size: 12px;
+  font-size: 13px;
   white-space: nowrap;
 }
 

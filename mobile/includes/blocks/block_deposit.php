@@ -18,7 +18,7 @@ $deposit_items = $deposit_items ?? [];
   </a>
   <div class="section-body">
     <?php if (empty($deposit_items)): ?>
-      <p style="padding:10px; font-size:12px; color:var(--muted);">預かり品はありません</p>
+      <p style="padding:10px; color:var(--muted);">預かり品はありません</p>
     <?php else: ?>
       <ul class="deposit-list">
         <?php foreach ($deposit_items as $item): ?>

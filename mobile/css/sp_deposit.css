@@ -25,12 +25,12 @@ body { background: #edf0ee; }
 
 .page-header { margin: 14px 0 12px; }
 .breadcrumb { margin: 0 0 6px; }
-.breadcrumb a { display: inline-flex; align-items: center; gap: 2px; color: var(--green-800); font-size: 12px; font-weight: 700; text-decoration: none; }
+.breadcrumb a { display: inline-flex; align-items: center; gap: 2px; color: var(--green-800); font-size: 14px; font-weight: 700; text-decoration: none; }
 .inline-chevron { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
 .page-header h1 { margin: 0; font-size: 20px; letter-spacing: .02em; }
 .page-header-row { display: flex; align-items: center; justify-content: center; text-align: center; }
 
-.form-lead { margin: 0 0 12px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.form-lead { margin: 0 0 12px; color: var(--muted); font-size: 14px; line-height: 1.6; }
 
 /* ==============================================
    一覧画面：登録／返却ボタン
@@ -47,7 +47,7 @@ body { background: #edf0ee; }
   border-radius: 8px;
   background: var(--green-050);
   color: var(--green-900);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   text-decoration: none;
 }
@@ -71,7 +71,7 @@ body { background: #edf0ee; }
   border: 0;
   background: var(--green-050);
   color: var(--green-900);
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 800;
   text-decoration: none;
   cursor: pointer;
@@ -87,12 +87,12 @@ body { background: #edf0ee; }
   border-radius: 999px;
   background: #fff;
   color: var(--green-800);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   padding: 4px 10px;
 }
 
-.empty-note { margin: 6px 2px; color: var(--muted); font-size: 12px; }
+.empty-note { margin: 6px 2px; color: var(--muted); font-size: 14px; }
 
 /* ==============================================
    預かり品の詳細リスト（一覧画面）
@@ -102,10 +102,10 @@ body { background: #edf0ee; }
 .deposit-detail-list li { padding: 10px 4px; border-bottom: 1px solid var(--line-soft); }
 .deposit-detail-list li:last-child { border-bottom: 0; }
 .deposit-detail-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
-.deposit-detail-head strong { font-size: 14px; }
-.deposit-detail-list p { margin: 2px 0; color: var(--muted); font-size: 11px; }
+.deposit-detail-head strong { font-size: 16px; }
+.deposit-detail-list p { margin: 2px 0; color: var(--muted); font-size: 14px; }
 
-.deposit-status { padding: 3px 9px; border-radius: 999px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.deposit-status { padding: 3px 9px; border-radius: 999px; font-size: 13px; font-weight: 700; white-space: nowrap; }
 .deposit-status--stored { color: var(--green-900); background: var(--green-100); }
 .deposit-status--returned { color: #68736b; background: #eef1ef; }
 
@@ -118,8 +118,8 @@ body { background: #edf0ee; }
   color: var(--green-900);
 }
 .deposit-notice svg { width: 28px; height: 28px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.5; }
-.deposit-notice strong { display: block; margin-bottom: 3px; font-size: 12px; }
-.deposit-notice p { margin: 0; font-size: 11px; line-height: 1.6; color: #345540; }
+.deposit-notice strong { display: block; margin-bottom: 3px; font-size: 14px; }
+.deposit-notice p { margin: 0; font-size: 14px; line-height: 1.6; color: #345540; }
 
 /* ==============================================
    登録フォーム：品目テーブル
@@ -127,7 +127,8 @@ body { background: #edf0ee; }
 
 .deposit-item-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .deposit-item-table th, .deposit-item-table td { padding: 8px 6px; border-bottom: 1px solid var(--line-soft); text-align: left; }
-.deposit-item-table thead th { background: var(--green-050); color: var(--green-900); font-size: 11px; }
+.deposit-item-table td { font-size: 13px; }
+.deposit-item-table thead th { background: var(--green-050); color: var(--green-900); font-size: 12px; }
 .deposit-item-table tbody tr:last-child td { border-bottom: 0; }
 .select-cell { text-align: center; width: 40px; }
 .select-cell input { width: 18px; height: 18px; }
@@ -171,7 +172,6 @@ body { background: #edf0ee; }
 }
 .qty-unit { color: #26362c; font-size: 14px; font-weight: 700; }
 
-#quantity { text-align: right; padding-right: 8px; }
 
 .other-register-btn {
   display: flex;
@@ -187,7 +187,7 @@ body { background: #edf0ee; }
 }
 .other-register-btn svg { width: 24px; height: 24px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; }
 .other-register-btn span { font-size: 13px; font-weight: 700; }
-.other-register-btn small { color: #a97a2c; font-size: 10px; font-weight: 400; }
+.other-register-btn small { display: inline-block; margin-top: 4px; color: #a97a2c; font-size: 12px; font-weight: 400; }
 
 /* ==============================================
    共通フォーム部品
@@ -198,7 +198,7 @@ body { background: #edf0ee; }
 
 .form-row { margin-bottom: 12px; }
 .form-row:last-child { margin-bottom: 0; }
-.form-row label { display: block; margin-bottom: 5px; font-size: 12px; font-weight: 700; color: #23302a; }
+.form-row label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: 700; color: #23302a; }
 .required { margin-left: 5px; padding: 1px 6px; border-radius: 4px; background: var(--danger); color: #fff; font-size: 9px; font-weight: 700; vertical-align: middle; }
 
 .form-row input[type="text"],
@@ -216,14 +216,14 @@ body { background: #edf0ee; }
 }
 .form-row textarea { height: 72px; padding: 8px 10px; resize: vertical; }
 
-.radio-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 12px; }
-.radio-row:last-child { margin-bottom: 0; }
-.radio-row input[type="text"] { flex: 1; height: 32px; padding: 0 8px; border: 1px solid #ccd8d1; border-radius: 6px; font-size: 12px; }
-.radio-row input[type="text"]:disabled { background: #f2f4f3; color: var(--muted); }
+label.radio-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 12px; }
+label.radio-row:last-child { margin-bottom: 0; }
+label.radio-row input[type="text"] { flex: 1; margin-left: 8px; height: 32px; padding: 0 8px; border: 1px solid #ccd8d1; border-radius: 6px; font-size: 12px; }
+label.radio-row input[type="text"]:disabled { background: #f2f4f3; color: var(--muted); }
 
 .master-register-card { padding: 12px; }
 .master-register-title { margin: 0 0 4px; font-size: 12px; font-weight: 700; color: #23302a; }
-.master-register-note { margin: 0 0 10px; color: var(--muted); font-size: 11px; }
+.master-register-note { margin: 0 0 10px; color: var(--muted); font-size: 12px; }
 
 .form-status { min-height: 16px; margin: 8px 2px; color: var(--danger); font-size: 12px; }
 
@@ -253,12 +253,12 @@ body { background: #edf0ee; }
 .return-item-list { margin: 0; padding: 0; list-style: none; }
 .return-item-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 4px; border-bottom: 1px solid var(--line-soft); cursor: pointer; }
 .return-item-list li:last-child .return-item-row { border-bottom: 0; }
-.return-item-row input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; flex: none; }
-.return-item-info { display: block; }
-.return-item-info strong { display: block; margin-bottom: 3px; font-size: 13px; }
-.return-item-info small { display: block; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.return-item-row input[type="checkbox"] { order: 2; width: 18px; height: 18px; margin-top: 2px; flex: none; }
+.return-item-info { display: block; flex: 1; order: 1; }
+.return-item-info strong { display: block; margin-bottom: 3px; font-size: 16px; }
+.return-item-info small { display: block; color: var(--muted); font-size: 14px; line-height: 1.5; }
 
-.selected-count-note { margin: 0 0 10px 2px; color: var(--green-900); font-size: 12px; font-weight: 700; }
+.selected-count-note { margin: 0 0 10px 2px; color: var(--green-900); font-size: 13px; font-weight: 700; }
 
 .return-to-options { display: block; }
 .return-to-other-row { align-items: center; }
@@ -269,7 +269,7 @@ body { background: #edf0ee; }
   border-radius: 7px;
   background: #fff8ec;
   color: #a15c00;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.6;
 }
 
