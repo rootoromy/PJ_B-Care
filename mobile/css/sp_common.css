@@ -171,9 +171,11 @@ img {
    ============================================== */
 
 .drawer {
-  position: absolute;
+  position: fixed;
   z-index: 30;
   inset: 0 auto 0 0;
+  height: 100vh;
+  height: 100dvh;
   width: min(78%, 290px);
   padding: calc(env(safe-area-inset-top) + 18px) 18px 18px;
   display: flex;
@@ -234,7 +236,7 @@ img {
 }
 
 .drawer-backdrop {
-  position: absolute;
+  position: fixed;
   z-index: 20;
   inset: 0;
   background: rgba(0, 0, 0, 0.25);

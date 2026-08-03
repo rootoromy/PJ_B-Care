@@ -131,7 +131,7 @@ main { display: grid; gap: 7px; }
 .fall-risk strong { margin-top: 0; }
 .transport { flex-direction: row; gap: 6px; border: 1px solid #d5e6da; background: var(--green-050); color: var(--green-900); }
 .transport small { font-size: 13px; }
-.transport strong { margin-top: 0; color: #161b18; font-size: 19px; }
+.transport strong { margin-top: 0; font-size: 19px; }
 
 /* ==============================================
    今日の予定
