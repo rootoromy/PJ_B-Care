@@ -22,7 +22,7 @@ $patient_id  = $patient_id ?? '';
 
 $menu_items = [
     'home'      => ['label' => 'TOP',         'href' => 'sp_patient_home.php?patient_id=' . urlencode($patient_id)],
-    'pictogram' => ['label' => 'ピクトグラム', 'href' => '#'],
+    'pictogram' => ['label' => 'ピクトグラム', 'href' => 'sp_pictogram.php?patient_id=' . urlencode($patient_id)],
     'vitals'    => ['label' => 'バイタル',     'href' => 'sp_vitals.php?patient_id=' . urlencode($patient_id)],
     'schedule'  => ['label' => '予定',         'href' => 'sp_schedule.php?patient_id=' . urlencode($patient_id)],
     'deposit'   => ['label' => '預かり品',     'href' => 'sp_deposit_list.php?patient_id=' . urlencode($patient_id)],

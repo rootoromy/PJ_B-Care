@@ -179,7 +179,7 @@ $active_menu = 'home';
   <title>B-Care Mobile｜患者ホーム</title>
   <link rel="icon" href="../favicon.ico">
   <link rel="stylesheet" href="css/sp_common.css?v=17">
-  <link rel="stylesheet" href="css/sp_patient_home.css?v=36">
+  <link rel="stylesheet" href="css/sp_patient_home.css?v=45">
 </head>
 <body>
   <!-- SVG icon sprite（外部ライブラリ不要） -->
@@ -209,6 +209,6 @@ $active_menu = 'home';
   </div>
 
   <script src="js/sp_drawer.js?v=1"></script>
-  <script src="js/sp_patient_home.js?v=2"></script>
+  <script src="js/sp_patient_home.js?v=3"></script>
 </body>
 </html>

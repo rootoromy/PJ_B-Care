@@ -42,3 +42,32 @@
       });
   });
 })();
+
+// ピクトグラムブロック：横スクロールの位置・幅を常時表示のバーに反映する
+(function () {
+  const grid = document.getElementById("pictogramGrid");
+  const track = document.getElementById("pictogramScrollbar");
+  const thumb = document.getElementById("pictogramScrollbarThumb");
+  if (!grid || !track || !thumb) return;
+
+  function update() {
+    const maxScroll = grid.scrollWidth - grid.clientWidth;
+
+    if (maxScroll <= 1) {
+      track.hidden = true;
+      return;
+    }
+    track.hidden = false;
+
+    const thumbRatio = grid.clientWidth / grid.scrollWidth;
+    const thumbWidthPct = Math.max(thumbRatio * 100, 12);
+    const scrollRatio = grid.scrollLeft / maxScroll;
+
+    thumb.style.width = thumbWidthPct + "%";
+    thumb.style.left = scrollRatio * (100 - thumbWidthPct) + "%";
+  }
+
+  grid.addEventListener("scroll", update);
+  window.addEventListener("resize", update);
+  update();
+})();

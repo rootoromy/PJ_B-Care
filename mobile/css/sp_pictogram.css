@@ -1,0 +1,254 @@
+/* ==============================================
+   B-Care Mobile - ピクトグラム選択画面専用スタイル
+   配置先: css/sp_pictogram.css
+
+   iPhone 14相当（390px幅）のスマホ縦画面を基準にしたレイアウト。
+   .phone-shell / .patient-header / .icon-button / .drawer 系は
+   sp_patient_home.php と共通のため css/sp_common.css 側で定義している。
+   ============================================== */
+
+body { background: #edf0ee; }
+
+.pictogram-main { display: block; }
+
+/* ==============================================
+   ページ見出し
+   ============================================== */
+
+.page-header { margin: 14px 0 10px; }
+
+.breadcrumb { margin: 2px 0 4px 2px; color: var(--green-800); font-size: 14px; font-weight: 700; }
+.breadcrumb a { display: inline-flex; align-items: center; gap: 2px; color: inherit; text-decoration: none; }
+.inline-chevron { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+.page-title-row { position: relative; display: flex; align-items: center; justify-content: center; }
+.page-header h1 { margin: 0; font-size: 20px; letter-spacing: .02em; text-align: center; }
+
+.page-refresh-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--green-800);
+  color: var(--green-800);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.page-refresh-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+/* ==============================================
+   カード共通
+   ============================================== */
+
+.card, .action-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.section-title {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  background: var(--green-100);
+  border-left: 4px solid var(--green-800);
+  color: var(--green-900);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.chevron-icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; transform: rotate(90deg); transition: transform .15s ease; }
+.section-title.is-collapsed .chevron-icon { transform: rotate(0deg); }
+
+.section-body { padding: 10px; }
+
+/* ==============================================
+   選択中のピクトグラム
+   ============================================== */
+
+.selected-grid {
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  grid-auto-columns: calc((100% - 12px) / 3);
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.selected-grid::-webkit-scrollbar { display: none; }
+
+/* ブラウザ標準の横スクロールバーは操作時以外自動で隠れる端末が多いため、
+   TOPページ（患者ホーム）のピクトグラムブロックと同様に、常に見える
+   自前のスクロールバー（トラック＋つまみ）を JS で表示する */
+.pictogram-scrollbar {
+  position: relative;
+  height: 5px;
+  margin-top: 4px;
+  border-radius: 3px;
+  background: var(--line);
+  overflow: hidden;
+}
+.pictogram-scrollbar-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--green-800);
+}
+
+.selected-item, .pictogram-item {
+  position: relative;
+  border: 1px solid #e2e7e4;
+  border-radius: 6px;
+  background: #fff;
+  text-align: center;
+  cursor: pointer;
+}
+.selected-item { padding: 8px 4px 8px; min-height: 128px; }
+.pictogram-item { padding: 10px 5px 8px; min-height: 132px; }
+
+.selected-item.selected, .pictogram-item.selected { border-color: var(--green-800); background: var(--green-100); }
+
+.selected-item .remove {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--green-800);
+  color: #fff;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.pictogram-item.selected::after {
+  content: "";
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='12' fill='%231e6337'/%3E%3Cpath d='M7 12.5l3 3 7-7' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.selected-item img { width: 100%; height: 78px; object-fit: contain; display: block; }
+.pictogram-item img { width: 100%; height: 80px; object-fit: contain; display: block; }
+.selected-item .label, .pictogram-item .label { display: block; font-size: 14px; line-height: 1.25; margin-top: 4px; color: #364139; }
+
+/* ==============================================
+   設定・キャンセルボタン
+   ============================================== */
+
+.action-card { padding: 10px; }
+
+.primary-btn, .secondary-btn {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  text-decoration: none;
+}
+.primary-btn {
+  border: 0;
+  background: linear-gradient(180deg, var(--green-700, #2c8447), var(--green-900));
+  color: #fff;
+  cursor: pointer;
+}
+.primary-btn:disabled { opacity: .6; cursor: default; }
+.primary-btn .btn-icon { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.5; }
+
+.clear-all-btn {
+  width: 100%;
+  height: 40px;
+  margin-top: 7px;
+  border-radius: 999px;
+  border: 1px solid #e05a4e;
+  background: #fff;
+  color: #e05a4e;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.secondary-btn { margin-top: 7px; border: 1px solid #d8ddd9; background: #fff; color: #333; }
+
+/* ==============================================
+   ピクトグラムを選択
+   ============================================== */
+
+.hint { font-size: 11px; color: var(--muted); margin: 0 0 8px; }
+.selected-empty p { margin: 0; font-size: 13px; color: var(--muted); }
+.selected-empty p + p { margin-top: 4px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.chip {
+  border: 1px solid #d6ddd8;
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #4a514d;
+  cursor: pointer;
+}
+.chip.is-active { background: var(--green-800); border-color: var(--green-800); color: #fff; }
+
+.pictogram-grid {
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  grid-auto-columns: calc((100% - 12px) / 3);
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.pictogram-grid::-webkit-scrollbar { display: none; }
+
+/* ==============================================
+   トースト通知
+   ============================================== */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%) translateY(20px);
+  background: #17251c;
+  color: #fff;
+  border-radius: 20px;
+  padding: 9px 16px;
+  font-size: 13px;
+  opacity: 0;
+  pointer-events: none;
+  transition: .2s;
+  z-index: 40;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
