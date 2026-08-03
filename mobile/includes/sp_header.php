@@ -41,7 +41,6 @@ $dup_count = $dup_count ?? 0;
   </div>
 
   <div class="login-user">
-    <svg><use href="#i-user"></use></svg>
-    <span><?= htmlspecialchars($_SESSION['user_name'] ?? 'ナース') ?></span>
+    <span>Login: <?= htmlspecialchars($_SESSION['user_name'] ?? 'ナース') ?></span>
   </div>
 </header>

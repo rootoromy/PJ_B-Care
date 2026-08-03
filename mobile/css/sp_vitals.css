@@ -14,6 +14,7 @@
   --v-blood: #2968ca;
   --v-pulse: #0d7a27;
   --v-spo2: #d71920;
+  --v-respiratory: #7c3aed;
 }
 
 body { background: #edf0ee; }
@@ -48,7 +49,30 @@ body { background: #edf0ee; }
 .date-nav svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
 .date-nav--prev svg { transform: rotate(180deg); }
 
-.date-display { font-size: 14px; font-weight: 700; white-space: nowrap; }
+.date-display {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.date-display-icon { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; }
+
+.date-picker-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
 
 /* ==============================================
    バイタルカード
@@ -69,6 +93,7 @@ body { background: #edf0ee; }
 .card-topbar h2 { margin: 0; font-size: 16px; }
 
 .update-area { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 11px; }
+.update-area > span { font-size: 15px; }
 
 .refresh-button {
   display: inline-flex;
@@ -82,7 +107,7 @@ body { background: #edf0ee; }
   border-radius: 7px;
   background: #fff;
   color: var(--green-800);
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 700;
   text-decoration: none;
 }
@@ -98,6 +123,7 @@ body { background: #edf0ee; }
   gap: 7px;
   margin: 14px 0 10px;
 }
+.metric-tabs .metric-tab:last-child:nth-child(odd) { grid-column: 1 / -1; }
 
 .metric-tab {
   --tab-color: var(--green-800);
@@ -128,6 +154,7 @@ body { background: #edf0ee; }
 .metric-tab[data-series="systolic,diastolic"] { --tab-color: var(--v-blood); }
 .metric-tab[data-series="pulse"] { --tab-color: var(--v-pulse); }
 .metric-tab[data-series="spo2"] { --tab-color: var(--v-spo2); }
+.metric-tab[data-series="respiratory"] { --tab-color: var(--v-respiratory); }
 
 .metric-tab:not(.is-active) { opacity: .38; }
 
@@ -136,6 +163,15 @@ body { background: #edf0ee; }
 
 .metric-tab strong, .metric-tab small { display: block; }
 .metric-tab strong { font-size: 12px; }
+
+.metric-value {
+  margin-left: auto;
+  padding-left: 6px;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: right;
+  white-space: nowrap;
+}
 .metric-tab small { margin-top: 2px; color: #444; font-size: 10px; font-weight: 500; }
 
 /* ==============================================
@@ -175,5 +211,6 @@ body { background: #edf0ee; }
 .row-blood { color: var(--v-blood); }
 .row-pulse { color: var(--v-pulse); }
 .row-spo2 { color: var(--v-spo2); }
+.row-respiratory { color: var(--v-respiratory); }
 
 .chart-note { margin: 10px 2px 0; color: #747b77; font-size: 10px; }

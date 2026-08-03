@@ -52,13 +52,12 @@ $now_local = date('Y-m-d\TH:i');
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜預かり品 その他（新規登録）</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=16">
-  <link rel="stylesheet" href="css/sp_deposit.css?v=13">
+  <link rel="stylesheet" href="css/sp_common.css?v=17">
+  <link rel="stylesheet" href="css/sp_deposit.css?v=15">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
-    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M5 20c.8-4.2 3.2-6 7-6s6.2 1.8 7 6"/></symbol>
     <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
   </svg>
 

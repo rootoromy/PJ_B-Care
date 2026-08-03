@@ -71,7 +71,7 @@ $pictograms = $stmt_pic->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt_pic->close();
 
 $stmt_vital = $mysqli->prepare("
-    SELECT measured_at, temperature, systolic_bp, diastolic_bp, pulse, spo2
+    SELECT measured_at, temperature, systolic_bp, diastolic_bp, pulse, spo2, respiratory_rate
     FROM vitals
     WHERE patient_id = ?
     ORDER BY measured_at DESC
@@ -93,6 +93,33 @@ $stmt_deposit->execute();
 $deposit_items = $stmt_deposit->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt_deposit->close();
 
+// 今日・明日の予定は、電カルから一括同期される想定の patient_schedule を
+// 実際の日時（scheduled_at）で絞り込んで取得する（vitals と同じ考え方）
+$today_date    = date('Y-m-d');
+$tomorrow_date = date('Y-m-d', strtotime('+1 day'));
+
+$stmt_schedule = $mysqli->prepare("
+    SELECT scheduled_at, category, content
+    FROM patient_schedule
+    WHERE patient_id = ? AND DATE(scheduled_at) = ?
+    ORDER BY scheduled_at
+");
+$stmt_schedule->bind_param('ss', $patient_id, $today_date);
+$stmt_schedule->execute();
+$schedule_today = $stmt_schedule->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt_schedule->close();
+
+$stmt_schedule_tomorrow = $mysqli->prepare("
+    SELECT scheduled_at, category, content
+    FROM patient_schedule
+    WHERE patient_id = ? AND DATE(scheduled_at) = ?
+    ORDER BY scheduled_at
+");
+$stmt_schedule_tomorrow->bind_param('ss', $patient_id, $tomorrow_date);
+$stmt_schedule_tomorrow->execute();
+$schedule_tomorrow = $stmt_schedule_tomorrow->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt_schedule_tomorrow->close();
+
 $mysqli->close();
 
 function vitalValue($latest_vital, $field) {
@@ -111,10 +138,10 @@ $default_block_order = [
     'info',
     'pictogram',
     'risk',
+    'vitals',
     'schedule_today',
     'schedule_tomorrow',
     'deposit',
-    'vitals',
 ];
 
 /**
@@ -151,14 +178,13 @@ $active_menu = 'home';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜患者ホーム</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=16">
-  <link rel="stylesheet" href="css/sp_patient_home.css?v=30">
+  <link rel="stylesheet" href="css/sp_common.css?v=17">
+  <link rel="stylesheet" href="css/sp_patient_home.css?v=36">
 </head>
 <body>
   <!-- SVG icon sprite（外部ライブラリ不要） -->
   <svg class="svg-sprite" aria-hidden="true">
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
-    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M5 20c.8-4.2 3.2-6 7-6s6.2 1.8 7 6"/></symbol>
     <symbol id="i-stethoscope" viewBox="0 0 24 24"><path d="M6 3v6a5 5 0 0 0 10 0V3M4 3h4M14 3h4M16 12v2a4 4 0 0 0 8 0v-1"/><circle cx="21" cy="10" r="2"/></symbol>
     <symbol id="i-nurse" viewBox="0 0 24 24"><path d="M8 4h8l1 3H7zM9 7v2a3 3 0 0 0 6 0V7M5 21c.8-4.7 3.2-7 7-7s6.2 2.3 7 7"/><path d="M11 5h2M12 4v2"/></symbol>
     <symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V4h12v17M16 10h4v11M8 8h2M8 12h2M8 16h2M13 8h1M13 12h1M13 16h1M2 21h20"/></symbol>
@@ -183,5 +209,6 @@ $active_menu = 'home';
   </div>
 
   <script src="js/sp_drawer.js?v=1"></script>
+  <script src="js/sp_patient_home.js?v=2"></script>
 </body>
 </html>

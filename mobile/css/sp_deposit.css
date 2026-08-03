@@ -62,12 +62,12 @@ body { background: #edf0ee; }
 
 .section-title {
   width: 100%;
-  min-height: 34px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 0 12px;
   border: 0;
   background: var(--green-050);
   color: var(--green-900);
@@ -187,7 +187,7 @@ body { background: #edf0ee; }
 }
 .other-register-btn svg { width: 24px; height: 24px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; }
 .other-register-btn span { font-size: 13px; font-weight: 700; }
-.other-register-btn small { display: inline-block; margin-top: 4px; color: #a97a2c; font-size: 12px; font-weight: 400; }
+.other-register-btn small { display: inline-block; margin-top: 4px; color: #a97a2c; font-size: 14px; font-weight: 400; }
 
 /* ==============================================
    共通フォーム部品

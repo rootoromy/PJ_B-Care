@@ -78,13 +78,12 @@ $active_menu = 'deposit';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜預かり品一覧</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=16">
-  <link rel="stylesheet" href="css/sp_deposit.css?v=13">
+  <link rel="stylesheet" href="css/sp_common.css?v=17">
+  <link rel="stylesheet" href="css/sp_deposit.css?v=15">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
-    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M5 20c.8-4.2 3.2-6 7-6s6.2 1.8 7 6"/></symbol>
     <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
     <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
     <symbol id="i-return-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 8.2 6.7 10.5 9 12.8"/><path d="M6.7 10.5H13a4 4 0 1 1-2.8 6.8"/></symbol>

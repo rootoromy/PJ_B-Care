@@ -26,13 +26,8 @@ body {
   background: #edf0ee;
 }
 
-/* .phone-shell / .patient-header 系は sp_vitals.php とも共通のため
+/* .phone-shell / .patient-header / .login-user 系は sp_vitals.php とも共通のため
    css/sp_common.css 側で定義している（このファイルでは上書きしない） */
-
-.login-user {
-  margin-top: 8px;
-  font-weight: 700;
-}
 
 .home-label { margin: 10px 1px 5px; font-size: 14px; font-weight: 800; }
 .home-label a { color: var(--green-900); text-decoration: none; }
@@ -141,6 +136,9 @@ main { display: grid; gap: 7px; }
 .schedule-list li { position: relative; padding: 7px 0 7px 7px; border-bottom: 1px solid var(--line-soft); font-size: 16px; color: #4b554f; }
 .schedule-list li:last-child { border-bottom: 0; }
 .schedule-list li::before { content: "•"; position: absolute; left: -6px; color: var(--green-800); font-weight: 900; }
+.schedule-time { display: inline-block; width: 46px; margin-right: 6px; color: var(--green-900); font-weight: 800; }
+
+.empty-note { margin: 6px 2px; color: var(--muted); font-size: 14px; }
 
 /* ==============================================
    預かり品
@@ -197,6 +195,13 @@ main { display: grid; gap: 7px; }
   text-decoration: none;
 }
 .vital-update-btn svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; }
+.vital-update-btn.is-loading { opacity: 0.6; }
+.vital-update-btn.is-loading svg { animation: vital-update-spin 0.7s linear infinite; }
+
+@keyframes vital-update-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 
 /* ドロワーメニューの見た目は css/sp_common.css の .drawer 系クラスを使用（sp_vitals.php と共通） */
 

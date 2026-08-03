@@ -5,9 +5,9 @@
         "info",
         "pictogram",
         "risk",
+        "vitals",
         "schedule_today",
         "schedule_tomorrow",
-        "deposit",
-        "vitals"
+        "deposit"
     ]
 }

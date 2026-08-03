@@ -9,7 +9,8 @@ const seriesConfig = {
   systolic:    { color: "#2968ca", min: 40, max: 200, step: 20, dash: "" },
   diastolic:   { color: "#2968ca", min: 40, max: 200, step: 20, dash: "8 7" },
   pulse:       { color: "#0d7a27", min: 40, max: 130, step: 10, dash: "" },
-  spo2:        { color: "#d71920", min: 84, max: 100, step: 2, dash: "" }
+  spo2:        { color: "#d71920", min: 84, max: 100, step: 2, dash: "" },
+  respiratory: { color: "#7c3aed", min: 8, max: 36, step: 4, dash: "" }
 };
 
 const svg = document.getElementById("vitalChart");
@@ -30,7 +31,7 @@ function scale(value, min, max, top, bottom) {
 }
 
 function drawChart() {
-  const width = 1400;
+  const width = 1490;
   const height = 510;
   const plot = { left: 78, right: 1115, top: 58, bottom: 420 };
 
@@ -77,12 +78,14 @@ function drawChart() {
   drawAxis("systolic", plot.right + 8, "start", 14);
   drawAxis("pulse", plot.right + 92, "start", 14);
   drawAxis("spo2", plot.right + 183, "start", 14);
+  drawAxis("respiratory", plot.right + 274, "start", 14);
 
   const unitLabels = [
     { x: plot.left - 40, y: plot.bottom + 47, text: "(℃)", color: seriesConfig.temperature.color },
     { x: plot.right + 14, y: plot.bottom + 47, text: "(mmHg)", color: seriesConfig.systolic.color },
     { x: plot.right + 102, y: plot.bottom + 47, text: "(回/分)", color: seriesConfig.pulse.color },
-    { x: plot.right + 196, y: plot.bottom + 47, text: "(%)", color: seriesConfig.spo2.color }
+    { x: plot.right + 196, y: plot.bottom + 47, text: "(%)", color: seriesConfig.spo2.color },
+    { x: plot.right + 287, y: plot.bottom + 47, text: "(回/分)", color: seriesConfig.respiratory.color }
   ];
 
   unitLabels.forEach(item => {
@@ -91,7 +94,7 @@ function drawChart() {
     }, item.text));
   });
 
-  ["temperature", "systolic", "diastolic", "pulse", "spo2"].forEach(seriesName => {
+  ["temperature", "systolic", "diastolic", "pulse", "spo2", "respiratory"].forEach(seriesName => {
     if (!hiddenSeries.has(seriesName)) {
       drawSeries(seriesName, plot);
     }
@@ -182,6 +185,11 @@ function renderTable() {
       label: "SpO₂（%）",
       className: "row-spo2",
       values: vitalData.spo2.map(value => value === null ? "－" : value)
+    },
+    {
+      label: "呼吸数（回/分）",
+      className: "row-respiratory",
+      values: vitalData.respiratory.map(value => value === null ? "－" : value)
     }
   ];
 
@@ -212,3 +220,15 @@ renderTable();
 drawChart();
 
 window.addEventListener("resize", drawChart);
+
+const datePicker = document.getElementById("datePicker");
+if (datePicker) {
+  datePicker.addEventListener("change", () => {
+    if (!datePicker.value) return;
+    const params = new URLSearchParams({
+      patient_id: datePicker.dataset.patientId,
+      date: datePicker.value
+    });
+    location.href = `sp_vitals.php?${params}`;
+  });
+}

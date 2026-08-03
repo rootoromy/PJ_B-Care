@@ -1,0 +1,147 @@
+/* ==============================================
+   B-Care Mobile - 予定表画面専用スタイル
+   配置先: css/sp_schedule.css
+
+   iPhone 14相当（390px幅）のスマホ縦画面を基準にしたレイアウト。
+   .phone-shell / .patient-header / .icon-button / .drawer 系は
+   sp_patient_home.php と共通のため css/sp_common.css 側で定義している。
+   ============================================== */
+
+body { background: #edf0ee; }
+
+.schedule-main { display: block; }
+
+/* ==============================================
+   ページ見出し
+   ============================================== */
+
+.page-header { margin: 14px 0 10px; }
+
+.breadcrumb { margin: 0 0 4px; color: var(--green-800); font-size: 14px; font-weight: 700; }
+.breadcrumb a { display: inline-flex; align-items: center; gap: 2px; color: inherit; text-decoration: none; }
+.inline-chevron { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+.page-header h1 { margin: 0; font-size: 20px; letter-spacing: .02em; text-align: center; }
+
+/* ==============================================
+   予定パネル
+   ============================================== */
+
+.schedule-panel {
+  margin: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* ==============================================
+   日付切り替え
+   ============================================== */
+
+.date-navigation {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 8px;
+  min-height: 76px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.today-jump {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+  text-align: center;
+}
+.today-jump a {
+  display: inline-block;
+  padding: 5px 14px;
+  border: 1px solid var(--green-800);
+  border-radius: 999px;
+  color: var(--green-800);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.circle-button {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #cbd9cf;
+  background: #fff;
+  color: var(--green-800);
+  text-decoration: none;
+}
+.circle-button:active { transform: scale(0.96); }
+.circle-button-icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; }
+
+.date-button {
+  position: relative;
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  font-size: 19px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.calendar-icon { width: 20px; height: 20px; flex: none; fill: none; stroke: var(--green-800); stroke-width: 1.8; }
+
+.date-picker-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* ==============================================
+   予定一覧
+   ============================================== */
+
+.schedule-list { display: flex; flex-direction: column; }
+
+.schedule-row {
+  display: grid;
+  grid-template-columns: 68px 1fr;
+  gap: 14px;
+  align-items: center;
+  min-height: 76px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.schedule-row:last-child { border-bottom: 0; }
+
+.schedule-time { color: var(--green-800); font-size: 18px; font-weight: 800; }
+
+.schedule-name { margin: 0 0 4px; font-size: 16px; font-weight: 800; line-height: 1.4; }
+.schedule-place { margin: 0; color: var(--muted); font-size: 13px; }
+
+.schedule-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  background: linear-gradient(90deg, var(--green-100), #f8fbf9);
+  color: var(--muted);
+}
+.schedule-note p { margin: 0; font-size: 13px; }
+
+.info-icon { width: 20px; height: 20px; flex: none; fill: none; stroke: var(--green-800); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+@media (max-width: 360px) {
+  .date-button { font-size: 16px; gap: 7px; }
+  .schedule-row { grid-template-columns: 56px 1fr; gap: 10px; padding: 12px; }
+  .schedule-time { font-size: 15px; }
+  .schedule-name { font-size: 15px; }
+}

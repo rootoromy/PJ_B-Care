@@ -16,24 +16,25 @@ $bp_dia = vitalValue($latest_vital, 'diastolic_bp');
 $temp   = vitalValue($latest_vital, 'temperature');
 $pulse  = vitalValue($latest_vital, 'pulse');
 $spo2   = vitalValue($latest_vital, 'spo2');
+$resp   = vitalValue($latest_vital, 'respiratory_rate');
 ?>
-<section class="card section-card vital-card">
+<section class="card section-card vital-card" id="vitalCard" data-patient-id="<?= h($patient_id) ?>">
   <a class="section-title" href="sp_vitals.php?patient_id=<?= urlencode($patient_id) ?>">
     <span><b></b>バイタル</span>
     <svg><use href="#i-chevron"></use></svg>
   </a>
   <div class="section-body">
     <div class="vitals-grid">
-      <div><span>血圧(上)<small>mmHg</small></span><strong><?= $bp_sys !== null ? h($bp_sys) : '－' ?></strong></div>
-      <div><span>体温<small>℃</small></span><strong><?= $temp !== null ? h($temp) : '－' ?></strong></div>
-      <div><span>血圧(下)<small>mmHg</small></span><strong><?= $bp_dia !== null ? h($bp_dia) : '－' ?></strong></div>
-      <div><span>脈拍<small>bpm</small></span><strong><?= $pulse !== null ? h($pulse) : '－' ?></strong></div>
-      <div class="empty"></div>
-      <div><span>SPO2<small>%</small></span><strong><?= $spo2 !== null ? h($spo2) : '－' ?></strong></div>
+      <div><span>血圧(上)<small>mmHg</small></span><strong id="vitalBpSys"><?= $bp_sys !== null ? h($bp_sys) : '－' ?></strong></div>
+      <div><span>体温<small>℃</small></span><strong id="vitalTemp"><?= $temp !== null ? h($temp) : '－' ?></strong></div>
+      <div><span>血圧(下)<small>mmHg</small></span><strong id="vitalBpDia"><?= $bp_dia !== null ? h($bp_dia) : '－' ?></strong></div>
+      <div><span>脈拍<small>bpm</small></span><strong id="vitalPulse"><?= $pulse !== null ? h($pulse) : '－' ?></strong></div>
+      <div><span>呼吸数<small>回/分</small></span><strong id="vitalResp"><?= $resp !== null ? h($resp) : '－' ?></strong></div>
+      <div><span>SPO2<small>%</small></span><strong id="vitalSpo2"><?= $spo2 !== null ? h($spo2) : '－' ?></strong></div>
     </div>
     <div class="vital-footer">
-      <p><svg><use href="#i-clock"></use></svg>最終更新：<span><?= $latest_vital ? h(date('Y/m/d H:i', strtotime($latest_vital['measured_at']))) : '記録なし' ?></span></p>
-      <a class="vital-update-btn" href="sp_vitals.php?patient_id=<?= urlencode($patient_id) ?>"><svg><use href="#i-refresh"></use></svg>更新</a>
+      <p><svg><use href="#i-clock"></use></svg>最終更新：<span id="vitalLastUpdated"><?= $latest_vital ? h(date('Y/m/d H:i', strtotime($latest_vital['measured_at']))) : '記録なし' ?></span></p>
+      <button type="button" class="vital-update-btn" id="vitalUpdateBtn"><svg><use href="#i-refresh"></use></svg>更新</button>
     </div>
   </div>
 </section>
