@@ -179,7 +179,7 @@ $active_menu = 'home';
   <title>B-Care Mobile｜患者ホーム</title>
   <link rel="icon" href="../favicon.ico">
   <link rel="stylesheet" href="css/sp_common.css?v=17">
-  <link rel="stylesheet" href="css/sp_patient_home.css?v=45">
+  <link rel="stylesheet" href="css/sp_patient_home.css?v=47">
 </head>
 <body>
   <!-- SVG icon sprite（外部ライブラリ不要） -->

@@ -141,8 +141,13 @@ main { display: grid; gap: 7px; }
   align-items: center;
   border-radius: 6px;
 }
-.risk-card small { font-size: 10px; font-weight: 700; }
-.risk-card strong { margin-top: 2px; font-size: 21px; line-height: 1; }
+.risk-card small { font-size: 10px; font-weight: 700; line-height: 1; }
+.risk-card strong {
+  margin-top: 2px;
+  font-size: 21px;
+  line-height: 1;
+  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+}
 .fall-risk { flex-direction: row; align-items: center; gap: 6px; border: 1px solid #ffc9c9; background: var(--danger-bg); color: var(--danger); }
 .fall-risk small { font-size: 16px; }
 .fall-risk strong { margin-top: 0; font-size: 24px; }

@@ -105,7 +105,7 @@ $active_menu = 'schedule';
   <title>B-Care Mobile｜予定</title>
   <link rel="icon" href="../favicon.ico">
   <link rel="stylesheet" href="css/sp_common.css?v=17" />
-  <link rel="stylesheet" href="css/sp_schedule.css?v=6" />
+  <link rel="stylesheet" href="css/sp_schedule.css?v=8" />
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">

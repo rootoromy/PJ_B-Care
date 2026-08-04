@@ -97,7 +97,7 @@ $active_menu = 'pictogram';
   <title>B-Care Mobile｜ピクトグラム</title>
   <link rel="icon" href="../favicon.ico">
   <link rel="stylesheet" href="css/sp_common.css?v=17" />
-  <link rel="stylesheet" href="css/sp_pictogram.css?v=12" />
+  <link rel="stylesheet" href="css/sp_pictogram.css?v=14" />
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">

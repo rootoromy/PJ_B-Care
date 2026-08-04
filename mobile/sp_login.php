@@ -11,6 +11,11 @@ if (!empty($_SESSION['sp_logged_in'])) {
     header('Location: sp_patient_home.php');
     exit;
 }
+
+// 開発環境（localhostアクセス時）のみログイン情報を自動入力する
+$isLocalDev = in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true);
+$devUserId = $isLocalDev ? 'admin' : '';
+$devPassword = $isLocalDev ? 'admin' : '';
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -40,7 +45,7 @@ if (!empty($_SESSION['sp_logged_in'])) {
                   <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z"/>
                 </svg>
               </span>
-              <input id="userId" name="userId" type="text" autocomplete="username" placeholder="ユーザーIDを入力" aria-describedby="userIdError">
+              <input id="userId" name="userId" type="text" autocomplete="username" placeholder="ユーザーIDを入力" aria-describedby="userIdError" value="<?= htmlspecialchars($devUserId, ENT_QUOTES, 'UTF-8') ?>">
             </div>
             <p class="error-message" id="userIdError"></p>
           </div>
@@ -53,7 +58,7 @@ if (!empty($_SESSION['sp_logged_in'])) {
                   <path d="M17 8h-1V6a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2Zm-7-2a2 2 0 0 1 4 0v2h-4V6Zm2 11.25A1.75 1.75 0 1 1 12 13a1.75 1.75 0 0 1 0 3.5v.75Z"/>
                 </svg>
               </span>
-              <input id="password" name="password" type="password" autocomplete="current-password" placeholder="パスワードを入力" aria-describedby="passwordError">
+              <input id="password" name="password" type="password" autocomplete="current-password" placeholder="パスワードを入力" aria-describedby="passwordError" value="<?= htmlspecialchars($devPassword, ENT_QUOTES, 'UTF-8') ?>">
               <button type="button" class="password-toggle" id="passwordToggle" aria-label="パスワードを表示">
                 <svg class="eye-open" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 5c-5.5 0-9.5 4.8-10.7 6.4a1 1 0 0 0 0 1.2C2.5 14.2 6.5 19 12 19s9.5-4.8 10.7-6.4a1 1 0 0 0 0-1.2C21.5 9.8 17.5 5 12 5Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>

@@ -54,7 +54,7 @@ $now_local = date('Y-m-d\TH:i');
   <title>B-Care Mobile｜預かり品登録</title>
   <link rel="icon" href="../favicon.ico">
   <link rel="stylesheet" href="css/sp_common.css?v=17">
-  <link rel="stylesheet" href="css/sp_deposit.css?v=16">
+  <link rel="stylesheet" href="css/sp_deposit.css?v=18">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
