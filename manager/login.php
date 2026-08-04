@@ -11,7 +11,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>B-Care Manager ログイン</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/login.css?v=1">
 </head>
 <body>
   <main class="login-page">

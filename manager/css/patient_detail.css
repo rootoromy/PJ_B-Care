@@ -17,6 +17,11 @@
     letter-spacing: 0.05em;
 }
 
+/* 転倒リスク・移送区分バッジ */
+.badge {
+    font-weight: bold;
+}
+
 /* 患者基本情報 */
 .info-row {
     display: flex;

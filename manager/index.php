@@ -108,65 +108,18 @@ function buildQuery(array $extra = []): string {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>B-Care Manager - 患者一覧</title>
     <link rel="icon" href="../favicon.ico">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/style.css?v=1">
+    <link rel="stylesheet" href="css/common.css?v=2">
+    <link rel="stylesheet" href="css/index.css?v=1">
 </head>
 <body>
 
-<!-- ヘッダー -->
-<header>
-    <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-        <rect width="26" height="26" rx="6" fill="#fff" fill-opacity="0.15"/>
-        <path d="M7 13h12M13 7v12" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
-    </svg>
-    <span class="logo">B-Care Manager</span>
-        <span class="user">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="16" cy="16" r="15" stroke="#fff" stroke-width="1.5"/>
-            <circle cx="16" cy="13" r="4.5" stroke="#fff" stroke-width="1.5"/>
-            <path d="M7 26c0-5 4-8 9-8s9 3 9 8" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        管理者
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M6 9l6 6 6-6" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-    </span>
-</header>
+<?php $active_menu = 'patients'; ?>
+<?php include __DIR__ . '/includes/header.php'; ?>
 
 <div class="layout">
 
-    <!-- サイドバー -->
-    <aside>
-        <nav>
-            <a href="index.php" class="active">
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                患者一覧
-            </a>
-            <a href="#">
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
-                QRコード管理
-            </a>
-            <a href="#">
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M9 17H7A5 5 0 017 7h2M15 7h2a5 5 0 010 10h-2M9 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                読み取り履歴
-            </a>
-            <a href="#">
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                ユーザー管理
-            </a>
-            <a href="#">
-                <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                表示設定
-            </a>
-        </nav>
-        <div class="logout">
-            <a href="#">
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                ログアウト
-            </a>
-        </div>
-    </aside>
+    <?php include __DIR__ . '/includes/sidebar.php'; ?>
 
     <!-- メイン -->
     <main>
@@ -218,7 +171,7 @@ function buildQuery(array $extra = []): string {
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>移動区分</label>
+                    <label>移送区分</label>
                     <select name="transfer">
                         <option value="">すべて</option>
                         <?php foreach ($transfers as $t): ?>
@@ -246,13 +199,13 @@ function buildQuery(array $extra = []): string {
                     <tr>
                         <th>患者ID</th>
                         <th>氏名</th>
+                        <th>性別</th>
+                        <th>年齢</th>
                         <th>病棟</th>
                         <th>病室</th>
                         <th>ベッド</th>
-                        <th>性別</th>
-                        <th>年齢</th>
                         <th>転倒リスク</th>
-                        <th>移動区分</th>
+                        <th>移送区分</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -266,15 +219,15 @@ function buildQuery(array $extra = []): string {
                     <tr>
                         <td><?= htmlspecialchars($p['patient_id']) ?></td>
                         <td><?= htmlspecialchars($p['patient_name']) ?></td>
-                        <td><?= htmlspecialchars($p['ward_name']) ?></td>
-                        <td><?= htmlspecialchars($p['room_no']) ?>号室</td>
-                        <td><?= htmlspecialchars($p['bed_no']) ?>ベッド</td>
                         <td>
                             <span style="color:<?= $gender['color'] ?>; font-weight:bold;">
-                                <?= $gender['icon'] ?> <?= htmlspecialchars($p['gender'] ?? '-') ?>
+                                <?= htmlspecialchars($p['gender'] ?? '-') ?>
                             </span>
                         </td>
                         <td><?= htmlspecialchars($p['age'] ?? '-') ?>歳</td>
+                        <td><?= htmlspecialchars($p['ward_name']) ?></td>
+                        <td><?= htmlspecialchars($p['room_no']) ?>号室</td>
+                        <td><?= htmlspecialchars($p['bed_no']) ?>ベッド</td>
                         <td>
                             <span class="badge" style="background:<?= $risk['bg'] ?>; color:<?= $risk['text'] ?>;">
                                 <?= $risk['label'] ?>
@@ -324,7 +277,7 @@ function buildQuery(array $extra = []): string {
     </main>
 </div>
 
-<footer>B-Care Manager &copy; <?= date('Y') ?></footer>
+<?php include __DIR__ . '/includes/footer.php'; ?>
 
 </body>
 </html>

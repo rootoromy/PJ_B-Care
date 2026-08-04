@@ -33,13 +33,13 @@ function getRiskColor(int $risk): array {
         return [
             'bg'    => COLOR_RISK_BG,
             'text'  => COLOR_RISK_TEXT,
-            'label' => 'リスクあり',
+            'label' => '転倒危険度' . $risk,
         ];
     }
     return [
         'bg'    => COLOR_SAFE_BG,
         'text'  => COLOR_SAFE_TEXT,
-        'label' => 'なし',
+        'label' => '転倒危険度0',
     ];
 }
 
