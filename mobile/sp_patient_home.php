@@ -40,8 +40,8 @@ $stmt->close();
 
 if (!$patient) {
     $patient = [
-        'patient_name' => '患者 太郎',
-        'patient_kana' => 'カンジャ タロウ',
+        'patient_name' => '',
+        'patient_kana' => '',
         'age'          => '',
         'gender'       => '',
         'ward_name'    => '',

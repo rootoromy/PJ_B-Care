@@ -12,11 +12,11 @@
 <section class="card info-card" aria-label="患者基本情報">
   <div class="info-row">
     <span class="info-label"><svg><use href="#i-stethoscope"></use></svg>主治医</span>
-    <span class="info-value">テスト 次郎</span>
+    <span class="info-value"><?= h($patient['doctor_name'] ?? '') ?></span>
   </div>
   <div class="info-row">
     <span class="info-label"><svg><use href="#i-nurse"></use></svg>受持看護師</span>
-    <span class="info-value">テスト 次郎</span>
+    <span class="info-value"><?= h($patient['primary_nurse'] ?? '') ?></span>
   </div>
   <div class="info-row">
     <span class="info-label"><svg><use href="#i-building"></use></svg>病棟・病室</span>

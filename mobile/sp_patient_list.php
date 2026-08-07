@@ -25,7 +25,7 @@ $staff_id = $_SESSION['staff_id'] ?? '';
 
 $mysqli = getDB();
 $stmt = $mysqli->prepare("
-    SELECT p.patient_id, p.patient_name, p.gender, p.age,
+    SELECT p.patient_id, p.patient_name, p.patient_kana, p.gender, p.age,
            (spp.staff_id IS NOT NULL) AS pinned
     FROM patients p
     LEFT JOIN staff_pinned_patients spp
@@ -58,12 +58,13 @@ $page_title  = 'B-Care Mobile';
   <title>B-Care Mobile｜患者一覧</title>
   <link rel="icon" href="../favicon.ico">
   <link rel="stylesheet" href="css/sp_common.css?v=31">
-  <link rel="stylesheet" href="css/sp_patient_list.css?v=11">
+  <link rel="stylesheet" href="css/sp_patient_list.css?v=12">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M20 6v5h-5M4 18v-5h5M18 10a7 7 0 0 0-12-2M6 14a7 7 0 0 0 12 2"/></symbol>
   </svg>
 
   <div class="phone-shell">
@@ -81,13 +82,17 @@ $page_title  = 'B-Care Mobile';
           <input
             id="searchInput"
             type="search"
-            placeholder="患者IDまたは氏名を入力"
+            placeholder="IDまたは氏名を入力"
             autocomplete="off"
           >
         </div>
 
         <button id="searchButton" class="search-button" type="button" aria-label="検索">
           <svg class="search-button-icon"><use href="#i-search"></use></svg>
+        </button>
+
+        <button id="searchResetButton" class="search-reset-button" type="button" aria-label="検索をリセット">
+          <svg class="search-button-icon"><use href="#i-reset"></use></svg>
         </button>
       </section>
 
@@ -131,6 +136,6 @@ $page_title  = 'B-Care Mobile';
 
   <script>window.PATIENTS_DATA = <?= $patients_json ?>;</script>
   <script src="js/sp_drawer.js?v=1"></script>
-  <script src="js/sp_patient_list.js?v=3"></script>
+  <script src="js/sp_patient_list.js?v=5"></script>
 </body>
 </html>

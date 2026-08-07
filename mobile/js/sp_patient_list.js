@@ -11,6 +11,7 @@ const patients = Array.isArray(window.PATIENTS_DATA) ? window.PATIENTS_DATA : []
 
 const searchInput = document.getElementById("searchInput");
 const searchButton = document.getElementById("searchButton");
+const searchResetButton = document.getElementById("searchResetButton");
 const pickupSection = document.getElementById("pickupSection");
 const allSection = document.getElementById("allSection");
 const pickupList = document.getElementById("pickupList");
@@ -35,7 +36,8 @@ function getFilteredPatients() {
   return patients.filter((patient) => {
     return (
       normalize(patient.patient_id).includes(currentKeyword) ||
-      normalize(patient.patient_name).includes(currentKeyword)
+      normalize(patient.patient_name).includes(currentKeyword) ||
+      normalize(patient.patient_kana ?? "").includes(currentKeyword)
     );
   });
 }
@@ -157,6 +159,13 @@ function executeSearch() {
   }
 }
 
+function resetSearch() {
+  searchInput.value = "";
+  currentKeyword = "";
+  currentPage = 1;
+  renderPatients();
+}
+
 async function togglePin(patientId, button) {
   const patient = patients.find((item) => item.patient_id === patientId);
   if (!patient) return;
@@ -215,6 +224,8 @@ document.querySelector(".patient-table").addEventListener("click", (event) => {
 });
 
 searchButton.addEventListener("click", executeSearch);
+
+searchResetButton.addEventListener("click", resetSearch);
 
 searchInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
