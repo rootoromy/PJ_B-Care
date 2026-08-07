@@ -34,7 +34,7 @@ $menu_items = [
     ],
     'users' => [
         'label' => 'ユーザー管理',
-        'href'  => '#',
+        'href'  => 'user_management.php',
         'icon'  => '<svg width="18" height="18" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     ],
     'display' => [
