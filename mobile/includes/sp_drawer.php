@@ -4,12 +4,15 @@
  * 配置先: mobile/includes/sp_drawer.php
  *
  * 【呼び出し側で用意しておく変数】
- *   $patient_id   : GETから受け取った患者ID文字列
+ *   $patient_id   : GETから受け取った患者ID文字列（患者一覧画面など、
+ *                   患者未選択のページでは空文字のままでよい）
  *   $active_menu  : 現在ページのメニューキー
- *                   ('home' / 'pictogram' / 'vitals' / 'deposit' / 'schedule')
+ *                   ('patients' / 'home' / 'pictogram' / 'vitals' / 'deposit' / 'schedule')
  *                   未設定ならどれもハイライトしない
  *
  * 新しいメニュー項目を増やしたい場合は、下の $menu_items 配列に追記するだけでOK。
+ * ただし患者に紐づくメニューは、患者未選択時（$patient_id が空）には
+ * 表示されない（クリックしても患者が見つからずダミー表示になってしまうため）。
  *
  * 【対応CSS】css/sp_common.css の .drawer 系クラス
  * 【対応JS 】js/sp_drawer.js
@@ -21,12 +24,18 @@ $active_menu = $active_menu ?? '';
 $patient_id  = $patient_id ?? '';
 
 $menu_items = [
-    'home'      => ['label' => 'TOP',         'href' => 'sp_patient_home.php?patient_id=' . urlencode($patient_id)],
-    'pictogram' => ['label' => 'ピクトグラム', 'href' => 'sp_pictogram.php?patient_id=' . urlencode($patient_id)],
-    'vitals'    => ['label' => 'バイタル',     'href' => 'sp_vitals.php?patient_id=' . urlencode($patient_id)],
-    'schedule'  => ['label' => '予定',         'href' => 'sp_schedule.php?patient_id=' . urlencode($patient_id)],
-    'deposit'   => ['label' => '預かり品',     'href' => 'sp_deposit_list.php?patient_id=' . urlencode($patient_id)],
+    'patients'  => ['label' => '患者一覧',     'href' => 'sp_patient_list.php'],
 ];
+
+if ($patient_id !== '') {
+    $menu_items += [
+        'home'      => ['label' => '患者個別',     'href' => 'sp_patient_home.php?patient_id=' . urlencode($patient_id)],
+        'pictogram' => ['label' => 'ピクトグラム', 'href' => 'sp_pictogram.php?patient_id=' . urlencode($patient_id)],
+        'vitals'    => ['label' => 'バイタル',     'href' => 'sp_vitals.php?patient_id=' . urlencode($patient_id)],
+        'schedule'  => ['label' => '予定',         'href' => 'sp_schedule.php?patient_id=' . urlencode($patient_id)],
+        'deposit'   => ['label' => '預かり品',     'href' => 'sp_deposit_list.php?patient_id=' . urlencode($patient_id)],
+    ];
+}
 ?>
 <nav class="drawer" id="drawer" aria-label="メインメニュー" aria-hidden="true" inert>
   <div class="drawer-head">

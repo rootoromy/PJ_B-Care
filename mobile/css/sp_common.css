@@ -13,6 +13,7 @@
   --panel: #f4f7f5;
   --white: #ffffff;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --header-accent: #70ab88;
 }
 
 /* リセット・基本設定 */
@@ -74,7 +75,6 @@ img {
   width: min(100%, 430px);
   min-height: 100vh;
   margin: 0 auto;
-  padding: calc(env(safe-area-inset-top) + 15px) 9px calc(env(safe-area-inset-bottom) + 20px);
   overflow: clip;
   background: #fff;
 }
@@ -82,9 +82,12 @@ img {
 @media (min-width: 431px) {
   .phone-shell {
     min-height: 850px;
-    border-radius: 30px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, .16);
   }
+}
+
+main {
+  padding: 0 9px calc(env(safe-area-inset-bottom) + 20px);
 }
 
 /* ==============================================
@@ -100,13 +103,14 @@ img {
   grid-template-columns: 34px minmax(0, 1fr) auto;
   align-items: start;
   gap: 9px;
-  padding: 0 0 8px;
+  padding: calc(env(safe-area-inset-top) + 15px) 9px 8px;
   margin: 0 0 -8px;
+  border-top: 2px solid var(--header-accent);
   border-bottom: 1px solid var(--green-100);
   background: var(--white);
 }
 
-.patient-header .icon-button { margin-top: 8px; }
+.patient-header .icon-button { margin-top: 0; }
 
 .icon-button {
   width: 34px;
@@ -143,7 +147,7 @@ img {
   align-items: center;
   gap: 5px;
   min-height: 24px;
-  margin-top: -3px;
+  margin-top: 0;
   padding: 3px 7px;
   border-radius: 2px;
   background: var(--green-100);
@@ -156,6 +160,70 @@ img {
   border-radius: 12px;
   background: var(--white);
   box-shadow: var(--shadow);
+}
+
+/* ==============================================
+   シンプルヘッダー（患者コンテキストなしの画面用）
+   ============================================== */
+
+.simple-header {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: start;
+  gap: 9px;
+  min-height: 90.625px;
+  padding: calc(env(safe-area-inset-top) + 15px) 9px 10px;
+  margin: 0 0 4px;
+  overflow: hidden;
+  border-top: 2px solid var(--header-accent);
+  border-bottom: 1px solid var(--green-100);
+  background: var(--white);
+}
+
+.simple-header-wave {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.simple-header-wave span {
+  position: absolute;
+  left: -15%;
+  width: 130%;
+  height: 46px;
+  border-radius: 50%;
+  transform: rotate(-4deg);
+}
+
+.simple-header-wave .wave-a { bottom: -30px; background: rgba(210, 239, 225, .55); }
+.simple-header-wave .wave-b { bottom: -35px; background: rgba(225, 245, 235, .75); transform: rotate(3deg); }
+.simple-header-wave .wave-c { bottom: -39px; background: rgba(234, 247, 241, .9); transform: rotate(-2deg); }
+
+.simple-header .icon-button {
+  position: relative;
+  z-index: 1;
+  margin-top: 0;
+}
+
+.simple-header h1 {
+  position: relative;
+  z-index: 1;
+  align-self: start;
+  margin: 0;
+  color: var(--green-900);
+  font-size: 19px;
+  text-align: center;
+  letter-spacing: -.02em;
+}
+
+.simple-header .login-user {
+  position: relative;
+  z-index: 1;
 }
 
 /* ==============================================

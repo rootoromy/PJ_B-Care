@@ -78,7 +78,7 @@ $active_menu = 'deposit';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜預かり品一覧</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=17">
+  <link rel="stylesheet" href="css/sp_common.css?v=31">
   <link rel="stylesheet" href="css/sp_deposit.css?v=18">
 </head>
 <body>

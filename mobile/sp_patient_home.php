@@ -24,7 +24,11 @@ function h($value) {
     return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
 }
 
-$patient_id = isset($_GET['patient_id']) ? trim($_GET['patient_id']) : 'P001';
+$patient_id = isset($_GET['patient_id']) ? trim($_GET['patient_id']) : '';
+if ($patient_id === '') {
+    header('Location: sp_patient_list.php');
+    exit;
+}
 
 $mysqli = getDB();
 
@@ -178,8 +182,8 @@ $active_menu = 'home';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜患者ホーム</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=17">
-  <link rel="stylesheet" href="css/sp_patient_home.css?v=47">
+  <link rel="stylesheet" href="css/sp_common.css?v=31">
+  <link rel="stylesheet" href="css/sp_patient_home.css?v=52">
 </head>
 <body>
   <!-- SVG icon sprite（外部ライブラリ不要） -->
@@ -190,6 +194,7 @@ $active_menu = 'home';
     <symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V4h12v17M16 10h4v11M8 8h2M8 12h2M8 16h2M13 8h1M13 12h1M13 16h1M2 21h20"/></symbol>
     <symbol id="i-bed" viewBox="0 0 24 24"><path d="M3 18V6M3 14h18v4M7 14v-3h5a3 3 0 0 1 3 3M3 18v3M21 18v3"/></symbol>
     <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
     <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
     <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 6v5h-5M4 18v-5h5M18 10a7 7 0 0 0-12-2M6 14a7 7 0 0 0 12 2"/></symbol>
   </svg>
@@ -199,7 +204,16 @@ $active_menu = 'home';
 
     <?php include __DIR__ . '/includes/sp_drawer.php'; ?>
 
-    <p class="home-label"><a href="sp_patient_home.php?patient_id=<?= urlencode($patient_id) ?>">TOP</a></p>
+    <header class="page-header">
+      <p class="breadcrumb"><a href="sp_patient_list.php"><svg class="inline-chevron"><use href="#i-chevron-left"></use></svg>戻る</a></p>
+      <div class="page-title-row">
+        <h1>患者個別</h1>
+        <a class="page-refresh-btn" href="sp_patient_home.php?patient_id=<?= urlencode($patient_id) ?>">
+          <svg><use href="#i-refresh"></use></svg>
+          更新
+        </a>
+      </div>
+    </header>
 
     <main>
       <?php foreach ($block_order as $block_key): ?>
