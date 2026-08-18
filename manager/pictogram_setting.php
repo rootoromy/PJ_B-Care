@@ -48,7 +48,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
 // ---------------------------------------------------
 // 患者情報取得
 // ---------------------------------------------------
-$stmt = $mysqli->prepare("SELECT * FROM patients WHERE patient_id = ?");
+$stmt = $mysqli->prepare("
+    SELECT p.*, doc.name AS doctor_name, nur.name AS primary_nurse
+    FROM patients p
+    LEFT JOIN patients_staff ps_doc ON ps_doc.patient_id = p.patient_id AND ps_doc.role = 'doctor'
+    LEFT JOIN staff doc ON doc.staff_id = ps_doc.staff_id
+    LEFT JOIN patients_staff ps_nur ON ps_nur.patient_id = p.patient_id AND ps_nur.role = 'nurse'
+    LEFT JOIN staff nur ON nur.staff_id = ps_nur.staff_id
+    WHERE p.patient_id = ?
+");
 $stmt->bind_param('s', $patient_id);
 $stmt->execute();
 $patient = $stmt->get_result()->fetch_assoc();
@@ -84,6 +92,8 @@ $stmt_cur->close();
 $mysqli->close();
 
 $gender   = getGenderStyle($patient['gender'] ?? '');
+$risk     = getRiskColor((int)$patient['fall_risk']);
+$transfer = getTransferColor();
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -94,11 +104,11 @@ $gender   = getGenderStyle($patient['gender'] ?? '');
     <link rel="icon" href="../favicon.ico">
     <link rel="stylesheet" href="css/style.css?v=1">
     <link rel="stylesheet" href="css/common.css?v=2">
-    <link rel="stylesheet" href="css/pictogram_setting.css?v=1">
+    <link rel="stylesheet" href="css/pictogram_setting.css?v=3">
 </head>
 <body>
 
-<?php $active_menu = 'qr'; ?>
+<?php $active_menu = 'patients'; ?>
 <?php include __DIR__ . '/includes/header.php'; ?>
 
 <div class="layout">
@@ -114,7 +124,6 @@ $gender   = getGenderStyle($patient['gender'] ?? '');
         <div class="page-header">
             <div class="page-title">ピクトグラム設定</div>
         </div>
-        <p style="font-size:0.85rem;color:#666;margin-bottom:20px;">管理画面や読み取り完了画面に表示するピクトグラムを選択してください。</p>
 
         <?php if ($save_message === 'success'): ?>
             <div class="alert-success">
@@ -126,7 +135,71 @@ $gender   = getGenderStyle($patient['gender'] ?? '');
         <form method="POST" action="pictogram_setting.php?patient_id=<?= urlencode($patient_id) ?>">
         <div class="setting-grid">
 
-            <!-- 左：ピクトグラム選択 -->
+            <!-- 左：患者基本情報 -->
+            <div class="card">
+                <div class="card-title">患者基本情報</div>
+
+                <div class="info-row">
+                    <span class="info-label">患者ID</span>
+                    <span class="info-value"><?= htmlspecialchars($patient['patient_id']) ?></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">患者氏名</span>
+                    <span class="info-value large"><?= htmlspecialchars($patient['patient_name']) ?></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">性別</span>
+                    <span class="info-value" style="color:<?= $gender['color'] ?>; font-weight:bold;">
+                        <?= htmlspecialchars($patient['gender'] ?? '-') ?>
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">年齢</span>
+                    <span class="info-value"><?= htmlspecialchars($patient['age'] ?? '-') ?>歳</span>
+                </div>
+
+                <hr class="info-divider">
+
+                <div class="info-row">
+                    <span class="info-label">主治医</span>
+                    <span class="info-value"><?= htmlspecialchars($patient['doctor_name'] ?? '') ?: '未設定' ?></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">受持看護師</span>
+                    <span class="info-value"><?= htmlspecialchars($patient['primary_nurse'] ?? '') ?: '未設定' ?></span>
+                </div>
+                <hr class="info-divider">
+
+                <div class="info-row">
+                    <span class="info-label">病棟</span>
+                    <span class="info-value"><?= htmlspecialchars($patient['ward_name']) ?></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">病室</span>
+                    <span class="info-value"><?= htmlspecialchars($patient['room_no']) ?>号室</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ベッド番号</span>
+                    <span class="info-value"><?= htmlspecialchars($patient['bed_no']) ?>ベッド</span>
+                </div>
+
+                <hr class="info-divider">
+
+                <div class="info-row">
+                    <span class="info-label">転倒リスク</span>
+                    <span class="badge" style="background:<?= $risk['bg'] ?>; color:<?= $risk['text'] ?>;">
+                        <?= $risk['label'] ?>
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">移送区分</span>
+                    <span class="badge" style="background:<?= $transfer['bg'] ?>; color:<?= $transfer['text'] ?>;">
+                        <?= htmlspecialchars($patient['transfer_type']) ?>
+                    </span>
+                </div>
+            </div>
+
+            <!-- 中央：ピクトグラム選択 -->
             <div class="card">
                 <div class="card-title">ピクトグラムを選択</div>
                 <div class="card-desc">クリックで選択・解除できます</div>
@@ -166,29 +239,8 @@ $gender   = getGenderStyle($patient['gender'] ?? '');
             </div>
             
 
-            <!-- 右：患者情報 + 選択中ピクトグラム -->
+            <!-- 右：選択中ピクトグラム -->
             <div>
-                <!-- 患者情報 -->
-                <div class="card patient-info-card">
-                    <div class="card-title">患者情報</div>
-                    <div class="info-row">
-                        <span class="info-label">患者ID</span>
-                        <span class="info-value"><?= htmlspecialchars($patient['patient_id']) ?></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">患者名</span>
-                        <span class="info-value"><?= htmlspecialchars($patient['patient_name']) ?></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">性別</span>
-                        <span class="info-value" style="color:<?= $gender['color'] ?>;"><?= $gender['icon'] ?> <?= htmlspecialchars($patient['gender'] ?? '-') ?></span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">年齢</span>
-                        <span class="info-value"><?= htmlspecialchars($patient['age'] ?? '-') ?>歳</span>
-                    </div>
-                </div>
-
                 <!-- 選択中ピクトグラム -->
                 <div class="card">
                     <div class="selected-title">

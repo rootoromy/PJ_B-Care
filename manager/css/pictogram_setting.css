@@ -2,7 +2,7 @@
 
 .setting-grid {
     display: grid;
-    grid-template-columns: 1fr 360px;
+    grid-template-columns: 300px 1fr 360px;
     gap: 20px;
     align-items: start;
 }
@@ -103,26 +103,34 @@
 }
 .pic-check svg { width: 12px; height: 12px; }
 
-/* 右サイドパネル */
-.patient-info-card {
-    margin-bottom: 16px;
+/* 左：患者基本情報 */
+.badge {
+    font-weight: bold;
 }
 .info-row {
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border-subtle);
+    flex-direction: column;
+    margin-bottom: 14px;
 }
-.info-row:last-child { border-bottom: none; }
 .info-label {
-    font-size: 1.5rem;
-    color: var(--text-muted);
+    font-size: 0.75rem;
+    color: var(--text-label);
+    margin-bottom: 3px;
 }
-.info-value { 
-    font-size: 1.8rem;
-    font-weight: 700;
+.info-value {
+    font-size: 0.95rem;
     color: var(--text-body);
+    font-weight: 500;
+}
+.info-value.large {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-heading);
+}
+.info-divider {
+    border: none;
+    border-top: 1px solid var(--border-faint);
+    margin: 14px 0;
 }
 
 /* 選択中ピクトグラム */
