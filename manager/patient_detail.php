@@ -5,6 +5,7 @@
  */
 
 require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../includes/aims_functions.php';
 
 // ---------------------------------------------------
 // 患者ID取得
@@ -20,7 +21,15 @@ $mysqli = getDB();
 // ---------------------------------------------------
 // 患者情報取得
 // ---------------------------------------------------
-$stmt = $mysqli->prepare("SELECT * FROM patients WHERE patient_id = ?");
+$stmt = $mysqli->prepare("
+    SELECT p.*, doc.name AS doctor_name, nur.name AS primary_nurse
+    FROM patients p
+    LEFT JOIN patients_staff ps_doc ON ps_doc.patient_id = p.patient_id AND ps_doc.role = 'doctor'
+    LEFT JOIN staff doc ON doc.staff_id = ps_doc.staff_id
+    LEFT JOIN patients_staff ps_nur ON ps_nur.patient_id = p.patient_id AND ps_nur.role = 'nurse'
+    LEFT JOIN staff nur ON nur.staff_id = ps_nur.staff_id
+    WHERE p.patient_id = ?
+");
 $stmt->bind_param('s', $patient_id);
 $stmt->execute();
 $patient = $stmt->get_result()->fetch_assoc();
@@ -28,6 +37,17 @@ $stmt->close();
 
 if (!$patient) {
     die('<p style="color:red;">患者が見つかりません。</p>');
+}
+
+// ---------------------------------------------------
+// ESL配信処理
+// ---------------------------------------------------
+$esl_deliver_result = null;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deliver_esl']) && !empty($patient['esl_label_code'])) {
+    $result = linkPatientArticleToLabel($patient, $patient['esl_label_code']);
+    $esl_deliver_result = ($result['httpCode'] >= 200 && $result['httpCode'] < 300)
+        ? ['success' => true,  'message' => '配信リクエストを送信しました']
+        : ['success' => false, 'message' => 'HTTP ' . $result['httpCode'] . ($result['error'] ? ' ' . $result['error'] : '')];
 }
 
 // ---------------------------------------------------
@@ -39,9 +59,7 @@ define('QR_SIZE',   5);
 define('QR_MARGIN', 1);
 
 function generateQRBase64(string $relativeUrl): string {
-    $baseUrl   = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
-                 . '://' . $_SERVER['HTTP_HOST'];
-    $fullUrl   = $baseUrl . '/' . ltrim($relativeUrl, '/');
+    $fullUrl   = BCARE_BASE_URL . '/' . ltrim($relativeUrl, '/');
     $cacheFile = CACHE_DIR . md5($fullUrl) . '.png';
     if (!file_exists($cacheFile)) {
         QRcode::png($fullUrl, $cacheFile, QR_ECLEVEL_M, QR_SIZE, QR_MARGIN);
@@ -84,11 +102,11 @@ $transfer = getTransferColor();
     <link rel="icon" href="../favicon.ico">
     <link rel="stylesheet" href="css/style.css?v=1">
     <link rel="stylesheet" href="css/common.css?v=2">
-    <link rel="stylesheet" href="css/patient_detail.css?v=1">
+    <link rel="stylesheet" href="css/patient_detail.css?v=8">
 </head>
 <body>
 
-<?php $active_menu = 'qr'; ?>
+<?php $active_menu = 'patients'; ?>
 <?php include __DIR__ . '/includes/header.php'; ?>
 
 <div class="layout">
@@ -134,6 +152,16 @@ $transfer = getTransferColor();
                 <hr class="info-divider">
 
                 <div class="info-row">
+                    <span class="info-label">主治医</span>
+                    <span class="info-value"><?= htmlspecialchars($patient['doctor_name'] ?? '') ?: '未設定' ?></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">受持看護師</span>
+                    <span class="info-value"><?= htmlspecialchars($patient['primary_nurse'] ?? '') ?: '未設定' ?></span>
+                </div>
+                <hr class="info-divider">
+
+                <div class="info-row">
                     <span class="info-label">病棟</span>
                     <span class="info-value"><?= htmlspecialchars($patient['ward_name']) ?></span>
                 </div>
@@ -176,15 +204,37 @@ $transfer = getTransferColor();
                         </div>
                         <div class="info-row">
                             <span class="info-label">ESL配信状態</span>
-                            <div class="esl-status esl-ok">
-                                <span class="dot"></span>
-                                <span>配信済み</span>
-                            </div>
-                            <div class="esl-sub">正常にESLへ配信されています</div>
+                            <?php if ($esl_deliver_result !== null): ?>
+                                <div class="esl-status <?= $esl_deliver_result['success'] ? 'esl-ok' : 'esl-ng' ?>">
+                                    <span class="dot"></span>
+                                    <span><?= $esl_deliver_result['success'] ? '配信済み' : '配信失敗' ?></span>
+                                </div>
+                                <div class="esl-sub"><?= htmlspecialchars($esl_deliver_result['message']) ?></div>
+                            <?php elseif (empty($patient['esl_label_code'])): ?>
+                                <div class="esl-status esl-ng">
+                                    <span class="dot"></span>
+                                    <span>未設定</span>
+                                </div>
+                                <div class="esl-sub">この患者にはESLラベルが割り当てられていません</div>
+                            <?php else: ?>
+                                <div class="esl-status">
+                                    <span class="dot"></span>
+                                    <span>未配信</span>
+                                </div>
+                                <div class="esl-sub">ラベル: <?= htmlspecialchars($patient['esl_label_code']) ?></div>
+                            <?php endif; ?>
                         </div>
+                        <?php if (!empty($patient['esl_label_code'])): ?>
+                            <form method="POST" action="patient_detail.php?patient_id=<?= urlencode($patient_id) ?>" style="margin-top:8px;">
+                                <button type="submit" name="deliver_esl" value="1" class="btn-pictogram">
+                                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    ESL配信
+                                </button>
+                            </form>
+                        <?php endif; ?>
                     </div>
 
-                    <div class="card">
+                    <div class="card qr-card">
                         <div class="card-title">QRコード</div>
                         <div class="qr-wrap">
                             <?php if ($qr_base64): ?>
@@ -210,7 +260,6 @@ $transfer = getTransferColor();
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                        <div class="pictogram-note">※ ESLに表示されているピクトグラムの一覧です</div>
                     <?php else: ?>
                         <p style="color:#aaa; font-size:0.85rem;">ピクトグラムが設定されていません</p>
                     <?php endif; ?>
@@ -223,36 +272,6 @@ $transfer = getTransferColor();
                 </div>
             </div>
 
-            <!-- 右カラム：ESLプレビュー -->
-            <div class="card">
-                <div class="card-title">ESL のプレビュー</div>
-                <div class="esl-preview">
-                    <div class="esl-preview-name"><?= htmlspecialchars($patient['patient_name']) ?> 様</div>
-                    <div class="esl-preview-meta">
-                        <?= htmlspecialchars($patient['ward_name']) ?>
-                        <?= htmlspecialchars($patient['room_no']) ?>号室
-                        <?= htmlspecialchars($patient['bed_no']) ?>ベッド
-                    </div>
-                    <div class="esl-preview-badges">
-                        <span class="esl-badge" style="background:<?= $risk['bg'] ?>; color:<?= $risk['text'] ?>;">
-                            <?= $risk['label'] ?>
-                        </span>
-                        <span class="esl-badge" style="background:<?= $transfer['bg'] ?>; color:<?= $transfer['text'] ?>;">
-                            <?= htmlspecialchars($patient['transfer_type']) ?>
-                        </span>
-                    </div>
-                    <?php if (!empty($pictograms)): ?>
-                        <div class="esl-preview-pics">
-                            <?php foreach ($pictograms as $pic): ?>
-                                <img src="../<?= htmlspecialchars($pic['image_path']) ?>"
-                                     alt="<?= htmlspecialchars($pic['name']) ?>"
-                                     title="<?= htmlspecialchars($pic['name']) ?>"
-                                     onerror="this.style.display='none'">
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
 
         </div><!-- /detail-grid -->
     </main>

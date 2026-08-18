@@ -2,7 +2,7 @@
 
 .detail-grid {
     display: grid;
-    grid-template-columns: 280px 1fr 1fr;
+    grid-template-columns: 300px 1fr;
     gap: 18px;
     align-items: start;
 }
@@ -60,13 +60,23 @@
 .esl-status .dot {
     width: 10px; height: 10px;
     border-radius: 50%;
+    background: var(--text-muted);
 }
 .esl-ok   .dot { background: var(--status-ok); }
 .esl-ng   .dot { background: var(--status-ng); }
 .esl-sub  { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
 
 /* QRコード */
+.qr-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
 .qr-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
 }
 .qr-wrap img {
@@ -135,28 +145,23 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    width: 72px;
+    gap: 8px;
+    width: 96px;
 }
 .pictogram-item img {
-    width: 52px;
-    height: 52px;
+    width: 80px;
+    height: 80px;
     object-fit: contain;
-    background: var(--bg-subtle);
+    background: #fff;
     border-radius: 6px;
     padding: 4px;
     border: 1px solid var(--border-light);
 }
 .pictogram-item span {
-    font-size: 0.7rem;
+    font-size: 0.95rem;
     color: var(--text-sub);
     text-align: center;
-    line-height: 1.2;
-}
-.pictogram-note {
-    font-size: 0.75rem;
-    color: var(--text-faint);
-    margin-top: 10px;
+    line-height: 1.3;
 }
 
 /* ピクトグラム設定ボタン */
