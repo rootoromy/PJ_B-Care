@@ -32,7 +32,23 @@ function sp_authenticate(string $loginId, string $password): ?array {
 
 function sp_require_login(): void {
     if (empty($_SESSION['sp_logged_in'])) {
-        header('Location: sp_login.php');
+        $redirect = $_SERVER['REQUEST_URI'] ?? '';
+        header('Location: sp_login.php?redirect=' . urlencode($redirect));
         exit;
     }
+}
+
+/**
+ * ログイン後リダイレクト先として安全なパスかを検証する。
+ * オープンリダイレクト対策として、スキーム付き絶対URLや "//" 始まりは拒否し、
+ * サーバー内の相対パス（"/" 始まりの .php へのパス）のみ許可する。
+ */
+function sp_safe_redirect_path(?string $path, string $default = 'sp_patient_home.php'): string {
+    if ($path === null || $path === '') {
+        return $default;
+    }
+    if (preg_match('#^/[A-Za-z0-9_\-/]+\.php(\?[A-Za-z0-9_%.\-=&]*)?$#', $path) === 1) {
+        return $path;
+    }
+    return $default;
 }

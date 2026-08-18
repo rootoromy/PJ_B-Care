@@ -7,8 +7,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once __DIR__ . '/includes/sp_auth.php';
+
+$redirect = sp_safe_redirect_path($_GET['redirect'] ?? null);
+
 if (!empty($_SESSION['sp_logged_in'])) {
-    header('Location: sp_patient_home.php');
+    header('Location: ' . $redirect);
     exit;
 }
 
@@ -36,7 +40,7 @@ $devPassword = $isLocalDev ? 'admin' : '';
           <p>医療従事者向けログイン</p>
         </div>
 
-        <form id="loginForm" novalidate>
+        <form id="loginForm" novalidate data-redirect="<?= htmlspecialchars($redirect, ENT_QUOTES, 'UTF-8') ?>">
           <div class="form-group">
             <label for="userId">ユーザーID</label>
             <div class="input-wrap">
@@ -92,6 +96,6 @@ $devPassword = $isLocalDev ? 'admin' : '';
     </section>
   </main>
 
-  <script src="js/sp_login.js"></script>
+  <script src="js/sp_login.js?v=2"></script>
 </body>
 </html>

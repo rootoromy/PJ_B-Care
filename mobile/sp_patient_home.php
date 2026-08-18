@@ -32,7 +32,15 @@ if ($patient_id === '') {
 
 $mysqli = getDB();
 
-$stmt = $mysqli->prepare("SELECT * FROM patients WHERE patient_id = ?");
+$stmt = $mysqli->prepare("
+    SELECT p.*, doc.name AS doctor_name, nur.name AS primary_nurse
+    FROM patients p
+    LEFT JOIN patients_staff ps_doc ON ps_doc.patient_id = p.patient_id AND ps_doc.role = 'doctor'
+    LEFT JOIN staff doc ON doc.staff_id = ps_doc.staff_id
+    LEFT JOIN patients_staff ps_nur ON ps_nur.patient_id = p.patient_id AND ps_nur.role = 'nurse'
+    LEFT JOIN staff nur ON nur.staff_id = ps_nur.staff_id
+    WHERE p.patient_id = ?
+");
 $stmt->bind_param('s', $patient_id);
 $stmt->execute();
 $patient = $stmt->get_result()->fetch_assoc();

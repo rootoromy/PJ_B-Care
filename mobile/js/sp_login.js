@@ -63,6 +63,7 @@ form.addEventListener('submit', (event) => {
   const params = new URLSearchParams();
   params.set('userId', userId.value.trim());
   params.set('password', password.value);
+  params.set('redirect', form.dataset.redirect || '');
 
   fetch('sp_login_process.php', {
     method: 'POST',
