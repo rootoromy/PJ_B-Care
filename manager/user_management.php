@@ -1,12 +1,133 @@
 <?php
 /**
- * B-Care Manager - ユーザー管理（モック）
+ * B-Care Manager - ユーザー管理
  * 配置先: manager/user_management.php
  *
- * DB未接続のフロントエンドのみのモックです（js/user_management.js 内のダミーデータで動作）。
+ * staff テーブルと接続。一覧表示・新規追加・編集はここでDBに反映する。
+ * フィルター・検索はページ内のJS（user_management.js）でクライアント側処理する。
  */
 
 require_once __DIR__ . '/../includes/config.php';
+
+$mysqli = getDB();
+
+$errors = [];
+
+// ---------------------------------------------------
+// 保存処理（新規追加・編集）
+// ---------------------------------------------------
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $action    = $_POST['action'];
+    $name      = trim($_POST['user_name'] ?? '');
+    $mail      = trim($_POST['user_email'] ?? '');
+    $ward      = trim($_POST['user_ward'] ?? '');
+    $role_key  = ($_POST['user_role'] ?? '') === '管理者' ? 'admin' : 'user';
+    $is_active = ($_POST['user_status'] ?? '') === '有効' ? 1 : 0;
+    $password  = $_POST['user_password'] ?? '';
+
+    if ($name === '' || $mail === '' || $ward === '') {
+        $errors[] = '必須項目が入力されていません。';
+    }
+
+    $stmt = $mysqli->prepare('SELECT role_id FROM roles WHERE role_key = ?');
+    $stmt->bind_param('s', $role_key);
+    $stmt->execute();
+    $role_row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    $role_id = (int)($role_row['role_id'] ?? 0);
+
+    if ($action === 'create') {
+        $login_id = trim($_POST['user_id'] ?? '');
+
+        if ($login_id === '') {
+            $errors[] = 'ユーザーIDを入力してください。';
+        }
+        if ($password === '') {
+            $errors[] = '初期パスワードを入力してください。';
+        }
+
+        if (empty($errors)) {
+            $stmt = $mysqli->prepare('SELECT staff_id FROM staff WHERE login_id = ?');
+            $stmt->bind_param('s', $login_id);
+            $stmt->execute();
+            $exists = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+
+            if ($exists) {
+                $errors[] = '同じユーザーIDがすでに登録されています。';
+            }
+        }
+
+        if (empty($errors)) {
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $mysqli->prepare('
+                INSERT INTO staff (staff_id, login_id, mail, password_hash, name, ward_name, role_id, is_active)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ');
+            $stmt->bind_param('ssssssii', $login_id, $login_id, $mail, $password_hash, $name, $ward, $role_id, $is_active);
+            $stmt->execute();
+            $stmt->close();
+
+            $mysqli->close();
+            header('Location: user_management.php?saved=1');
+            exit;
+        }
+    } elseif ($action === 'update') {
+        $staff_id = trim($_POST['staff_id_hidden'] ?? '');
+
+        if ($staff_id === '') {
+            $errors[] = '対象のユーザーが見つかりません。';
+        }
+
+        if (empty($errors)) {
+            if ($password !== '') {
+                $password_hash = password_hash($password, PASSWORD_DEFAULT);
+                $stmt = $mysqli->prepare('
+                    UPDATE staff SET mail = ?, name = ?, ward_name = ?, role_id = ?, is_active = ?, password_hash = ?
+                    WHERE staff_id = ?
+                ');
+                $stmt->bind_param('sssiiss', $mail, $name, $ward, $role_id, $is_active, $password_hash, $staff_id);
+            } else {
+                $stmt = $mysqli->prepare('
+                    UPDATE staff SET mail = ?, name = ?, ward_name = ?, role_id = ?, is_active = ?
+                    WHERE staff_id = ?
+                ');
+                $stmt->bind_param('sssiis', $mail, $name, $ward, $role_id, $is_active, $staff_id);
+            }
+            $stmt->execute();
+            $stmt->close();
+
+            $mysqli->close();
+            header('Location: user_management.php?saved=1');
+            exit;
+        }
+    }
+}
+
+// ---------------------------------------------------
+// 一覧取得（表示・並び替え・絞り込みはJS側で行う）
+// ---------------------------------------------------
+$staffRows = $mysqli->query('
+    SELECT s.staff_id, s.login_id, s.mail, s.name, s.ward_name, r.role_key, s.is_active, s.updated_at
+    FROM staff s
+    JOIN roles r ON r.role_id = s.role_id
+    ORDER BY s.staff_id
+')->fetch_all(MYSQLI_ASSOC);
+$mysqli->close();
+
+$usersForJs = array_map(static function (array $row): array {
+    return [
+        'staffId'   => $row['staff_id'],
+        'id'        => $row['login_id'],
+        'name'      => $row['name'],
+        'email'     => $row['mail'] ?? '',
+        'ward'      => $row['ward_name'] ?? '',
+        'role'      => $row['role_key'] === 'admin' ? '管理者' : 'スタッフ',
+        'status'    => ((int)$row['is_active'] === 1) ? '有効' : '無効',
+        'lastLogin' => '-',
+        'updatedAt' => date('Y/m/d H:i', strtotime($row['updated_at'])),
+    ];
+}, $staffRows);
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -17,7 +138,7 @@ require_once __DIR__ . '/../includes/config.php';
     <link rel="icon" href="../favicon.ico">
     <link rel="stylesheet" href="css/style.css?v=1">
     <link rel="stylesheet" href="css/common.css?v=2">
-    <link rel="stylesheet" href="css/user_management.css?v=1">
+    <link rel="stylesheet" href="css/user_management.css?v=2">
 </head>
 <body>
 
@@ -40,6 +161,13 @@ require_once __DIR__ . '/../includes/config.php';
                 <span>新規ユーザー追加</span>
             </button>
         </div>
+
+        <?php if (isset($_GET['saved'])): ?>
+            <div class="alert-success">保存しました。</div>
+        <?php endif; ?>
+        <?php foreach ($errors as $error): ?>
+            <div class="alert-error"><?= htmlspecialchars($error) ?></div>
+        <?php endforeach; ?>
 
         <!-- フィルター -->
         <div class="card filter-card">
@@ -88,7 +216,7 @@ require_once __DIR__ . '/../includes/config.php';
 
         <!-- テーブル -->
         <div class="table-wrap">
-            <div class="table-meta" id="recordCount">全6件中 1〜6件を表示</div>
+            <div class="table-meta" id="recordCount"></div>
 
             <div class="table-scroll">
                 <table>
@@ -96,12 +224,10 @@ require_once __DIR__ . '/../includes/config.php';
                         <tr>
                             <th>ユーザーID</th>
                             <th>氏名</th>
-                            <th>メールアドレス</th>
                             <th>所属部署・病棟</th>
                             <th>権限</th>
                             <th>利用状態</th>
                             <th>最終ログイン</th>
-                            <th>更新日時</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -109,11 +235,7 @@ require_once __DIR__ . '/../includes/config.php';
                 </table>
             </div>
 
-            <div class="pagination">
-                <span class="disabled">&#8249;</span>
-                <span class="current">1</span>
-                <span class="disabled">&#8250;</span>
-            </div>
+            <div class="pagination" id="pagination"></div>
         </div>
 
         <!-- ご案内 -->
@@ -139,28 +261,29 @@ require_once __DIR__ . '/../includes/config.php';
             <button class="icon-button" id="closeModal" type="button" aria-label="閉じる">×</button>
         </div>
 
-        <form id="userForm">
-            <input type="hidden" id="editingId">
+        <form id="userForm" method="POST" action="user_management.php">
+            <input type="hidden" name="action" id="formAction" value="create">
+            <input type="hidden" name="staff_id_hidden" id="staffIdHidden">
 
             <div class="form-grid">
                 <div class="field">
                     <label>ユーザーID</label>
-                    <input id="userId" type="text" required placeholder="例：U007">
+                    <input name="user_id" id="userId" type="text" required placeholder="例：s023">
                 </div>
 
                 <div class="field">
                     <label>氏名</label>
-                    <input id="userName" type="text" required placeholder="例：山田 太郎">
+                    <input name="user_name" id="userName" type="text" required placeholder="例：山田 太郎">
                 </div>
 
                 <div class="field full">
                     <label>メールアドレス</label>
-                    <input id="userEmail" type="email" required placeholder="example@tomare.co.jp">
+                    <input name="user_email" id="userEmail" type="email" required placeholder="example@tomare.co.jp">
                 </div>
 
                 <div class="field">
                     <label>所属部署・病棟</label>
-                    <select id="userWard" required>
+                    <select name="user_ward" id="userWard" required>
                         <option value="">選択してください</option>
                         <option value="3階東病棟">3階東病棟</option>
                         <option value="4階西病棟">4階西病棟</option>
@@ -171,7 +294,7 @@ require_once __DIR__ . '/../includes/config.php';
 
                 <div class="field">
                     <label>権限</label>
-                    <select id="userRole" required>
+                    <select name="user_role" id="userRole" required>
                         <option value="スタッフ">スタッフ</option>
                         <option value="管理者">管理者</option>
                     </select>
@@ -179,10 +302,15 @@ require_once __DIR__ . '/../includes/config.php';
 
                 <div class="field">
                     <label>利用状態</label>
-                    <select id="userStatus" required>
+                    <select name="user_status" id="userStatus" required>
                         <option value="有効">有効</option>
                         <option value="無効">無効</option>
                     </select>
+                </div>
+
+                <div class="field full">
+                    <label id="userPasswordLabel">初期パスワード</label>
+                    <input name="user_password" id="userPassword" type="password" placeholder="ログイン用のパスワードを入力" autocomplete="new-password">
                 </div>
             </div>
 
@@ -194,6 +322,9 @@ require_once __DIR__ . '/../includes/config.php';
     </div>
 </div>
 
-<script src="js/user_management.js?v=1"></script>
+<script>
+  window.INITIAL_USERS = <?= json_encode($usersForJs, JSON_UNESCAPED_UNICODE) ?>;
+</script>
+<script src="js/user_management.js?v=4"></script>
 </body>
 </html>

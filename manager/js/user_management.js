@@ -1,76 +1,20 @@
 /**
- * B-Care Manager - ユーザー管理（モック）
+ * B-Care Manager - ユーザー管理
  * 配置先: manager/js/user_management.js
  *
- * DB未接続のフロントエンドのみのモックです。
- * ページを再読み込みすると変更内容は失われます。
+ * 一覧の絞り込み・モーダル制御を行う。保存はフォームの通常送信でstaffテーブルに反映される
+ * （user_management.php側でPOSTを処理）。
  */
 
-const users = [
-  {
-    id: "U001",
-    name: "山田 太郎",
-    email: "yamada.taro@tomare.co.jp",
-    ward: "3階東病棟",
-    role: "管理者",
-    status: "有効",
-    lastLogin: "2026/08/05 09:12",
-    updatedAt: "2026/08/01 14:20"
-  },
-  {
-    id: "U002",
-    name: "佐藤 花子",
-    email: "sato.hanako@tomare.co.jp",
-    ward: "3階東病棟",
-    role: "スタッフ",
-    status: "有効",
-    lastLogin: "2026/08/04 16:30",
-    updatedAt: "2026/07/28 10:15"
-  },
-  {
-    id: "U003",
-    name: "田中 一郎",
-    email: "tanaka.ichiro@tomare.co.jp",
-    ward: "4階西病棟",
-    role: "スタッフ",
-    status: "有効",
-    lastLogin: "2026/08/03 11:20",
-    updatedAt: "2026/07/25 09:40"
-  },
-  {
-    id: "U004",
-    name: "鈴木 奈々",
-    email: "suzuki.nana@tomare.co.jp",
-    ward: "4階西病棟",
-    role: "スタッフ",
-    status: "有効",
-    lastLogin: "2026/08/02 18:45",
-    updatedAt: "2026/07/20 16:10"
-  },
-  {
-    id: "U005",
-    name: "高橋 健",
-    email: "takahashi.ken@tomare.co.jp",
-    ward: "2階南病棟",
-    role: "スタッフ",
-    status: "無効",
-    lastLogin: "2026/07/20 10:15",
-    updatedAt: "2026/07/20 10:20"
-  },
-  {
-    id: "U006",
-    name: "伊藤 美咲",
-    email: "ito.misaki@tomare.co.jp",
-    ward: "事務部",
-    role: "管理者",
-    status: "有効",
-    lastLogin: "2026/08/05 08:50",
-    updatedAt: "2026/08/02 13:05"
-  }
-];
+const PAGE_SIZE = 10;
+
+const users = window.INITIAL_USERS || [];
+let filteredUsers = [];
+let currentPage = 1;
 
 const tbody = document.getElementById("userTableBody");
 const recordCount = document.getElementById("recordCount");
+const pagination = document.getElementById("pagination");
 const keywordInput = document.getElementById("keywordInput");
 const roleFilter = document.getElementById("roleFilter");
 const wardFilter = document.getElementById("wardFilter");
@@ -80,7 +24,10 @@ const showInactive = document.getElementById("showInactive");
 const modal = document.getElementById("userModal");
 const modalTitle = document.getElementById("modalTitle");
 const form = document.getElementById("userForm");
-const editingId = document.getElementById("editingId");
+const formAction = document.getElementById("formAction");
+const staffIdHidden = document.getElementById("staffIdHidden");
+const userPassword = document.getElementById("userPassword");
+const userPasswordLabel = document.getElementById("userPasswordLabel");
 
 function renderUsers(list) {
   tbody.innerHTML = "";
@@ -90,7 +37,6 @@ function renderUsers(list) {
     tr.innerHTML = `
       <td>${user.id}</td>
       <td>${user.name}</td>
-      <td>${user.email}</td>
       <td>${user.ward}</td>
       <td>
         <span class="badge ${user.role === "管理者" ? "badge-admin" : "badge-staff"}">
@@ -103,15 +49,74 @@ function renderUsers(list) {
         </span>
       </td>
       <td>${user.lastLogin}</td>
-      <td>${user.updatedAt}</td>
-      <td><button class="btn-select" data-id="${user.id}" type="button">編集</button></td>
+      <td><button class="btn-select" data-staff-id="${user.staffId}" type="button">編集</button></td>
     `;
     tbody.appendChild(tr);
   });
+}
 
-  recordCount.textContent = list.length
-    ? `全${list.length}件中 1〜${list.length}件を表示`
+function renderPagination(totalCount) {
+  pagination.innerHTML = "";
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  if (currentPage > totalPages) currentPage = totalPages;
+
+  const prev = document.createElement(currentPage === 1 ? "span" : "a");
+  prev.innerHTML = "&#8249;";
+  prev.className = currentPage === 1 ? "disabled" : "";
+  if (currentPage !== 1) {
+    prev.href = "#";
+    prev.addEventListener("click", (event) => {
+      event.preventDefault();
+      goToPage(currentPage - 1);
+    });
+  }
+  pagination.appendChild(prev);
+
+  for (let page = 1; page <= totalPages; page += 1) {
+    const item = document.createElement(page === currentPage ? "span" : "a");
+    item.textContent = String(page);
+    item.className = page === currentPage ? "current" : "";
+    if (page !== currentPage) {
+      item.href = "#";
+      item.addEventListener("click", (event) => {
+        event.preventDefault();
+        goToPage(page);
+      });
+    }
+    pagination.appendChild(item);
+  }
+
+  const next = document.createElement(currentPage === totalPages ? "span" : "a");
+  next.innerHTML = "&#8250;";
+  next.className = currentPage === totalPages ? "disabled" : "";
+  if (currentPage !== totalPages) {
+    next.href = "#";
+    next.addEventListener("click", (event) => {
+      event.preventDefault();
+      goToPage(currentPage + 1);
+    });
+  }
+  pagination.appendChild(next);
+}
+
+function renderPage() {
+  const total = filteredUsers.length;
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filteredUsers.slice(startIndex, startIndex + PAGE_SIZE);
+
+  renderUsers(pageItems);
+
+  recordCount.textContent = total
+    ? `全${total}件中 ${startIndex + 1}〜${startIndex + pageItems.length}件を表示`
     : "該当するユーザーはいません";
+
+  renderPagination(total);
+}
+
+function goToPage(page) {
+  currentPage = page;
+  renderPage();
 }
 
 function applyFilters() {
@@ -120,7 +125,7 @@ function applyFilters() {
   const ward = wardFilter.value;
   const status = statusFilter.value;
 
-  const filtered = users.filter((user) => {
+  filteredUsers = users.filter((user) => {
     const keywordMatch =
       !keyword ||
       user.id.toLowerCase().includes(keyword) ||
@@ -135,7 +140,8 @@ function applyFilters() {
     return keywordMatch && roleMatch && wardMatch && statusMatch && inactiveMatch;
   });
 
-  renderUsers(filtered);
+  currentPage = 1;
+  renderPage();
 }
 
 function resetFilters() {
@@ -153,13 +159,18 @@ function openModal(mode, user = null) {
 
   if (mode === "create") {
     modalTitle.textContent = "新規ユーザー追加";
-    editingId.value = "";
+    formAction.value = "create";
+    staffIdHidden.value = "";
     form.reset();
     document.getElementById("userStatus").value = "有効";
     document.getElementById("userId").disabled = false;
+    userPassword.required = true;
+    userPasswordLabel.textContent = "初期パスワード";
+    userPassword.placeholder = "ログイン用のパスワードを入力";
   } else {
     modalTitle.textContent = "ユーザー編集";
-    editingId.value = user.id;
+    formAction.value = "update";
+    staffIdHidden.value = user.staffId;
     document.getElementById("userId").value = user.id;
     document.getElementById("userName").value = user.name;
     document.getElementById("userEmail").value = user.email;
@@ -167,6 +178,10 @@ function openModal(mode, user = null) {
     document.getElementById("userRole").value = user.role;
     document.getElementById("userStatus").value = user.status;
     document.getElementById("userId").disabled = true;
+    userPassword.value = "";
+    userPassword.required = false;
+    userPasswordLabel.textContent = "パスワード（変更する場合のみ入力）";
+    userPassword.placeholder = "変更しない場合は空欄のまま";
   }
 }
 
@@ -189,59 +204,40 @@ document.getElementById("cancelModal").addEventListener("click", closeModal);
 tbody.addEventListener("click", (event) => {
   const button = event.target.closest(".btn-select");
   if (!button) return;
-  const user = users.find((item) => item.id === button.dataset.id);
+  const user = users.find((item) => item.staffId === button.dataset.staffId);
   if (user) openModal("edit", user);
 });
 
 form.addEventListener("submit", (event) => {
-  event.preventDefault();
+  const isCreate = formAction.value === "create";
+  const name = document.getElementById("userName").value.trim();
+  const status = document.getElementById("userStatus").value;
 
-  const now = new Date();
-  const formattedNow = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, "0")}/${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-
-  const data = {
-    id: document.getElementById("userId").value.trim(),
-    name: document.getElementById("userName").value.trim(),
-    email: document.getElementById("userEmail").value.trim(),
-    ward: document.getElementById("userWard").value,
-    role: document.getElementById("userRole").value,
-    status: document.getElementById("userStatus").value,
-    lastLogin: "-",
-    updatedAt: formattedNow
-  };
-
-  if (editingId.value) {
-    const index = users.findIndex((user) => user.id === editingId.value);
-    if (index >= 0) {
-      const wasActive = users[index].status !== "無効";
-      if (wasActive && data.status === "無効") {
-        const confirmed = confirm(
-          `${data.name}さんのアカウントを無効にしますか？\n無効化するとB-Careへログインできなくなります。`
-        );
-        if (!confirmed) return;
-      }
-
-      users[index] = {
-        ...users[index],
-        ...data,
-        id: users[index].id,
-        lastLogin: users[index].lastLogin
-      };
-    }
-  } else {
-    if (users.some((user) => user.id === data.id)) {
+  if (isCreate) {
+    const id = document.getElementById("userId").value.trim();
+    if (users.some((user) => user.id === id)) {
+      event.preventDefault();
       alert("同じユーザーIDがすでに登録されています。");
       return;
     }
-    users.push(data);
+  } else {
+    const current = users.find((user) => user.staffId === staffIdHidden.value);
+    const wasActive = current && current.status !== "無効";
+    if (wasActive && status === "無効") {
+      const confirmed = confirm(
+        `${name}さんのアカウントを無効にしますか？\n無効化するとB-Careへログインできなくなります。`
+      );
+      if (!confirmed) {
+        event.preventDefault();
+        return;
+      }
+    }
   }
-
-  closeModal();
-  applyFilters();
+  // バリデーションを通過した場合はフォームを通常送信し、サーバー側でstaffテーブルに反映する
 });
 
 modal.addEventListener("click", (event) => {
   if (event.target === modal) closeModal();
 });
 
-renderUsers(users.filter((user) => user.status !== "無効"));
+applyFilters();

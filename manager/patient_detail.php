@@ -22,12 +22,20 @@ $mysqli = getDB();
 // 患者情報取得
 // ---------------------------------------------------
 $stmt = $mysqli->prepare("
-    SELECT p.*, doc.name AS doctor_name, nur.name AS primary_nurse
+    SELECT p.*, doc.name AS doctor_name, nur.name AS primary_nurse, pic.pictogram_names, pic.pictogram_ids
     FROM patients p
     LEFT JOIN patients_staff ps_doc ON ps_doc.patient_id = p.patient_id AND ps_doc.role = 'doctor'
     LEFT JOIN staff doc ON doc.staff_id = ps_doc.staff_id
     LEFT JOIN patients_staff ps_nur ON ps_nur.patient_id = p.patient_id AND ps_nur.role = 'nurse'
     LEFT JOIN staff nur ON nur.staff_id = ps_nur.staff_id
+    LEFT JOIN (
+        SELECT pp.patient_id,
+            GROUP_CONCAT(pg.name ORDER BY pp.display_order SEPARATOR '、') AS pictogram_names,
+            GROUP_CONCAT(pg.pictogram_id ORDER BY pp.display_order SEPARATOR ',') AS pictogram_ids
+        FROM patient_pictograms pp
+        JOIN pictograms pg ON pg.pictogram_id = pp.pictogram_id
+        GROUP BY pp.patient_id
+    ) pic ON pic.patient_id = p.patient_id
     WHERE p.patient_id = ?
 ");
 $stmt->bind_param('s', $patient_id);
@@ -38,6 +46,18 @@ $stmt->close();
 if (!$patient) {
     die('<p style="color:red;">患者が見つかりません。</p>');
 }
+
+$stmt_dup = $mysqli->prepare("
+    SELECT COUNT(*) AS cnt
+    FROM patients
+    WHERE patient_name = ? AND patient_id != ?
+");
+$stmt_dup->bind_param('ss', $patient['patient_name'], $patient_id);
+$stmt_dup->execute();
+$dup_count = (int)($stmt_dup->get_result()->fetch_assoc()['cnt'] ?? 0);
+$stmt_dup->close();
+$patient['dup_count'] = $dup_count;
+$has_namesake = $dup_count > 0 || (int)($patient['has_namesake'] ?? 0) === 1;
 
 // ---------------------------------------------------
 // ESL配信処理
@@ -137,6 +157,11 @@ $transfer = getTransferColor();
                 <div class="info-row">
                     <span class="info-label">患者氏名</span>
                     <span class="info-value large"><?= htmlspecialchars($patient['patient_name']) ?></span>
+                    <?php if ($has_namesake): ?>
+                        <span class="badge" style="background:<?= COLOR_RISK_BG ?>; color:<?= COLOR_RISK_TEXT ?>; width:fit-content; margin-top:4px;">
+                            同姓同名有
+                        </span>
+                    <?php endif; ?>
                 </div>
                 <div class="info-row">
                     <span class="info-label">性別</span>

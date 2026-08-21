@@ -16,12 +16,21 @@ $mysqli = getDB();
 
 if ($patientId !== '') {
     $stmt = $mysqli->prepare("
-        SELECT p.*, doc.name AS doctor_name, nur.name AS primary_nurse
+        SELECT p.*, doc.name AS doctor_name, nur.name AS primary_nurse, pic.pictogram_names, pic.pictogram_ids,
+            (SELECT COUNT(*) FROM patients p2 WHERE p2.patient_name = p.patient_name AND p2.patient_id != p.patient_id) AS dup_count
         FROM patients p
         LEFT JOIN patients_staff ps_doc ON ps_doc.patient_id = p.patient_id AND ps_doc.role = 'doctor'
         LEFT JOIN staff doc ON doc.staff_id = ps_doc.staff_id
         LEFT JOIN patients_staff ps_nur ON ps_nur.patient_id = p.patient_id AND ps_nur.role = 'nurse'
         LEFT JOIN staff nur ON nur.staff_id = ps_nur.staff_id
+        LEFT JOIN (
+            SELECT pp.patient_id,
+                GROUP_CONCAT(pg.name ORDER BY pp.display_order SEPARATOR '、') AS pictogram_names,
+                GROUP_CONCAT(pg.pictogram_id ORDER BY pp.display_order SEPARATOR ',') AS pictogram_ids
+            FROM patient_pictograms pp
+            JOIN pictograms pg ON pg.pictogram_id = pp.pictogram_id
+            GROUP BY pp.patient_id
+        ) pic ON pic.patient_id = p.patient_id
         WHERE p.patient_id = ?
     ");
     $stmt->bind_param('s', $patientId);
@@ -34,12 +43,21 @@ if ($patientId !== '') {
     }
 } else {
     $result = $mysqli->query("
-        SELECT p.*, doc.name AS doctor_name, nur.name AS primary_nurse
+        SELECT p.*, doc.name AS doctor_name, nur.name AS primary_nurse, pic.pictogram_names, pic.pictogram_ids,
+            (SELECT COUNT(*) FROM patients p2 WHERE p2.patient_name = p.patient_name AND p2.patient_id != p.patient_id) AS dup_count
         FROM patients p
         LEFT JOIN patients_staff ps_doc ON ps_doc.patient_id = p.patient_id AND ps_doc.role = 'doctor'
         LEFT JOIN staff doc ON doc.staff_id = ps_doc.staff_id
         LEFT JOIN patients_staff ps_nur ON ps_nur.patient_id = p.patient_id AND ps_nur.role = 'nurse'
         LEFT JOIN staff nur ON nur.staff_id = ps_nur.staff_id
+        LEFT JOIN (
+            SELECT pp.patient_id,
+                GROUP_CONCAT(pg.name ORDER BY pp.display_order SEPARATOR '、') AS pictogram_names,
+                GROUP_CONCAT(pg.pictogram_id ORDER BY pp.display_order SEPARATOR ',') AS pictogram_ids
+            FROM patient_pictograms pp
+            JOIN pictograms pg ON pg.pictogram_id = pp.pictogram_id
+            GROUP BY pp.patient_id
+        ) pic ON pic.patient_id = p.patient_id
         LIMIT 3
     ");
     $patients = $result->fetch_all(MYSQLI_ASSOC);

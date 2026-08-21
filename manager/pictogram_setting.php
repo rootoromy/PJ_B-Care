@@ -5,6 +5,7 @@
  */
 
 require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../includes/aims_functions.php';
 
 // ---------------------------------------------------
 // 患者ID取得
@@ -40,6 +41,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
             $stmt_ins->execute();
         }
         $stmt_ins->close();
+    }
+
+    // 保存直後にESLラベルへも即時反映する(ラベル未割当の患者はスキップ)。
+    // 配信に失敗しても、ピクトグラム自体の保存は成功しているので処理は継続する。
+    $stmt_patient = $mysqli->prepare("
+        SELECT p.*, doc.name AS doctor_name, nur.name AS primary_nurse, pic.pictogram_names, pic.pictogram_ids,
+            (SELECT COUNT(*) FROM patients p2 WHERE p2.patient_name = p.patient_name AND p2.patient_id != p.patient_id) AS dup_count
+        FROM patients p
+        LEFT JOIN patients_staff ps_doc ON ps_doc.patient_id = p.patient_id AND ps_doc.role = 'doctor'
+        LEFT JOIN staff doc ON doc.staff_id = ps_doc.staff_id
+        LEFT JOIN patients_staff ps_nur ON ps_nur.patient_id = p.patient_id AND ps_nur.role = 'nurse'
+        LEFT JOIN staff nur ON nur.staff_id = ps_nur.staff_id
+        LEFT JOIN (
+            SELECT pp.patient_id,
+                GROUP_CONCAT(pg.name ORDER BY pp.display_order SEPARATOR '、') AS pictogram_names,
+                GROUP_CONCAT(pg.pictogram_id ORDER BY pp.display_order SEPARATOR ',') AS pictogram_ids
+            FROM patient_pictograms pp
+            JOIN pictograms pg ON pg.pictogram_id = pp.pictogram_id
+            GROUP BY pp.patient_id
+        ) pic ON pic.patient_id = p.patient_id
+        WHERE p.patient_id = ?
+    ");
+    $stmt_patient->bind_param('s', $patient_id);
+    $stmt_patient->execute();
+    $patientForEsl = $stmt_patient->get_result()->fetch_assoc();
+    $stmt_patient->close();
+
+    if ($patientForEsl && !empty($patientForEsl['esl_label_code'])) {
+        $eslResult = linkPatientArticleToLabel($patientForEsl, $patientForEsl['esl_label_code']);
+        if ($eslResult['httpCode'] >= 200 && $eslResult['httpCode'] < 300) {
+            $stmtSync = $mysqli->prepare("UPDATE patients SET esl_synced_at = NOW() WHERE patient_id = ?");
+            $stmtSync->bind_param('s', $patient_id);
+            $stmtSync->execute();
+            $stmtSync->close();
+        }
     }
 
     $save_message = 'success';
