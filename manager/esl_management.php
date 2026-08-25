@@ -7,6 +7,13 @@
  * B-Care側の患者情報（esl_label_codeで紐付け）と突き合わせて表示する。
  */
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once __DIR__ . '/includes/mgr_auth.php';
+mgr_require_login();
+
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/aims_functions.php';
 

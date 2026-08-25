@@ -67,7 +67,8 @@ $stmt_dup->close();
 // ---------------------------------------------------
 // ピクトグラム一覧・カテゴリ取得
 // ---------------------------------------------------
-$all_pictograms = $mysqli->query("SELECT * FROM pictograms ORDER BY category, pictogram_id")->fetch_all(MYSQLI_ASSOC);
+// pictogram_id=0はAIMS配信用の「空欄」を表す内部レコードのため、選択肢からは除外する
+$all_pictograms = $mysqli->query("SELECT * FROM pictograms WHERE pictogram_id > 0 ORDER BY category, pictogram_id")->fetch_all(MYSQLI_ASSOC);
 
 $categories = [];
 foreach ($all_pictograms as $pic) {

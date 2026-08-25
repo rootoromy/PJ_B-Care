@@ -7,6 +7,13 @@
  * フィルター・検索はページ内のJS（user_management.js）でクライアント側処理する。
  */
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once __DIR__ . '/includes/mgr_auth.php';
+mgr_require_login();
+
 require_once __DIR__ . '/../includes/config.php';
 
 $mysqli = getDB();

@@ -207,6 +207,15 @@ body { background: #edf0ee; }
 .vital-table thead th:first-child, .vital-table tbody th { width: 100px; }
 .vital-table tbody th { padding-left: 8px; background: #fbfcfb; text-align: left; font-size: 11px; }
 
+.vital-table thead th:first-child,
+.vital-table tbody th {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  box-shadow: 1px 0 0 var(--line);
+}
+.vital-table thead th:first-child { z-index: 2; }
+
 .row-temperature { color: var(--v-temperature); }
 .row-blood { color: var(--v-blood); }
 .row-pulse { color: var(--v-pulse); }

@@ -4,6 +4,13 @@
  * 配置先: manager/pictogram_setting.php
  */
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once __DIR__ . '/includes/mgr_auth.php';
+mgr_require_login();
+
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/aims_functions.php';
 
@@ -105,7 +112,8 @@ if (!$patient) {
 // ---------------------------------------------------
 // 全ピクトグラム取得
 // ---------------------------------------------------
-$all_pictograms = $mysqli->query("SELECT * FROM pictograms ORDER BY category, pictogram_id")->fetch_all(MYSQLI_ASSOC);
+// pictogram_id=0はAIMS配信用の「空欄」を表す内部レコードのため、選択肢からは除外する
+$all_pictograms = $mysqli->query("SELECT * FROM pictograms WHERE pictogram_id > 0 ORDER BY category, pictogram_id")->fetch_all(MYSQLI_ASSOC);
 
 // カテゴリ一覧
 $categories = [];

@@ -4,6 +4,13 @@
  * 配置先: manager/patient_detail.php
  */
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once __DIR__ . '/includes/mgr_auth.php';
+mgr_require_login();
+
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/aims_functions.php';
 

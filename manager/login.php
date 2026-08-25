@@ -3,6 +3,23 @@
  * B-Care Manager - ログイン画面
  * 配置先: manager/login.php
  */
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once __DIR__ . '/includes/mgr_auth.php';
+
+$redirect = mgr_safe_redirect_path($_GET['redirect'] ?? null);
+
+if (!empty($_SESSION['mgr_logged_in'])) {
+    header('Location: ' . $redirect);
+    exit;
+}
+
+// 開発環境（localhostアクセス時）のみログイン情報を自動入力する
+$isLocalDev = in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true);
+$devUserId = $isLocalDev ? 'admin' : '';
+$devPassword = $isLocalDev ? 'admin' : '';
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -25,7 +42,7 @@
           <p class="subtitle">医療従事者向けログイン</p>
         </header>
 
-        <form id="loginForm" class="login-form" novalidate>
+        <form id="loginForm" class="login-form" novalidate data-redirect="<?= htmlspecialchars($redirect, ENT_QUOTES, 'UTF-8') ?>">
           <div class="form-group">
             <label for="loginId">ユーザーID</label>
             <div class="input-wrap">
@@ -41,6 +58,7 @@
                 autocomplete="username"
                 placeholder="ユーザーIDを入力"
                 aria-describedby="loginIdError"
+                value="<?= htmlspecialchars($devUserId, ENT_QUOTES, 'UTF-8') ?>"
               >
             </div>
             <p id="loginIdError" class="error-message" aria-live="polite"></p>
@@ -61,6 +79,7 @@
                 autocomplete="current-password"
                 placeholder="パスワードを入力"
                 aria-describedby="passwordError"
+                value="<?= htmlspecialchars($devPassword, ENT_QUOTES, 'UTF-8') ?>"
               >
               <button id="togglePassword" class="password-toggle" type="button" aria-label="パスワードを表示">
                 <svg class="eye-open" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -84,6 +103,6 @@
     </section>
   </main>
 
-  <script src="js/login.js"></script>
+  <script src="js/login.js?v=2"></script>
 </body>
 </html>

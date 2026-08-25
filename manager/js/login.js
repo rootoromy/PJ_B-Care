@@ -54,7 +54,33 @@ form.addEventListener('submit', (event) => {
     return;
   }
 
-  formMessage.textContent = 'モック画面のため、認証処理はまだ接続されていません。';
+  const submitButton = form.querySelector('.login-button');
+  submitButton.disabled = true;
+  formMessage.textContent = 'ログイン中...';
+
+  const params = new URLSearchParams();
+  params.set('login_id', loginId.value.trim());
+  params.set('password', password.value);
+  params.set('redirect', form.dataset.redirect || '');
+
+  fetch('login_process.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        window.location.href = data.redirect;
+        return;
+      }
+      submitButton.disabled = false;
+      formMessage.textContent = data.message || 'ログインに失敗しました。';
+    })
+    .catch(() => {
+      submitButton.disabled = false;
+      formMessage.textContent = '通信エラーが発生しました。時間をおいて再度お試しください。';
+    });
 });
 
 [loginId, password].forEach((input) => {

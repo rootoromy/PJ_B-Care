@@ -183,7 +183,7 @@ $active_menu = 'vitals';
   <title>B-Care Mobile｜バイタル</title>
   <link rel="icon" href="../favicon.ico">
   <link rel="stylesheet" href="css/sp_common.css?v=31" />
-  <link rel="stylesheet" href="css/sp_vitals.css?v=26" />
+  <link rel="stylesheet" href="css/sp_vitals.css?v=29" />
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">

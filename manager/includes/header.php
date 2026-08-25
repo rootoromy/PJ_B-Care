@@ -16,9 +16,6 @@
             <circle cx="16" cy="13" r="4.5" stroke="#fff" stroke-width="1.5"/>
             <path d="M7 26c0-5 4-8 9-8s9 3 9 8" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
-        管理者
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M6 9l6 6 6-6" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-        </svg>
+        <?= htmlspecialchars($_SESSION['mgr_user_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>
     </span>
 </header>
