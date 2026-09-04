@@ -32,6 +32,30 @@ if ($patient_id === '') {
 
 $mysqli = getDB();
 
+// ---------------------------------------------------
+// 退院処理(Mobileはadmin/userどちらでも実行可)
+// ---------------------------------------------------
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['discharge_patient'])) {
+    $stmt_name = $mysqli->prepare("SELECT patient_name FROM patients WHERE patient_id = ?");
+    $stmt_name->bind_param('s', $patient_id);
+    $stmt_name->execute();
+    $discharged_patient_name = $stmt_name->get_result()->fetch_assoc()['patient_name'] ?? '';
+    $stmt_name->close();
+
+    $discharge_result = dischargePatient($mysqli, $patient_id, $_SESSION['staff_id'] ?? '');
+    if ($discharge_result['success']) {
+        header('Location: sp_patient_list.php?discharge=success'
+            . '&discharge_id=' . urlencode($patient_id)
+            . '&discharge_name=' . urlencode($discharged_patient_name));
+        exit;
+    }
+    header('Location: sp_patient_home.php?patient_id=' . urlencode($patient_id)
+        . '&discharge=error&discharge_msg=' . urlencode($discharge_result['message']));
+    exit;
+}
+$discharge_notice = $_GET['discharge'] ?? '';
+$discharge_msg     = $_GET['discharge_msg'] ?? '';
+
 $stmt = $mysqli->prepare("
     SELECT p.*, doc.name AS doctor_name, nur.name AS primary_nurse
     FROM patients p
@@ -190,8 +214,8 @@ $active_menu = 'home';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜患者ホーム</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=31">
-  <link rel="stylesheet" href="css/sp_patient_home.css?v=52">
+  <link rel="stylesheet" href="css/sp_common.css?v=32">
+  <link rel="stylesheet" href="css/sp_patient_home.css?v=53">
 </head>
 <body>
   <!-- SVG icon sprite（外部ライブラリ不要） -->
@@ -224,9 +248,24 @@ $active_menu = 'home';
     </header>
 
     <main>
+      <?php if ($discharge_notice === 'error' && $discharge_msg !== ''): ?>
+        <section class="discharge-notice"><?= h($discharge_msg) ?></section>
+      <?php endif; ?>
+
+      <?php if ((int)($patient['is_admitted'] ?? 1) === 0): ?>
+        <section class="discharge-notice discharged">この患者は退院済みです(退院日時: <?= h($patient['discharged_at'] ?? '-') ?>)</section>
+      <?php endif; ?>
+
       <?php foreach ($block_order as $block_key): ?>
         <?php include __DIR__ . '/includes/blocks/block_' . $block_key . '.php'; ?>
       <?php endforeach; ?>
+
+      <?php if ((int)($patient['is_admitted'] ?? 1) === 1): ?>
+        <form method="POST" action="sp_patient_home.php?patient_id=<?= urlencode($patient_id) ?>"
+              onsubmit="return confirm('この患者を退院処理しますか？');" style="margin-top:16px;">
+          <button type="submit" name="discharge_patient" value="1" class="discharge-btn">退院処理</button>
+        </form>
+      <?php endif; ?>
     </main>
   </div>
 

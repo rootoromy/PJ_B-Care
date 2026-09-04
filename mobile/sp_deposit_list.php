@@ -47,11 +47,13 @@ $stmt_dup->close();
 $stmt_d = $mysqli->prepare("
     SELECT pd.*, sl.name AS location_name,
            st.name AS stored_by_name,
-           rt.name AS returned_by_name
+           rt.name AS returned_by_name,
+           im.unit AS unit
     FROM patient_deposits pd
     LEFT JOIN storage_locations sl ON sl.location_id = pd.storage_location_id
     LEFT JOIN staff st ON st.staff_id = pd.stored_by
     LEFT JOIN staff rt ON rt.staff_id = pd.returned_by
+    LEFT JOIN deposit_item_masters im ON im.item_master_id = pd.item_master_id
     WHERE pd.patient_id = ?
     ORDER BY pd.stored_at DESC
 ");
@@ -78,8 +80,8 @@ $active_menu = 'deposit';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜預かり品一覧</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=31">
-  <link rel="stylesheet" href="css/sp_deposit.css?v=18">
+  <link rel="stylesheet" href="css/sp_common.css?v=32">
+  <link rel="stylesheet" href="css/sp_deposit.css?v=23">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
@@ -128,7 +130,7 @@ $active_menu = 'deposit';
                     <strong><?= h($item['item_name']) ?></strong>
                     <span class="deposit-status deposit-status--stored">保管中</span>
                   </div>
-                  <p>数量：<?= h($item['quantity']) ?>個</p>
+                  <p>数量：<?= h(depositQty($item)) ?></p>
                   <p>預かり日時：<?= h(date('Y/m/d H:i', strtotime($item['stored_at']))) ?></p>
                   <p>預かり者：<?= h($item['stored_by_name'] ?? '') ?></p>
                 </li>
@@ -154,7 +156,7 @@ $active_menu = 'deposit';
                     <strong><?= h($item['item_name']) ?></strong>
                     <span class="deposit-status deposit-status--returned">返却済</span>
                   </div>
-                  <p>数量：<?= h($item['quantity']) ?>個</p>
+                  <p>数量：<?= h(depositQty($item)) ?></p>
                   <p>預かり日時：<?= h(date('Y/m/d H:i', strtotime($item['stored_at']))) ?></p>
                   <p>返却日時：<?= $item['returned_at'] ? h(date('Y/m/d H:i', strtotime($item['returned_at']))) : '-' ?></p>
                   <p>返却者：<?= h($item['returned_by_name'] ?? '') ?></p>

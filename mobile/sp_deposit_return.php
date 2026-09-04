@@ -59,7 +59,8 @@ if (empty($stored_items)) {
 
 $active_menu = 'deposit';
 $current_staff_id = $_SESSION['staff_id'] ?? '';
-$now_local = date('Y-m-d\TH:i');
+$now_date = date('Y-m-d');
+$now_time = date('H:i');
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -68,8 +69,8 @@ $now_local = date('Y-m-d\TH:i');
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜預かり品返却</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=31">
-  <link rel="stylesheet" href="css/sp_deposit.css?v=18">
+  <link rel="stylesheet" href="css/sp_common.css?v=32">
+  <link rel="stylesheet" href="css/sp_deposit.css?v=23">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
@@ -123,8 +124,11 @@ $now_local = date('Y-m-d\TH:i');
         <section class="card form-section">
           <h2 class="form-section-title">返却情報を入力</h2>
           <div class="form-row">
-            <label for="returnedAt">返却日時<span class="required">必須</span></label>
-            <input type="datetime-local" id="returnedAt" name="returned_at" value="<?= h($now_local) ?>" required>
+            <label for="returnedAtDate">返却日時<span class="required">必須</span></label>
+            <div class="datetime-split">
+              <input type="date" id="returnedAtDate" value="<?= h($now_date) ?>" required>
+              <input type="time" id="returnedAtTime" value="<?= h($now_time) ?>" required>
+            </div>
           </div>
           <div class="form-row">
             <label for="returnedBy">返却者<span class="required">必須</span></label>
@@ -173,6 +177,6 @@ $now_local = date('Y-m-d\TH:i');
     window.depositPatientId = <?= json_encode($patient_id) ?>;
   </script>
   <script src="js/sp_drawer.js?v=1"></script>
-  <script src="js/sp_deposit_return.js?v=1"></script>
+  <script src="js/sp_deposit_return.js?v=2"></script>
 </body>
 </html>

@@ -182,3 +182,11 @@ function linkPatientArticleToLabel(array $patient, string $labelCode): array {
 
     return aimsRequest('POST', '/labels/link/article/' . AIMS_STATION_CODE, $requestBody);
 }
+
+/**
+ * ラベルとArticleの紐付けを解除し、ラベル本体の表示もクリアする(APIガイド 3.3.18)。
+ * POST /labels/unlink?labelCode={labelcode}
+ */
+function unlinkArticleFromLabel(string $labelCode): array {
+    return aimsRequest('POST', '/labels/unlink?' . http_build_query(['labelCode' => $labelCode]));
+}

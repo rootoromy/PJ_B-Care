@@ -78,6 +78,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deliver_esl']) && !em
 }
 
 // ---------------------------------------------------
+// 退院処理・取り消し(取り消しはadmin権限のみ)
+// ---------------------------------------------------
+$discharge_result = null;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['discharge_patient'])) {
+    $discharge_result = dischargePatient($mysqli, $patient_id, $_SESSION['mgr_staff_id'] ?? '');
+    if ($discharge_result['success']) {
+        header('Location: patient_detail.php?patient_id=' . urlencode($patient_id) . '&discharge=success');
+        exit;
+    }
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['undischarge_patient'])) {
+    if (($_SESSION['mgr_role'] ?? '') === 'admin') {
+        $discharge_result = undischargePatient($mysqli, $patient_id);
+        if ($discharge_result['success']) {
+            header('Location: patient_detail.php?patient_id=' . urlencode($patient_id) . '&discharge=undone');
+            exit;
+        }
+    } else {
+        $discharge_result = ['success' => false, 'message' => '取り消し操作はadmin権限のみ実行できます。'];
+    }
+}
+$discharge_notice = $_GET['discharge'] ?? '';
+
+// ---------------------------------------------------
 // QRコード生成
 // ---------------------------------------------------
 require_once __DIR__ . '/../lib/phpqrcode/qrlib.php';
@@ -278,29 +302,72 @@ $transfer = getTransferColor();
                     </div>
                 </div>
 
-                <!-- 表示中ピクトグラム -->
-                <div class="card" style="margin-top:18px;">
-                    <div class="card-title">表示中ピクトグラム（<?= count($pictograms) ?>件）</div>
-                    <?php if (!empty($pictograms)): ?>
-                        <div class="pictogram-grid">
-                            <?php foreach ($pictograms as $pic): ?>
-                                <div class="pictogram-item">
-                                    <img src="../<?= htmlspecialchars($pic['image_path']) ?>"
-                                         alt="<?= htmlspecialchars($pic['name']) ?>"
-                                         onerror="this.style.display='none'">
-                                    <span><?= htmlspecialchars($pic['name']) ?></span>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
-                        <p style="color:#aaa; font-size:0.85rem;">ピクトグラムが設定されていません</p>
-                    <?php endif; ?>
+                <div class="bottom-grid">
+                    <!-- 配信ステータスの下: 表示中ピクトグラム -->
+                    <div class="card">
+                        <div class="card-title">表示中ピクトグラム（<?= count($pictograms) ?>件）</div>
+                        <?php if (!empty($pictograms)): ?>
+                            <div class="pictogram-grid">
+                                <?php foreach ($pictograms as $pic): ?>
+                                    <div class="pictogram-item">
+                                        <img src="../<?= htmlspecialchars($pic['image_path']) ?>"
+                                             alt="<?= htmlspecialchars($pic['name']) ?>"
+                                             onerror="this.style.display='none'">
+                                        <span><?= htmlspecialchars($pic['name']) ?></span>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <p style="color:#aaa; font-size:0.85rem;">ピクトグラムが設定されていません</p>
+                        <?php endif; ?>
 
-                    <a href="pictogram_setting.php?patient_id=<?= urlencode($patient_id) ?>" class="btn-pictogram">
-                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                        ピクトグラム設定へ
-                    </a>
-                    <div class="btn-desc">表示するピクトグラムの追加・編集ができます</div>
+                        <a href="pictogram_setting.php?patient_id=<?= urlencode($patient_id) ?>" class="btn-pictogram">
+                            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                            ピクトグラム設定へ
+                        </a>
+                        <div class="btn-desc">表示するピクトグラムの追加・編集ができます</div>
+                    </div>
+
+                    <!-- QRコードの下: 入退院ステータス -->
+                    <div class="card">
+                        <div class="card-title">入退院ステータス</div>
+
+                        <?php if ($discharge_notice === 'success'): ?>
+                            <div class="esl-status esl-ok" style="margin-bottom:8px;"><span class="dot"></span><span>退院処理しました</span></div>
+                        <?php elseif ($discharge_notice === 'undone'): ?>
+                            <div class="esl-status esl-ok" style="margin-bottom:8px;"><span class="dot"></span><span>退院を取り消しました</span></div>
+                        <?php elseif ($discharge_result !== null && !$discharge_result['success']): ?>
+                            <div class="esl-status esl-ng" style="margin-bottom:8px;"><span class="dot"></span><span><?= htmlspecialchars($discharge_result['message']) ?></span></div>
+                        <?php endif; ?>
+
+                        <?php if ((int)($patient['is_admitted'] ?? 1) === 1): ?>
+                            <div class="info-row">
+                                <span class="info-label">状態</span>
+                                <span class="badge" style="background:<?= COLOR_SAFE_BG ?>; color:<?= COLOR_SAFE_TEXT ?>;">在院中</span>
+                            </div>
+                            <form method="POST" action="patient_detail.php?patient_id=<?= urlencode($patient_id) ?>" style="margin-top:8px;"
+                                  onsubmit="return confirm('この患者を退院処理しますか？');">
+                                <button type="submit" name="discharge_patient" value="1" class="btn-pictogram">退院処理</button>
+                            </form>
+                        <?php else: ?>
+                            <div class="info-row">
+                                <span class="info-label">状態</span>
+                                <span class="badge" style="background:#eee; color:#666;">退院済み</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">退院日時</span>
+                                <span class="info-value" style="font-size:0.85rem;"><?= htmlspecialchars($patient['discharged_at'] ?? '-') ?></span>
+                            </div>
+                            <?php if (($_SESSION['mgr_role'] ?? '') === 'admin'): ?>
+                                <form method="POST" action="patient_detail.php?patient_id=<?= urlencode($patient_id) ?>" style="margin-top:8px;"
+                                      onsubmit="return confirm('退院処理を取り消し、在院中に戻しますか？（ESLラベルの再割当は別途ESL管理画面で行ってください）');">
+                                    <button type="submit" name="undischarge_patient" value="1" class="btn-pictogram">退院を取り消す</button>
+                                </form>
+                            <?php else: ?>
+                                <div class="btn-desc">取り消し操作はadmin権限のみ実行できます</div>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
 

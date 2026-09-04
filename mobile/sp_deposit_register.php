@@ -44,7 +44,8 @@ $mysqli->close();
 
 $active_menu = 'deposit';
 $current_staff_id = $_SESSION['staff_id'] ?? '';
-$now_local = date('Y-m-d\TH:i');
+$now_date = date('Y-m-d');
+$now_time = date('H:i');
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -53,8 +54,8 @@ $now_local = date('Y-m-d\TH:i');
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜預かり品登録</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=31">
-  <link rel="stylesheet" href="css/sp_deposit.css?v=18">
+  <link rel="stylesheet" href="css/sp_common.css?v=32">
+  <link rel="stylesheet" href="css/sp_deposit.css?v=23">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
@@ -115,8 +116,11 @@ $now_local = date('Y-m-d\TH:i');
         <section class="card form-section">
           <h2 class="form-section-title">登録情報</h2>
           <div class="form-row">
-            <label for="storedAt">預かり日時<span class="required">必須</span></label>
-            <input type="datetime-local" id="storedAt" name="stored_at" value="<?= h($now_local) ?>" required>
+            <label for="storedAtDate">預かり日時<span class="required">必須</span></label>
+            <div class="datetime-split">
+              <input type="date" id="storedAtDate" value="<?= h($now_date) ?>" required>
+              <input type="time" id="storedAtTime" value="<?= h($now_time) ?>" required>
+            </div>
           </div>
           <div class="form-row">
             <label for="storedBy">預かり者<span class="required">必須</span></label>

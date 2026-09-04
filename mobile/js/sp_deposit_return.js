@@ -38,53 +38,84 @@ form.addEventListener('submit', (event) => {
   event.preventDefault();
   formStatus.textContent = '';
 
-  const depositIds = checkboxes.filter((cb) => cb.checked).map((cb) => Number(cb.value));
+  try {
+    const depositIds = checkboxes.filter((cb) => cb.checked).map((cb) => Number(cb.value));
 
-  if (depositIds.length === 0) {
-    formStatus.textContent = '返却する預かり品を1件以上選択してください。';
-    return;
-  }
+    if (depositIds.length === 0) {
+      formStatus.textContent = '返却する預かり品を1件以上選択してください。';
+      return;
+    }
 
-  if (!form.reportValidity()) {
-    return;
-  }
+    const returnedAtDateInput = document.getElementById('returnedAtDate');
+    const returnedAtTimeInput = document.getElementById('returnedAtTime');
+    const returnedByInput = document.getElementById('returnedBy');
 
-  const returnTo = form.querySelector('input[name="return_to"]:checked').value;
-  if (returnTo === 'その他' && returnToOtherInput.value.trim() === '') {
-    formStatus.textContent = '返却先を入力してください。';
-    returnToOtherInput.focus();
-    return;
-  }
+    if (!returnedAtDateInput.value) {
+      formStatus.textContent = '返却日を入力してください。';
+      returnedAtDateInput.focus();
+      return;
+    }
+    if (!returnedAtTimeInput.value) {
+      formStatus.textContent = '返却時刻を入力してください。';
+      returnedAtTimeInput.focus();
+      return;
+    }
+    if (!returnedByInput.value) {
+      formStatus.textContent = '返却者を選択してください。';
+      returnedByInput.focus();
+      return;
+    }
 
-  const payload = {
-    patient_id: window.depositPatientId,
-    deposit_ids: depositIds,
-    returned_at: document.getElementById('returnedAt').value,
-    returned_by: document.getElementById('returnedBy').value,
-    return_to: returnTo,
-    return_to_other: returnToOtherInput.value.trim(),
-    return_remarks: document.getElementById('returnRemarks').value,
-  };
+    const returnToChecked = form.querySelector('input[name="return_to"]:checked');
+    if (!returnToChecked) {
+      formStatus.textContent = '返却先を選択してください。';
+      return;
+    }
+    const returnTo = returnToChecked.value;
+    if (returnTo === 'その他' && returnToOtherInput.value.trim() === '') {
+      formStatus.textContent = '返却先を入力してください。';
+      returnToOtherInput.focus();
+      return;
+    }
 
-  submitBtn.disabled = true;
-  formStatus.textContent = '返却処理中...';
+    const payload = {
+      patient_id: window.depositPatientId,
+      deposit_ids: depositIds,
+      returned_at: `${returnedAtDateInput.value}T${returnedAtTimeInput.value}`,
+      returned_by: returnedByInput.value,
+      return_to: returnTo,
+      return_to_other: returnToOtherInput.value.trim(),
+      return_remarks: document.getElementById('returnRemarks').value,
+    };
 
-  fetch('sp_deposit_return_process.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        window.location.href = data.redirect;
-        return;
-      }
-      submitBtn.disabled = false;
-      formStatus.textContent = data.message || '返却処理に失敗しました。';
+    submitBtn.disabled = true;
+    formStatus.textContent = '返却処理中...';
+
+    fetch('sp_deposit_return_process.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     })
-    .catch(() => {
-      submitBtn.disabled = false;
-      formStatus.textContent = '通信エラーが発生しました。時間をおいて再度お試しください。';
-    });
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTPエラー（${response.status}）`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data.success) {
+          window.location.href = data.redirect;
+          return;
+        }
+        submitBtn.disabled = false;
+        formStatus.textContent = data.message || '返却処理に失敗しました。';
+      })
+      .catch((error) => {
+        submitBtn.disabled = false;
+        formStatus.textContent = `通信エラーが発生しました。時間をおいて再度お試しください。（${error.message}）`;
+      });
+  } catch (error) {
+    submitBtn.disabled = false;
+    formStatus.textContent = `予期しないエラーが発生しました。（${error.message}）`;
+  }
 });

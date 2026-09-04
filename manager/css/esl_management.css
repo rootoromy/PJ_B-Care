@@ -48,6 +48,83 @@
     color: var(--text-muted);
 }
 
+/* ===== ラベル割り当て・解除フォーム ===== */
+.esl-patient-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.esl-patient-cell a {
+    display: inline-block;
+    width: 170px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: none;
+}
+.esl-assign-form {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+}
+.esl-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.esl-actions-row .esl-assign-form {
+    margin-top: 0;
+}
+.esl-patient-cell .esl-assign-form {
+    margin-top: 0;
+}
+.esl-assign-form select {
+    width: 170px;
+    padding: 4px 6px;
+    font-size: 0.82rem;
+    border: 1px solid var(--border-medium);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--text-body);
+}
+.btn-assign,
+.btn-unassign {
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+.btn-assign {
+    background: var(--green-mid);
+    color: #fff;
+}
+.btn-assign:hover {
+    background: var(--green-dark);
+}
+.btn-unassign {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+}
+.btn-unassign:hover {
+    background: var(--danger);
+    color: #fff;
+}
+.btn-hide {
+    border: 1px solid var(--green-dark);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    background: var(--green-light);
+    color: var(--green-dark);
+}
+.btn-hide:hover {
+    background: var(--green-light-hover);
+}
+
 @media (max-width: 1120px) {
     .esl-summary-grid {
         grid-template-columns: repeat(3, 1fr);

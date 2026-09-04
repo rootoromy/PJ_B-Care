@@ -30,6 +30,7 @@ $stmt = $mysqli->prepare("
     FROM patients p
     LEFT JOIN staff_pinned_patients spp
       ON spp.patient_id = p.patient_id AND spp.staff_id = ?
+    WHERE p.is_admitted = 1
     ORDER BY p.patient_id
 ");
 $stmt->bind_param('s', $staff_id);
@@ -57,7 +58,7 @@ $page_title  = 'B-Care Mobile';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜患者一覧</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=31">
+  <link rel="stylesheet" href="css/sp_common.css?v=32">
   <link rel="stylesheet" href="css/sp_patient_list.css?v=12">
 </head>
 <body>
@@ -76,6 +77,14 @@ $page_title  = 'B-Care Mobile';
       <header class="page-header">
         <h1>患者一覧</h1>
       </header>
+
+      <?php if (($_GET['discharge'] ?? '') === 'success'):
+          $discharge_id   = $_GET['discharge_id'] ?? '';
+          $discharge_name = $_GET['discharge_name'] ?? '';
+          $discharge_label = trim($discharge_id . ' ' . $discharge_name);
+      ?>
+        <section class="discharge-notice discharge-success"><?php if ($discharge_label !== ''): ?><strong><?= htmlspecialchars($discharge_label) ?></strong><br><?php endif; ?>退院処理しました</section>
+      <?php endif; ?>
 
       <section class="search-area" aria-label="患者検索">
         <div class="search-input-wrap">

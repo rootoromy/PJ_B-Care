@@ -26,6 +26,10 @@ $filter_room     = isset($_GET['room'])     ? trim($_GET['room'])     : '';
 $filter_gender   = isset($_GET['gender'])   ? trim($_GET['gender'])   : '';
 $filter_risk     = isset($_GET['risk'])     ? trim($_GET['risk'])     : '';
 $filter_transfer = isset($_GET['transfer']) ? trim($_GET['transfer']) : '';
+$admission_status = isset($_GET['admission_status']) ? trim($_GET['admission_status']) : 'admitted';
+if (!in_array($admission_status, ['admitted', 'discharged', 'all'], true)) {
+    $admission_status = 'admitted';
+}
 
 // ---------------------------------------------------
 // ページネーション
@@ -65,6 +69,11 @@ if ($filter_transfer !== '') {
     $where[]  = 'transfer_type = ?';
     $params[] = $filter_transfer;
     $types   .= 's';
+}
+if ($admission_status === 'admitted') {
+    $where[] = 'is_admitted = 1';
+} elseif ($admission_status === 'discharged') {
+    $where[] = 'is_admitted = 0';
 }
 
 $where_sql = count($where) ? 'WHERE ' . implode(' AND ', $where) : '';
@@ -189,6 +198,14 @@ function buildQuery(array $extra = []): string {
                         <?php endforeach; ?>
                     </select>
                 </div>
+                <div class="filter-group">
+                    <label>入退院</label>
+                    <select name="admission_status">
+                        <option value="admitted" <?= $admission_status === 'admitted' ? 'selected' : '' ?>>在院中</option>
+                        <option value="discharged" <?= $admission_status === 'discharged' ? 'selected' : '' ?>>退院済み</option>
+                        <option value="all" <?= $admission_status === 'all' ? 'selected' : '' ?>>すべて(在院・退院済み)</option>
+                    </select>
+                </div>
                 <button type="submit" class="btn-filter">絞り込む</button>
                 <a href="index.php" class="btn-clear">クリア</a>
             </div>
@@ -225,7 +242,12 @@ function buildQuery(array $extra = []): string {
                     ?>
                     <tr>
                         <td><?= htmlspecialchars($p['patient_id']) ?></td>
-                        <td><?= htmlspecialchars($p['patient_name']) ?></td>
+                        <td>
+                            <?= htmlspecialchars($p['patient_name']) ?>
+                            <?php if ((int)($p['is_admitted'] ?? 1) === 0): ?>
+                                <span class="badge" style="background:#eee; color:#666; margin-left:4px;">退院済み</span>
+                            <?php endif; ?>
+                        </td>
                         <td>
                             <span style="color:<?= $gender['color'] ?>; font-weight:bold;">
                                 <?= htmlspecialchars($p['gender'] ?? '-') ?>

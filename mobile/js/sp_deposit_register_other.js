@@ -27,7 +27,7 @@ form.addEventListener('submit', (event) => {
     item_name: document.getElementById('itemName').value.trim(),
     quantity: Number(qtyInput.value),
     condition_note: document.getElementById('conditionNote').value.trim(),
-    stored_at: document.getElementById('storedAt').value,
+    stored_at: `${document.getElementById('storedAtDate').value}T${document.getElementById('storedAtTime').value}`,
     stored_by: document.getElementById('storedBy').value,
     storage_location_id: document.getElementById('storageLocation').value,
     remarks: document.getElementById('remarks').value,

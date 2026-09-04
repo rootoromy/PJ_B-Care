@@ -64,7 +64,7 @@ form.addEventListener('submit', (event) => {
   const payload = {
     patient_id: window.depositPatientId,
     items,
-    stored_at: document.getElementById('storedAt').value,
+    stored_at: `${document.getElementById('storedAtDate').value}T${document.getElementById('storedAtTime').value}`,
     stored_by: document.getElementById('storedBy').value,
     storage_location_id: document.getElementById('storageLocation').value,
     remarks: document.getElementById('remarks').value,
