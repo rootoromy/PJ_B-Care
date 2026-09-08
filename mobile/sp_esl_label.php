@@ -53,6 +53,7 @@ $dup_count = (int)($stmt_dup->get_result()->fetch_assoc()['cnt'] ?? 0);
 $stmt_dup->close();
 
 $current_label_code = $patient['esl_label_code'] ?? '';
+$has_current_label = $current_label_code !== '';
 $assign_message = $_GET['assign'] ?? '';
 
 // ---------------------------------------------------
@@ -105,7 +106,7 @@ $active_menu = 'home';
   <title>B-Care Mobile｜ラベル割当</title>
   <link rel="icon" href="../favicon.ico">
   <link rel="stylesheet" href="css/sp_common.css?v=32">
-  <link rel="stylesheet" href="css/sp_esl_label.css?v=2">
+  <link rel="stylesheet" href="css/sp_esl_label.css?v=3">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
@@ -177,15 +178,19 @@ $active_menu = 'home';
         <section class="card">
           <div class="section-title"><span>割り当てるラベルを選択</span></div>
           <div class="section-body">
+            <?php if ($has_current_label): ?>
+              <p class="esl-locked-note">既にラベルが割り当てられているため選択できません。別のラベルに変更するには、先に上の「割当を解除」を行ってください。</p>
+            <?php endif; ?>
+
             <div class="esl-search-wrap">
               <svg class="esl-search-icon"><use href="#i-search"></use></svg>
-              <input id="labelSearchInput" type="search" placeholder="ラベルコードで検索" autocomplete="off">
+              <input id="labelSearchInput" type="search" placeholder="ラベルコードで検索" autocomplete="off" <?= $has_current_label ? 'disabled' : '' ?>>
             </div>
 
             <?php if (empty($availableLabels)): ?>
               <p class="esl-empty-text">割当可能なラベルがありません</p>
             <?php else: ?>
-              <div id="labelOptionList" class="esl-option-list">
+              <div id="labelOptionList" class="esl-option-list<?= $has_current_label ? ' is-locked' : '' ?>">
                 <?php foreach ($availableLabels as $label):
                   $code = $label['labelCode'] ?? '';
                   $alive = $label['sLabelStatus']['aliveStatus'] ?? '-';
@@ -193,7 +198,7 @@ $active_menu = 'home';
                   $signal = $label['sLabelStatus']['signalStrength'] ?? '-';
                 ?>
                   <label class="esl-option" data-code="<?= h(strtolower($code)) ?>">
-                    <input type="radio" name="label_code" value="<?= h($code) ?>">
+                    <input type="radio" name="label_code" value="<?= h($code) ?>" <?= $has_current_label ? 'disabled' : '' ?>>
                     <span class="esl-option-radio" aria-hidden="true"></span>
                     <span class="esl-option-body">
                       <span class="esl-option-code"><?= h($code) ?></span>

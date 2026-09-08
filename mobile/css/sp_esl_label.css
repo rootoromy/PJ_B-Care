@@ -170,14 +170,39 @@ body { background: #edf0ee; }
   box-shadow: 0 0 0 3px rgba(29, 114, 69, 0.10);
 }
 
+.esl-search-wrap input:disabled {
+  color: var(--muted);
+  background: #f3f5f4;
+  cursor: not-allowed;
+}
+
 /* ==============================================
    割り当てるラベルを選択（一覧）
    ============================================== */
+
+.esl-locked-note {
+  margin: 0 0 10px;
+  padding: 9px 10px;
+  color: #8a6d1f;
+  background: #fff8e6;
+  border: 1px solid #f2e2ad;
+  border-radius: 7px;
+  font-size: 12px;
+  line-height: 1.6;
+}
 
 .esl-option-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.esl-option-list.is-locked {
+  opacity: .55;
+}
+
+.esl-option-list.is-locked .esl-option {
+  cursor: not-allowed;
 }
 
 .esl-option {
