@@ -18,6 +18,58 @@ body { background: #edf0ee; }
 .page-header h1 { margin: 0; font-size: 20px; letter-spacing: .02em; text-align: center; }
 
 /* ==============================================
+   病棟絞り込みエリア
+   ============================================== */
+
+.ward-filter-area {
+  margin-bottom: 14px;
+}
+
+.ward-filter-area label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--green-800);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ward-filter-select-wrap {
+  position: relative;
+}
+
+.ward-filter-select-wrap::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+}
+
+.ward-filter-select-wrap select {
+  width: 100%;
+  height: 50px;
+  padding: 0 40px 0 14px;
+  color: var(--text);
+  background: var(--white);
+  border: 1px solid #b8c1bc;
+  border-radius: 9px;
+  outline: none;
+  font-size: 15px;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.ward-filter-select-wrap select:focus {
+  border-color: var(--green-800);
+  box-shadow: 0 0 0 3px rgba(29, 114, 69, 0.10);
+}
+
+/* ==============================================
    検索エリア
    ============================================== */
 

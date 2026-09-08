@@ -9,6 +9,7 @@
 
 const patients = Array.isArray(window.PATIENTS_DATA) ? window.PATIENTS_DATA : [];
 
+const wardFilter = document.getElementById("wardFilter");
 const searchInput = document.getElementById("searchInput");
 const searchButton = document.getElementById("searchButton");
 const searchResetButton = document.getElementById("searchResetButton");
@@ -23,6 +24,7 @@ const toast = document.getElementById("toast");
 const PAGE_SIZE = 20;
 
 let currentKeyword = "";
+let currentWard = "";
 let currentPage = 1;
 let toastTimer;
 
@@ -31,9 +33,11 @@ function normalize(value) {
 }
 
 function getFilteredPatients() {
-  if (!currentKeyword) return patients;
-
   return patients.filter((patient) => {
+    if (currentWard && patient.ward_name !== currentWard) return false;
+
+    if (!currentKeyword) return true;
+
     return (
       normalize(patient.patient_id).includes(currentKeyword) ||
       normalize(patient.patient_name).includes(currentKeyword) ||
@@ -221,6 +225,12 @@ document.querySelector(".patient-table").addEventListener("click", (event) => {
   if (button.dataset.action === "select") {
     selectPatient(patientId);
   }
+});
+
+wardFilter.addEventListener("change", () => {
+  currentWard = wardFilter.value;
+  currentPage = 1;
+  renderPatients();
 });
 
 searchButton.addEventListener("click", executeSearch);

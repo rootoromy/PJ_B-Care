@@ -25,7 +25,7 @@ $staff_id = $_SESSION['staff_id'] ?? '';
 
 $mysqli = getDB();
 $stmt = $mysqli->prepare("
-    SELECT p.patient_id, p.patient_name, p.patient_kana, p.gender, p.age,
+    SELECT p.patient_id, p.patient_name, p.patient_kana, p.gender, p.age, p.ward_name,
            (spp.staff_id IS NOT NULL) AS pinned
     FROM patients p
     LEFT JOIN staff_pinned_patients spp
@@ -38,6 +38,13 @@ $stmt->execute();
 $result = $stmt->get_result();
 $patients = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
+
+$wards = $mysqli->query("
+    SELECT DISTINCT ward_name FROM patients
+    WHERE is_admitted = 1 AND ward_name IS NOT NULL AND ward_name <> ''
+    ORDER BY ward_name
+")->fetch_all(MYSQLI_ASSOC);
+
 $mysqli->close();
 
 foreach ($patients as &$p) {
@@ -59,7 +66,7 @@ $page_title  = 'B-Care Mobile';
   <title>B-Care Mobile｜患者一覧</title>
   <link rel="icon" href="../favicon.ico">
   <link rel="stylesheet" href="css/sp_common.css?v=32">
-  <link rel="stylesheet" href="css/sp_patient_list.css?v=12">
+  <link rel="stylesheet" href="css/sp_patient_list.css?v=13">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
@@ -85,6 +92,18 @@ $page_title  = 'B-Care Mobile';
       ?>
         <section class="discharge-notice discharge-success"><?php if ($discharge_label !== ''): ?><strong><?= htmlspecialchars($discharge_label) ?></strong><br><?php endif; ?>退院処理しました</section>
       <?php endif; ?>
+
+      <section class="ward-filter-area" aria-label="病棟絞り込み">
+        <label for="wardFilter">病棟で絞り込み</label>
+        <div class="ward-filter-select-wrap">
+          <select id="wardFilter">
+            <option value="">すべての病棟</option>
+            <?php foreach ($wards as $w): ?>
+              <option value="<?= htmlspecialchars($w['ward_name']) ?>"><?= htmlspecialchars($w['ward_name']) ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+      </section>
 
       <section class="search-area" aria-label="患者検索">
         <div class="search-input-wrap">
@@ -145,6 +164,6 @@ $page_title  = 'B-Care Mobile';
 
   <script>window.PATIENTS_DATA = <?= $patients_json ?>;</script>
   <script src="js/sp_drawer.js?v=1"></script>
-  <script src="js/sp_patient_list.js?v=5"></script>
+  <script src="js/sp_patient_list.js?v=6"></script>
 </body>
 </html>
