@@ -190,3 +190,107 @@ function linkPatientArticleToLabel(array $patient, string $labelCode): array {
 function unlinkArticleFromLabel(string $labelCode): array {
     return aimsRequest('POST', '/labels/unlink?' . http_build_query(['labelCode' => $labelCode]));
 }
+
+/**
+ * 患者のESLラベル割当・解除処理（Manager/Mobile共通）。
+ * 配置先: includes/aims_functions.php
+ *
+ * patient_detail.php / esl_management.php (Manager) と
+ * sp_esl_label_process.php (Mobile) の両方から呼び出す共通ロジック。
+ * DB上の紐付け更新とAIMSへの配信/解除通知までをまとめて行う。
+ */
+
+/**
+ * ESL配信ペイロード作成に必要な患者情報一式を、doctor_name/primary_nurse/
+ * pictogram情報・同姓同名件数も含めて1患者分取得する。
+ */
+function fetchPatientForEslDelivery(mysqli $mysqli, string $patient_id): ?array {
+    $stmt = $mysqli->prepare("
+        SELECT p.*, doc.name AS doctor_name, nur.name AS primary_nurse, pic.pictogram_names, pic.pictogram_ids,
+            (SELECT COUNT(*) FROM patients p2 WHERE p2.patient_name = p.patient_name AND p2.patient_id != p.patient_id) AS dup_count
+        FROM patients p
+        LEFT JOIN patients_staff ps_doc ON ps_doc.patient_id = p.patient_id AND ps_doc.role = 'doctor'
+        LEFT JOIN staff doc ON doc.staff_id = ps_doc.staff_id
+        LEFT JOIN patients_staff ps_nur ON ps_nur.patient_id = p.patient_id AND ps_nur.role = 'nurse'
+        LEFT JOIN staff nur ON nur.staff_id = ps_nur.staff_id
+        LEFT JOIN (
+            SELECT pp.patient_id,
+                GROUP_CONCAT(pg.name ORDER BY pp.display_order SEPARATOR '、') AS pictogram_names,
+                GROUP_CONCAT(pg.pictogram_id ORDER BY pp.display_order SEPARATOR ',') AS pictogram_ids
+            FROM patient_pictograms pp
+            JOIN pictograms pg ON pg.pictogram_id = pp.pictogram_id
+            GROUP BY pp.patient_id
+        ) pic ON pic.patient_id = p.patient_id
+        WHERE p.patient_id = ?
+    ");
+    $stmt->bind_param('s', $patient_id);
+    $stmt->execute();
+    $patient = $stmt->get_result()->fetch_assoc() ?: null;
+    $stmt->close();
+    return $patient;
+}
+
+/**
+ * 未割当のESLラベルを患者に割り当て、AIMSへ配信する。
+ * @return string 'success' | 'deliver_error' | 'error'
+ *   - 'error'         : 対象患者が既に別ラベル割当済み、またはそのラベルが他患者で使用中
+ *   - 'deliver_error' : DB上の割当は成立したが、AIMSへの配信に失敗した
+ */
+function assignEslLabelToPatient(mysqli $mysqli, string $patient_id, string $label_code): string {
+    // 割当先の患者が未割当であること、かつそのラベルコードが他の患者に
+    // 使われていないことの両方を条件にし、同時操作による二重割当を防ぐ
+    $stmt = $mysqli->prepare("
+        UPDATE patients
+        SET esl_label_code = ?, esl_synced_at = NULL
+        WHERE patient_id = ?
+          AND (esl_label_code IS NULL OR esl_label_code = '')
+          AND NOT EXISTS (
+              SELECT 1 FROM (SELECT patient_id FROM patients WHERE esl_label_code = ?) AS taken
+          )
+    ");
+    $stmt->bind_param('sss', $label_code, $patient_id, $label_code);
+    $stmt->execute();
+    $updated = $stmt->affected_rows > 0;
+    $stmt->close();
+
+    if (!$updated) {
+        return 'error';
+    }
+
+    // 割当と同時にAIMSへ配信する。配信に失敗しても割当自体は成立させる。
+    $patientForEsl = fetchPatientForEslDelivery($mysqli, $patient_id);
+    if ($patientForEsl) {
+        $eslResult = linkPatientArticleToLabel($patientForEsl, $label_code);
+        if ($eslResult['httpCode'] >= 200 && $eslResult['httpCode'] < 300) {
+            $stmtSync = $mysqli->prepare("UPDATE patients SET esl_synced_at = NOW() WHERE patient_id = ?");
+            $stmtSync->bind_param('s', $patient_id);
+            $stmtSync->execute();
+            $stmtSync->close();
+        } else {
+            return 'deliver_error';
+        }
+    }
+    return 'success';
+}
+
+/**
+ * 患者からESLラベルの割当を解除し、AIMS側にも解除を通知する。
+ * DB側の紐付けを消すだけでなく、AIMS側にもラベルの解除を通知して
+ * 物理ラベルの表示自体をクリアする(通知に失敗してもDB側の解除は成立させる)。
+ */
+function unassignEslLabelFromPatient(mysqli $mysqli, string $patient_id): void {
+    $stmt = $mysqli->prepare("SELECT esl_label_code FROM patients WHERE patient_id = ?");
+    $stmt->bind_param('s', $patient_id);
+    $stmt->execute();
+    $label_code = $stmt->get_result()->fetch_assoc()['esl_label_code'] ?? null;
+    $stmt->close();
+
+    $stmt = $mysqli->prepare("UPDATE patients SET esl_label_code = NULL, esl_synced_at = NULL WHERE patient_id = ?");
+    $stmt->bind_param('s', $patient_id);
+    $stmt->execute();
+    $stmt->close();
+
+    if (!empty($label_code)) {
+        unlinkArticleFromLabel($label_code);
+    }
+}

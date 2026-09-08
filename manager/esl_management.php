@@ -35,72 +35,15 @@ $refresh_message = $_GET['refresh'] ?? '';
 
 // ---------------------------------------------------
 // 患者へのESLラベル割り当て・解除（未割当ラベルに患者を紐付ける）
+// 実処理は includes/aims_functions.php の共通関数を利用する
+// （Mobile側の sp_esl_label_process.php と同じロジックを共有）
 // ---------------------------------------------------
-function fetchPatientForEslDelivery(mysqli $mysqli, string $patient_id): ?array {
-    $stmt = $mysqli->prepare("
-        SELECT p.*, doc.name AS doctor_name, nur.name AS primary_nurse, pic.pictogram_names, pic.pictogram_ids,
-            (SELECT COUNT(*) FROM patients p2 WHERE p2.patient_name = p.patient_name AND p2.patient_id != p.patient_id) AS dup_count
-        FROM patients p
-        LEFT JOIN patients_staff ps_doc ON ps_doc.patient_id = p.patient_id AND ps_doc.role = 'doctor'
-        LEFT JOIN staff doc ON doc.staff_id = ps_doc.staff_id
-        LEFT JOIN patients_staff ps_nur ON ps_nur.patient_id = p.patient_id AND ps_nur.role = 'nurse'
-        LEFT JOIN staff nur ON nur.staff_id = ps_nur.staff_id
-        LEFT JOIN (
-            SELECT pp.patient_id,
-                GROUP_CONCAT(pg.name ORDER BY pp.display_order SEPARATOR '、') AS pictogram_names,
-                GROUP_CONCAT(pg.pictogram_id ORDER BY pp.display_order SEPARATOR ',') AS pictogram_ids
-            FROM patient_pictograms pp
-            JOIN pictograms pg ON pg.pictogram_id = pp.pictogram_id
-            GROUP BY pp.patient_id
-        ) pic ON pic.patient_id = p.patient_id
-        WHERE p.patient_id = ?
-    ");
-    $stmt->bind_param('s', $patient_id);
-    $stmt->execute();
-    $patient = $stmt->get_result()->fetch_assoc() ?: null;
-    $stmt->close();
-    return $patient;
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_label'])) {
     $label_code = trim($_POST['label_code'] ?? '');
     $patient_id = trim($_POST['patient_id'] ?? '');
-    $assign_message = 'error';
-
-    if ($label_code !== '' && $patient_id !== '') {
-        // 割当先の患者が未割当であること、かつそのラベルコードが他の患者に
-        // 使われていないことの両方を条件にし、同時操作による二重割当を防ぐ
-        $stmt = $mysqli->prepare("
-            UPDATE patients
-            SET esl_label_code = ?, esl_synced_at = NULL
-            WHERE patient_id = ?
-              AND (esl_label_code IS NULL OR esl_label_code = '')
-              AND NOT EXISTS (
-                  SELECT 1 FROM (SELECT patient_id FROM patients WHERE esl_label_code = ?) AS taken
-              )
-        ");
-        $stmt->bind_param('sss', $label_code, $patient_id, $label_code);
-        $stmt->execute();
-        $updated = $stmt->affected_rows > 0;
-        $stmt->close();
-
-        if ($updated) {
-            $assign_message = 'success';
-            // 割当と同時にAIMSへ配信する。配信に失敗しても割当自体は成立させる。
-            $patientForEsl = fetchPatientForEslDelivery($mysqli, $patient_id);
-            if ($patientForEsl) {
-                $eslResult = linkPatientArticleToLabel($patientForEsl, $label_code);
-                if ($eslResult['httpCode'] >= 200 && $eslResult['httpCode'] < 300) {
-                    $stmtSync = $mysqli->prepare("UPDATE patients SET esl_synced_at = NOW() WHERE patient_id = ?");
-                    $stmtSync->bind_param('s', $patient_id);
-                    $stmtSync->execute();
-                    $stmtSync->close();
-                } else {
-                    $assign_message = 'deliver_error';
-                }
-            }
-        }
-    }
+    $assign_message = ($label_code !== '' && $patient_id !== '')
+        ? assignEslLabelToPatient($mysqli, $patient_id, $label_code)
+        : 'error';
     header('Location: esl_management.php?assign=' . $assign_message);
     exit;
 }
@@ -108,22 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_label'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unassign_label'])) {
     $patient_id = trim($_POST['patient_id'] ?? '');
     if ($patient_id !== '') {
-        $stmt = $mysqli->prepare("SELECT esl_label_code FROM patients WHERE patient_id = ?");
-        $stmt->bind_param('s', $patient_id);
-        $stmt->execute();
-        $label_code = $stmt->get_result()->fetch_assoc()['esl_label_code'] ?? null;
-        $stmt->close();
-
-        $stmt = $mysqli->prepare("UPDATE patients SET esl_label_code = NULL, esl_synced_at = NULL WHERE patient_id = ?");
-        $stmt->bind_param('s', $patient_id);
-        $stmt->execute();
-        $stmt->close();
-
-        // DB側の紐付けを消すだけでなく、AIMS側にもラベルの解除を通知して
-        // 物理ラベルの表示自体をクリアする(通知に失敗してもDB側の解除は成立させる)。
-        if (!empty($label_code)) {
-            unlinkArticleFromLabel($label_code);
-        }
+        unassignEslLabelFromPatient($mysqli, $patient_id);
     }
     header('Location: esl_management.php?assign=unassigned');
     exit;
