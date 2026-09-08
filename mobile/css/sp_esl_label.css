@@ -1,0 +1,279 @@
+/* ==============================================
+   B-Care Mobile - ラベル割当画面専用スタイル
+   配置先: css/sp_esl_label.css
+
+   iPhone 17相当（393px幅）のスマホ縦画面を基準にしたレイアウト。
+   .phone-shell / .patient-header / .icon-button / .drawer 系は
+   sp_patient_home.php とも共通のため css/sp_common.css 側で定義している
+   （このファイルでは上書きしない）。
+   ============================================== */
+
+body { background: #edf0ee; }
+
+.esl-label-main { display: block; }
+
+/* ==============================================
+   ページ見出し
+   ============================================== */
+
+.page-header { margin: 14px 0 10px; }
+
+.breadcrumb { margin: 2px 0 4px 2px; color: var(--green-800); font-size: 14px; font-weight: 700; }
+.breadcrumb a { display: inline-flex; align-items: center; gap: 2px; color: inherit; text-decoration: none; background: var(--green-100); padding: 2px 6px 2px 2px; border-radius: 2px; }
+.inline-chevron { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+.page-title-row { display: flex; align-items: center; justify-content: center; }
+.page-header h1 { margin: 0; font-size: 20px; letter-spacing: .02em; text-align: center; }
+
+.form-lead { margin: 0 0 12px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+
+/* ==============================================
+   カード共通
+   ============================================== */
+
+.card, .action-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.section-title {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 9px 12px;
+  background: var(--green-100);
+  border-left: 4px solid var(--green-800);
+  color: var(--green-900);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.section-body { padding: 10px; }
+
+.esl-empty-text { margin: 6px 2px; color: var(--muted); font-size: 13px; }
+
+/* ==============================================
+   現在の割当状況
+   ============================================== */
+
+.esl-current-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.esl-current-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--green-800);
+  background: var(--green-100);
+}
+
+.esl-current-icon svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.esl-current-fields { flex: 1; min-width: 0; }
+
+.esl-current-field {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.esl-current-caption { flex: none; width: 78px; color: var(--muted); font-size: 12px; }
+
+.esl-current-value {
+  overflow: hidden;
+  color: #23302a;
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.esl-current-value--muted { color: var(--muted); font-weight: 400; font-size: 12px; }
+
+.esl-unassign-btn {
+  flex: none;
+  padding: 9px 14px;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border: 1px solid #ffc9c9;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.esl-unassign-btn:active { opacity: .8; }
+
+/* ==============================================
+   ラベルコードで検索
+   ============================================== */
+
+.esl-search-wrap {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.esl-search-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.esl-search-wrap input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px 0 38px;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid #b8c1bc;
+  border-radius: 9px;
+  outline: none;
+  font-size: 14px;
+}
+
+.esl-search-wrap input:focus {
+  border-color: var(--green-800);
+  box-shadow: 0 0 0 3px rgba(29, 114, 69, 0.10);
+}
+
+/* ==============================================
+   割り当てるラベルを選択（一覧）
+   ============================================== */
+
+.esl-option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.esl-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .12s ease, border-color .12s ease;
+}
+
+.esl-option:active { background: var(--green-050, #f5faf7); }
+
+.esl-option input[type="radio"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.esl-option-radio {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #c3ccc6;
+  border-radius: 50%;
+  background: #fff;
+  transition: border-color .12s ease;
+}
+
+.esl-option input[type="radio"]:checked + .esl-option-radio {
+  border-width: 6px;
+  border-color: var(--green-800);
+}
+
+.esl-option:has(input[type="radio"]:checked) {
+  border-color: var(--green-800);
+  background: var(--green-100);
+}
+
+.esl-option-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.esl-option-code {
+  font-size: 15px;
+  font-weight: 700;
+  color: #23302a;
+}
+
+.esl-option-badges { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.esl-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.esl-badge--ok { color: var(--green-900); background: var(--green-100); }
+.esl-badge--ng { color: var(--danger); background: var(--danger-bg); }
+.esl-badge--neutral { color: #68736b; background: #eef1ef; }
+
+/* ==============================================
+   確定・キャンセルボタン
+   ============================================== */
+
+.action-card { padding: 10px; }
+
+.primary-btn, .secondary-btn {
+  width: 100%;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 7px;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.primary-btn {
+  border: 0;
+  background: linear-gradient(180deg, var(--green-700, #2c8447), var(--green-900));
+  color: #fff;
+  cursor: pointer;
+}
+
+.primary-btn:disabled { opacity: .5; cursor: default; }
+
+.secondary-btn { margin-top: 8px; border: 1px solid #d8ddd9; background: #fff; color: #333; }
+
+@media (max-width: 360px) {
+  .esl-current-caption { width: 66px; }
+}

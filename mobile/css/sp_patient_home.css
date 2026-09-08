@@ -203,6 +203,87 @@ main { display: grid; gap: 7px; }
 .empty-note { margin: 6px 2px; color: var(--muted); font-size: 14px; }
 
 /* ==============================================
+   ラベル割当
+   ============================================== */
+
+.esl-label-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+}
+
+.esl-label-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  color: var(--green-800);
+  background: var(--green-100);
+}
+
+.esl-label-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.esl-label-fields {
+  flex: 1;
+  min-width: 0;
+}
+
+.esl-label-field {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.esl-label-caption {
+  flex: none;
+  width: 68px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.esl-label-value {
+  overflow: hidden;
+  color: #23302a;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.esl-label-value--muted {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.esl-unassign-btn {
+  flex: none;
+  padding: 8px 12px;
+  color: var(--danger);
+  background: var(--danger-bg);
+  border: 1px solid #ffc9c9;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.esl-unassign-btn:active {
+  opacity: .8;
+}
+
+/* ==============================================
    預かり品
    ============================================== */
 

@@ -4,6 +4,7 @@
     "patient_home_blocks": [
         "info",
         "pictogram",
+        "esl_label",
         "risk",
         "vitals",
         "schedule_today",

@@ -173,6 +173,7 @@ function vitalValue($latest_vital, $field) {
 $default_block_order = [
     'info',
     'pictogram',
+    'esl_label',
     'risk',
     'vitals',
     'schedule_today',
@@ -215,7 +216,7 @@ $active_menu = 'home';
   <title>B-Care Mobile｜患者ホーム</title>
   <link rel="icon" href="../favicon.ico">
   <link rel="stylesheet" href="css/sp_common.css?v=32">
-  <link rel="stylesheet" href="css/sp_patient_home.css?v=53">
+  <link rel="stylesheet" href="css/sp_patient_home.css?v=54">
 </head>
 <body>
   <!-- SVG icon sprite（外部ライブラリ不要） -->
@@ -229,6 +230,7 @@ $active_menu = 'home';
     <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
     <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
     <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 6v5h-5M4 18v-5h5M18 10a7 7 0 0 0-12-2M6 14a7 7 0 0 0 12 2"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.59 13.41 13.41 20.59a2 2 0 0 1-2.82 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><circle cx="7" cy="7" r="1" fill="currentColor" stroke="none"/></symbol>
   </svg>
 
   <div class="phone-shell">
