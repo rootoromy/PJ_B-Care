@@ -8,6 +8,11 @@
    （このファイルでは上書きしない）。
    ============================================== */
 
+:root {
+  --danger: #ff1f2d;
+  --danger-bg: #fff2f2;
+}
+
 body { background: #edf0ee; }
 
 .esl-label-main { display: block; }

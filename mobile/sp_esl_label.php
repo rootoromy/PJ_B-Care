@@ -105,7 +105,7 @@ $active_menu = 'home';
   <title>B-Care Mobile｜ラベル割当</title>
   <link rel="icon" href="../favicon.ico">
   <link rel="stylesheet" href="css/sp_common.css?v=32">
-  <link rel="stylesheet" href="css/sp_esl_label.css?v=1">
+  <link rel="stylesheet" href="css/sp_esl_label.css?v=2">
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true">
