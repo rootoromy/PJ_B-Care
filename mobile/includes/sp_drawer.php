@@ -7,7 +7,7 @@
  *   $patient_id   : GETから受け取った患者ID文字列（患者一覧画面など、
  *                   患者未選択のページでは空文字のままでよい）
  *   $active_menu  : 現在ページのメニューキー
- *                   ('patients' / 'home' / 'pictogram' / 'vitals' / 'deposit' / 'schedule')
+ *                   ('patients' / 'esl_label_list' / 'home' / 'pictogram' / 'vitals' / 'deposit' / 'schedule')
  *                   未設定ならどれもハイライトしない
  *
  * 新しいメニュー項目を増やしたい場合は、下の $menu_items 配列に追記するだけでOK。
@@ -24,7 +24,8 @@ $active_menu = $active_menu ?? '';
 $patient_id  = $patient_id ?? '';
 
 $menu_items = [
-    'patients'  => ['label' => '患者一覧',     'href' => 'sp_patient_list.php'],
+    'patients'       => ['label' => '患者一覧',   'href' => 'sp_patient_list.php'],
+    'esl_label_list' => ['label' => 'ラベル一覧', 'href' => 'sp_esl_label_list.php'],
 ];
 
 if ($patient_id !== '') {
