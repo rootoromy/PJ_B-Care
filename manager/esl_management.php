@@ -351,7 +351,7 @@ function statusBadgeClass(string $value): string {
                                     <?php if ($patient): ?>
                                         <div class="esl-patient-cell">
                                             <a href="patient_detail.php?patient_id=<?= urlencode($patient['patient_id']) ?>">
-                                                <?= htmlspecialchars($patient['patient_name']) ?>（<?= htmlspecialchars($patient['patient_id']) ?>）
+                                                <?= htmlspecialchars($patient['patient_id']) ?>　<?= htmlspecialchars($patient['patient_name']) ?>
                                             </a>
                                             <form method="POST" action="esl_management.php" class="esl-assign-form" onsubmit="return confirm('この患者のラベル割り当てを解除しますか？');">
                                                 <input type="hidden" name="patient_id" value="<?= htmlspecialchars($patient['patient_id']) ?>">
