@@ -21,6 +21,11 @@ if (empty($_SESSION['sp_logged_in'])) {
     exit;
 }
 
+if (sp_is_viewer()) {
+    echo json_encode(['success' => false, 'message' => '閲覧のみの権限のため、この操作はできません。']);
+    exit;
+}
+
 require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/aims_functions.php';
 
@@ -36,14 +41,19 @@ if ($patient_id === '') {
 
 $mysqli = getDB();
 
-$stmt_check = $mysqli->prepare("SELECT 1 FROM patients WHERE patient_id = ?");
+$stmt_check = $mysqli->prepare("SELECT is_admitted FROM patients WHERE patient_id = ?");
 $stmt_check->bind_param('s', $patient_id);
 $stmt_check->execute();
-$patient_exists = (bool)$stmt_check->get_result()->fetch_row();
+$patient_row = $stmt_check->get_result()->fetch_assoc();
 $stmt_check->close();
 
-if (!$patient_exists) {
+if (!$patient_row) {
     echo json_encode(['success' => false, 'message' => '患者が見つかりません。']);
+    exit;
+}
+
+if ((int)$patient_row['is_admitted'] !== 1) {
+    echo json_encode(['success' => false, 'message' => '退院済みの患者はピクトグラムを変更できません。']);
     exit;
 }
 

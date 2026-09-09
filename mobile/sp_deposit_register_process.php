@@ -16,6 +16,11 @@ if (empty($_SESSION['sp_logged_in'])) {
     exit;
 }
 
+if (sp_is_viewer()) {
+    echo json_encode(['success' => false, 'message' => '閲覧のみの権限のため、この操作はできません。']);
+    exit;
+}
+
 require_once __DIR__ . '/../includes/config.php';
 
 $body = json_decode(file_get_contents('php://input'), true);
@@ -32,9 +37,14 @@ if ($patient_id === '' || empty($items) || $stored_at === '' || $stored_by === '
     exit;
 }
 
-$stored_at_sql = str_replace('T', ' ', $stored_at);
-
 $mysqli = getDB();
+
+if (isPatientDischarged($mysqli, $patient_id)) {
+    echo json_encode(['success' => false, 'message' => '退院済みの患者には預かり品を登録できません。']);
+    exit;
+}
+
+$stored_at_sql = str_replace('T', ' ', $stored_at);
 
 $stmt = $mysqli->prepare("
     INSERT INTO patient_deposits

@@ -32,6 +32,14 @@ function mgr_authenticate(string $loginId, string $password): ?array {
     ];
 }
 
+/**
+ * ログイン中ユーザーが「閲覧のみ」ロールかどうかを返す。
+ * mobile/includes/sp_auth.php の sp_is_viewer() と同じ考え方（同じ staff テーブル）。
+ */
+function mgr_is_viewer(): bool {
+    return ($_SESSION['mgr_role'] ?? '') === 'viewer';
+}
+
 function mgr_require_login(): void {
     if (empty($_SESSION['mgr_logged_in'])) {
         $redirect = $_SERVER['REQUEST_URI'] ?? '';

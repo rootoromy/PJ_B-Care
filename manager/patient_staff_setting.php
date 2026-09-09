@@ -22,7 +22,17 @@ if ($patient_id === '') {
     exit;
 }
 
+if (mgr_is_viewer()) {
+    header('Location: patient_detail.php?patient_id=' . urlencode($patient_id));
+    exit;
+}
+
 $mysqli = getDB();
+
+if (isPatientDischarged($mysqli, $patient_id)) {
+    header('Location: patient_detail.php?patient_id=' . urlencode($patient_id));
+    exit;
+}
 
 // ---------------------------------------------------
 // 保存処理

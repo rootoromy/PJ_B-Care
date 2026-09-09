@@ -18,6 +18,7 @@ require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/aims_functions.php';
 
 $mysqli = getDB();
+$is_viewer = mgr_is_viewer();
 
 // ---------------------------------------------------
 // Alive再チェック（任意操作）
@@ -39,21 +40,34 @@ $refresh_message = $_GET['refresh'] ?? '';
 // （Mobile側の sp_esl_label_process.php と同じロジックを共有）
 // ---------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_label'])) {
+    if (mgr_is_viewer()) {
+        header('Location: esl_management.php?assign=forbidden');
+        exit;
+    }
     $label_code = trim($_POST['label_code'] ?? '');
     $patient_id = trim($_POST['patient_id'] ?? '');
-    $assign_message = ($label_code !== '' && $patient_id !== '')
-        ? assignEslLabelToPatient($mysqli, $patient_id, $label_code)
-        : 'error';
+    if ($label_code === '' || $patient_id === '') {
+        $assign_message = 'error';
+    } elseif (isPatientDischarged($mysqli, $patient_id)) {
+        $assign_message = 'discharged';
+    } else {
+        $assign_message = assignEslLabelToPatient($mysqli, $patient_id, $label_code);
+    }
     header('Location: esl_management.php?assign=' . $assign_message);
     exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unassign_label'])) {
-    $patient_id = trim($_POST['patient_id'] ?? '');
-    if ($patient_id !== '') {
-        unassignEslLabelFromPatient($mysqli, $patient_id);
+    if (mgr_is_viewer()) {
+        header('Location: esl_management.php?assign=forbidden');
+        exit;
     }
-    header('Location: esl_management.php?assign=unassigned');
+    $patient_id = trim($_POST['patient_id'] ?? '');
+    $unassign_message = 'unassigned';
+    if ($patient_id !== '') {
+        $unassign_message = unassignEslLabelFromPatient($mysqli, $patient_id) === 'success' ? 'unassigned' : 'unassign_deliver_error';
+    }
+    header('Location: esl_management.php?assign=' . $unassign_message);
     exit;
 }
 $assign_message = $_GET['assign'] ?? '';
@@ -63,6 +77,10 @@ $assign_message = $_GET['assign'] ?? '';
 // （AIMSダッシュボードで削除してもGET /labelsに残り続けるゴーストラベル対策）
 // ---------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hide_label'])) {
+    if (mgr_is_viewer()) {
+        header('Location: esl_management.php?assign=forbidden');
+        exit;
+    }
     $label_code = trim($_POST['label_code'] ?? '');
     if ($label_code !== '') {
         $stmt = $mysqli->prepare("INSERT IGNORE INTO esl_hidden_labels (label_code, hidden_by) VALUES (?, ?)");
@@ -75,6 +93,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hide_label'])) {
     exit;
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unhide_label'])) {
+    if (mgr_is_viewer()) {
+        header('Location: esl_management.php?assign=forbidden');
+        exit;
+    }
     $label_code = trim($_POST['label_code'] ?? '');
     if ($label_code !== '') {
         $stmt = $mysqli->prepare("DELETE FROM esl_hidden_labels WHERE label_code = ?");
@@ -140,6 +162,18 @@ function statusBadgeClass(string $value): string {
     if (in_array($value, $ng, true)) return 'badge-admin';
     return 'badge-inactive';
 }
+
+/**
+ * AIMSから返るISO 8601形式の日時("2026-09-09T02:30:46.000+0000")を
+ * 日付と時刻だけの表示("2026-09-09 11:30")に整形する。
+ */
+function formatAimsTimestamp(?string $value): string {
+    if (empty($value)) {
+        return '-';
+    }
+    $timestamp = strtotime($value);
+    return $timestamp !== false ? date('Y-m-d H:i', $timestamp) : $value;
+}
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -198,6 +232,10 @@ function statusBadgeClass(string $value): string {
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 割り当てを解除しました。
             </div>
+        <?php elseif ($assign_message === 'unassign_deliver_error'): ?>
+            <div class="alert-error">割り当ての解除は保存しましたが、AIMSへの解除通知に失敗しました。ラベルの表示が残っている可能性があります。時間をおいて再度お試しください。</div>
+        <?php elseif ($assign_message === 'discharged'): ?>
+            <div class="alert-error">退院済みの患者にはラベルを割り当てられません。</div>
         <?php elseif ($assign_message === 'error'): ?>
             <div class="alert-error">割り当てに失敗しました。対象の患者が既に別のラベルへ割り当て済みの可能性があります。</div>
         <?php elseif ($assign_message === 'hidden'): ?>
@@ -210,6 +248,8 @@ function statusBadgeClass(string $value): string {
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 ラベルの表示を元に戻しました。
             </div>
+        <?php elseif ($assign_message === 'forbidden'): ?>
+            <div class="alert-error">閲覧のみの権限のため、この操作はできません。</div>
         <?php endif; ?>
 
         <?php if ($aims_error !== ''): ?>
@@ -281,11 +321,15 @@ function statusBadgeClass(string $value): string {
                                             <a href="patient_detail.php?patient_id=<?= urlencode($patient['patient_id']) ?>">
                                                 <?= htmlspecialchars($patient['patient_id']) ?>　<?= htmlspecialchars($patient['patient_name']) ?>
                                             </a>
-                                            <form method="POST" action="esl_management.php" class="esl-assign-form" onsubmit="return confirm('この患者のラベル割り当てを解除しますか？');">
-                                                <input type="hidden" name="patient_id" value="<?= htmlspecialchars($patient['patient_id']) ?>">
-                                                <button type="submit" name="unassign_label" value="1" class="btn-unassign">解除</button>
-                                            </form>
+                                            <?php if (!$is_viewer): ?>
+                                                <form method="POST" action="esl_management.php" class="esl-assign-form" onsubmit="return confirm('この患者のラベル割り当てを解除しますか？');">
+                                                    <input type="hidden" name="patient_id" value="<?= htmlspecialchars($patient['patient_id']) ?>">
+                                                    <button type="submit" name="unassign_label" value="1" class="btn-unassign">解除</button>
+                                                </form>
+                                            <?php endif; ?>
                                         </div>
+                                    <?php elseif ($is_viewer): ?>
+                                        <span class="esl-unassigned">未割当</span>
                                     <?php elseif (empty($unassignedPatients)): ?>
                                         <span class="esl-unassigned">割当可能な患者がいません</span>
                                         <form method="POST" action="esl_management.php" class="esl-assign-form" onsubmit="return confirm('このラベルを一覧から非表示にしますか？（AIMS側の削除操作が反映されていない場合などに使用）');">
@@ -324,7 +368,7 @@ function statusBadgeClass(string $value): string {
                                 <td><span class="badge <?= statusBadgeClass($battery) ?>"><?= htmlspecialchars($battery) ?></span></td>
                                 <td><span class="badge <?= statusBadgeClass($signal) ?>"><?= htmlspecialchars($signal) ?></span></td>
                                 <td><span class="badge <?= statusBadgeClass($status) ?>"><?= htmlspecialchars($status) ?></span></td>
-                                <td><?= htmlspecialchars($label['statusUpdateTime'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars(formatAimsTimestamp($label['statusUpdateTime'] ?? null)) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -350,10 +394,14 @@ function statusBadgeClass(string $value): string {
                                 <td><?= htmlspecialchars($code) ?></td>
                                 <td><?= htmlspecialchars($hidden['hidden_at']) ?></td>
                                 <td>
-                                    <form method="POST" action="esl_management.php" class="esl-assign-form">
-                                        <input type="hidden" name="label_code" value="<?= htmlspecialchars($code) ?>">
-                                        <button type="submit" name="unhide_label" value="1" class="btn-assign">表示に戻す</button>
-                                    </form>
+                                    <?php if ($is_viewer): ?>
+                                        -
+                                    <?php else: ?>
+                                        <form method="POST" action="esl_management.php" class="esl-assign-form">
+                                            <input type="hidden" name="label_code" value="<?= htmlspecialchars($code) ?>">
+                                            <button type="submit" name="unhide_label" value="1" class="btn-assign">表示に戻す</button>
+                                        </form>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

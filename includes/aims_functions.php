@@ -44,6 +44,7 @@ function patientToAimsArticlePayload(array $patient): array {
         'DATA_9' => empty($patient['qr_url']) ? '' : BCARE_BASE_URL . '/' . ltrim($patient['qr_url'], '/'),
         'DATA_10' => $patient['pictogram_names'] ?? '',
         'DATA_11' => ((int)($patient['dup_count'] ?? 0) > 0 || (int)($patient['has_namesake'] ?? 0) === 1) ? '同姓同名有' : '',
+        'DATA_24' => $patient['patient_kana'] ?? '',
     ];
 
     /*
@@ -275,10 +276,13 @@ function assignEslLabelToPatient(mysqli $mysqli, string $patient_id, string $lab
 
 /**
  * 患者からESLラベルの割当を解除し、AIMS側にも解除を通知する。
- * DB側の紐付けを消すだけでなく、AIMS側にもラベルの解除を通知して
- * 物理ラベルの表示自体をクリアする(通知に失敗してもDB側の解除は成立させる)。
+ * DB側の紐付けは常に解除するが、AIMS側への解除通知(物理ラベル表示のクリア)が
+ * 失敗した場合はそれを呼び出し元に伝え、エラー表示できるようにする。
+ * @return string 'success' | 'deliver_error'
+ *   - 'deliver_error': DB上の解除は成立したが、AIMSへの解除通知に失敗した
+ *     (物理ラベルの表示が残ったままの可能性がある)
  */
-function unassignEslLabelFromPatient(mysqli $mysqli, string $patient_id): void {
+function unassignEslLabelFromPatient(mysqli $mysqli, string $patient_id): string {
     $stmt = $mysqli->prepare("SELECT esl_label_code FROM patients WHERE patient_id = ?");
     $stmt->bind_param('s', $patient_id);
     $stmt->execute();
@@ -291,6 +295,10 @@ function unassignEslLabelFromPatient(mysqli $mysqli, string $patient_id): void {
     $stmt->close();
 
     if (!empty($label_code)) {
-        unlinkArticleFromLabel($label_code);
+        $result = unlinkArticleFromLabel($label_code);
+        if ($result['httpCode'] < 200 || $result['httpCode'] >= 300) {
+            return 'deliver_error';
+        }
     }
+    return 'success';
 }

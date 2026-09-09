@@ -22,6 +22,11 @@ if ($patient_id === '') {
     exit;
 }
 
+if (sp_is_viewer()) {
+    header('Location: sp_deposit_list.php?patient_id=' . urlencode($patient_id));
+    exit;
+}
+
 $mysqli = getDB();
 
 $stmt = $mysqli->prepare("SELECT * FROM patients WHERE patient_id = ?");
@@ -32,6 +37,12 @@ $stmt->close();
 
 if (!$patient) {
     die('<p style="color:red;">患者が見つかりません。</p>');
+}
+
+if ((int)($patient['is_admitted'] ?? 1) === 0) {
+    $mysqli->close();
+    header('Location: sp_deposit_list.php?patient_id=' . urlencode($patient_id));
+    exit;
 }
 
 $dup_count = 0;
@@ -69,7 +80,7 @@ $now_time = date('H:i');
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜預かり品返却</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=32">
+  <link rel="stylesheet" href="css/sp_common.css?v=33">
   <link rel="stylesheet" href="css/sp_deposit.css?v=23">
 </head>
 <body>

@@ -71,10 +71,16 @@ $has_namesake = $dup_count > 0 || (int)($patient['has_namesake'] ?? 0) === 1;
 // ---------------------------------------------------
 $esl_deliver_result = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deliver_esl']) && !empty($patient['esl_label_code'])) {
-    $result = linkPatientArticleToLabel($patient, $patient['esl_label_code']);
-    $esl_deliver_result = ($result['httpCode'] >= 200 && $result['httpCode'] < 300)
-        ? ['success' => true,  'message' => '配信リクエストを送信しました']
-        : ['success' => false, 'message' => 'HTTP ' . $result['httpCode'] . ($result['error'] ? ' ' . $result['error'] : '')];
+    if (mgr_is_viewer()) {
+        $esl_deliver_result = ['success' => false, 'message' => '閲覧のみの権限のため、この操作はできません。'];
+    } elseif ((int)($patient['is_admitted'] ?? 1) === 0) {
+        $esl_deliver_result = ['success' => false, 'message' => '退院済みの患者には配信できません。'];
+    } else {
+        $result = linkPatientArticleToLabel($patient, $patient['esl_label_code']);
+        $esl_deliver_result = ($result['httpCode'] >= 200 && $result['httpCode'] < 300)
+            ? ['success' => true,  'message' => '配信リクエストを送信しました']
+            : ['success' => false, 'message' => 'HTTP ' . $result['httpCode'] . ($result['error'] ? ' ' . $result['error'] : '')];
+    }
 }
 
 // ---------------------------------------------------
@@ -82,10 +88,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deliver_esl']) && !em
 // ---------------------------------------------------
 $discharge_result = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['discharge_patient'])) {
-    $discharge_result = dischargePatient($mysqli, $patient_id, $_SESSION['mgr_staff_id'] ?? '');
-    if ($discharge_result['success']) {
-        header('Location: patient_detail.php?patient_id=' . urlencode($patient_id) . '&discharge=success');
-        exit;
+    if (mgr_is_viewer()) {
+        $discharge_result = ['success' => false, 'message' => '閲覧のみの権限のため、退院処理はできません。'];
+    } else {
+        $discharge_result = dischargePatient($mysqli, $patient_id, $_SESSION['mgr_staff_id'] ?? '');
+        if ($discharge_result['success']) {
+            header('Location: patient_detail.php?patient_id=' . urlencode($patient_id) . '&discharge=success');
+            exit;
+        }
     }
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['undischarge_patient'])) {
@@ -143,6 +153,7 @@ $mysqli->close();
 $risk     = getRiskColor((int)$patient['fall_risk']);
 $gender   = getGenderStyle($patient['gender'] ?? '');
 $transfer = getTransferColor();
+$is_viewer = mgr_is_viewer();
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -280,7 +291,7 @@ $transfer = getTransferColor();
                                 <div class="esl-sub">ラベル: <?= htmlspecialchars($patient['esl_label_code']) ?></div>
                             <?php endif; ?>
                         </div>
-                        <?php if (!empty($patient['esl_label_code'])): ?>
+                        <?php if (!empty($patient['esl_label_code']) && !$is_viewer): ?>
                             <form method="POST" action="patient_detail.php?patient_id=<?= urlencode($patient_id) ?>" style="margin-top:8px;">
                                 <button type="submit" name="deliver_esl" value="1" class="btn-pictogram">
                                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -321,11 +332,13 @@ $transfer = getTransferColor();
                             <p style="color:#aaa; font-size:0.85rem;">ピクトグラムが設定されていません</p>
                         <?php endif; ?>
 
-                        <a href="pictogram_setting.php?patient_id=<?= urlencode($patient_id) ?>" class="btn-pictogram">
-                            <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                            ピクトグラム設定へ
-                        </a>
-                        <div class="btn-desc">表示するピクトグラムの追加・編集ができます</div>
+                        <?php if (!$is_viewer): ?>
+                            <a href="pictogram_setting.php?patient_id=<?= urlencode($patient_id) ?>" class="btn-pictogram">
+                                <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                                ピクトグラム設定へ
+                            </a>
+                            <div class="btn-desc">表示するピクトグラムの追加・編集ができます</div>
+                        <?php endif; ?>
                     </div>
 
                     <!-- QRコードの下: 入退院ステータス -->
@@ -345,10 +358,14 @@ $transfer = getTransferColor();
                                 <span class="info-label">状態</span>
                                 <span class="badge" style="background:<?= COLOR_SAFE_BG ?>; color:<?= COLOR_SAFE_TEXT ?>;">在院中</span>
                             </div>
-                            <form method="POST" action="patient_detail.php?patient_id=<?= urlencode($patient_id) ?>" style="margin-top:8px;"
-                                  onsubmit="return confirm('この患者を退院処理しますか？');">
-                                <button type="submit" name="discharge_patient" value="1" class="btn-pictogram">退院処理</button>
-                            </form>
+                            <?php if ($is_viewer): ?>
+                                <div class="btn-desc">閲覧のみの権限のため、退院処理はできません</div>
+                            <?php else: ?>
+                                <form method="POST" action="patient_detail.php?patient_id=<?= urlencode($patient_id) ?>" style="margin-top:8px;"
+                                      onsubmit="return confirm('この患者を退院処理しますか？');">
+                                    <button type="submit" name="discharge_patient" value="1" class="btn-pictogram">退院処理</button>
+                                </form>
+                            <?php endif; ?>
                         <?php else: ?>
                             <div class="info-row">
                                 <span class="info-label">状態</span>

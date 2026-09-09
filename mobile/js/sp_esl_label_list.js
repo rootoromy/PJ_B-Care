@@ -6,13 +6,17 @@
 // それぞれ開閉できる。病棟・患者検索の絞り込みは両ブロックに共通で効く
 // （未割当ラベルはどの病棟にも属さないため病棟フィルタでは常に表示する）。
 // 「患者を選択」は割当先を指定するためのもので、割当済みラベルの「解除」・
-// 未割当ラベルの「割当」は非表示フォーム(#listAssignForm/#listUnassignForm)
-// 経由で sp_esl_label_process.php に渡す。割当・解除の結果は
-// サーバー側の再描画（ページ遷移）で反映されるため、割当されたラベルは
-// 自動的に「割当済み」ブロックへ、解除されたラベルは「未割当」ブロックへ移る。
+// 未割当ラベルの「割当」は非表示フォーム(#listAssignForm/#listUnassignForm)を
+// sp_confirm.js の submitFormViaFetch() 経由で sp_esl_label_process.php に渡す
+// （ネイティブ<form>送信のままだとhttp運用のためブラウザの「安全でないフォーム
+// 送信」警告が出るため、fetchで送ってからリダイレクト先へ遷移する）。
+// 割当・解除の結果はサーバー側の再描画（ページ遷移）で反映されるため、
+// 割当されたラベルは自動的に「割当済み」ブロックへ、解除されたラベルは
+// 「未割当」ブロックへ移る。
 
 const labelRows = Array.isArray(window.ESL_LABEL_ROWS) ? window.ESL_LABEL_ROWS : [];
 const unassignedPatients = Array.isArray(window.ESL_UNASSIGNED_PATIENTS) ? window.ESL_UNASSIGNED_PATIENTS : [];
+const isViewer = window.IS_VIEWER === true;
 
 const wardFilter = document.getElementById("wardFilter");
 const patientSearchInput = document.getElementById("patientSearchInput");
@@ -64,7 +68,9 @@ function createRow(row) {
     ? `<span class="esl-row-patient-name">${escapeHtml(row.patient_id)}　${escapeHtml(row.patient_name)}</span><small>${escapeHtml(wardRoom)}</small>`
     : `<span class="esl-row-patient-empty">-</span>`;
 
-  const actionBlock = row.assigned
+  const actionBlock = isViewer
+    ? ""
+    : row.assigned
     ? `<button type="button" class="esl-row-btn esl-row-btn--unassign" data-patient-id="${escapeHtml(row.patient_id)}" data-patient-name="${escapeHtml(row.patient_name)}">解除</button>`
     : `<button type="button" class="esl-row-btn esl-row-btn--assign" data-code="${escapeHtml(row.code)}">割当</button>`;
 
@@ -118,6 +124,7 @@ function render() {
 // 選択肢そのものを毎回組み直す。選択中の患者が絞り込みで対象外になった場合は
 // 選択を解除する。
 function renderPatientOptions(ward) {
+  if (!patientSelect) return;
   const previousValue = patientSelect.value;
   const matched = unassignedPatients.filter((p) => !ward || p.ward_name === ward);
 
@@ -140,7 +147,7 @@ patientSearchInput.addEventListener("input", () => {
   render();
 });
 
-function handleRowListClick(event) {
+async function handleRowListClick(event) {
   const assignBtn = event.target.closest(".esl-row-btn--assign");
   if (assignBtn) {
     const targetPatientId = patientSelect.value;
@@ -150,19 +157,27 @@ function handleRowListClick(event) {
     }
     const targetOption = patientSelect.selectedOptions[0];
     const targetLabel = targetOption ? targetOption.textContent.trim() : targetPatientId;
-    if (!confirm(`${targetLabel} にラベル ${assignBtn.dataset.code} を割り当てますか？`)) return;
+    const ok = await confirmDialog({
+      title: "ラベルを割り当て",
+      message: `${targetLabel} にラベル ${assignBtn.dataset.code} を割り当てますか？`,
+    });
+    if (!ok) return;
 
     assignForm.querySelector('[name="patient_id"]').value = targetPatientId;
     assignForm.querySelector('[name="label_code"]').value = assignBtn.dataset.code;
-    assignForm.submit();
+    submitFormViaFetch(assignForm);
     return;
   }
 
   const unassignBtn = event.target.closest(".esl-row-btn--unassign");
   if (unassignBtn) {
-    if (!confirm(`${unassignBtn.dataset.patientName}様のラベル割り当てを解除しますか？`)) return;
+    const ok = await confirmDialog({
+      title: "ラベル割り当てを解除",
+      message: `${unassignBtn.dataset.patientName}様のラベル割り当てを解除しますか？`,
+    });
+    if (!ok) return;
     unassignForm.querySelector('[name="patient_id"]').value = unassignBtn.dataset.patientId;
-    unassignForm.submit();
+    submitFormViaFetch(unassignForm);
   }
 }
 

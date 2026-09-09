@@ -29,6 +29,11 @@ const staffIdHidden = document.getElementById("staffIdHidden");
 const userPassword = document.getElementById("userPassword");
 const userPasswordLabel = document.getElementById("userPasswordLabel");
 
+const ROLE_BADGE_CLASS = {
+  "管理者": "badge-admin",
+  "閲覧のみ": "badge-viewer",
+};
+
 function renderUsers(list) {
   tbody.innerHTML = "";
 
@@ -39,7 +44,7 @@ function renderUsers(list) {
       <td>${user.name}</td>
       <td>${user.ward}</td>
       <td>
-        <span class="badge ${user.role === "管理者" ? "badge-admin" : "badge-staff"}">
+        <span class="badge ${ROLE_BADGE_CLASS[user.role] || "badge-staff"}">
           ${user.role}
         </span>
       </td>

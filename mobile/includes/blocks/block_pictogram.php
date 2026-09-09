@@ -9,12 +9,18 @@
  *                 （name, image_path を含む）
  *   h()         : エスケープ用ヘルパー関数（mobile/sp_patient_home.php で定義）
  */
+$is_viewer = $is_viewer ?? false;
+$is_discharged = $is_discharged ?? false;
 ?>
 <section class="card section-card">
-  <a class="section-title" href="sp_pictogram.php?patient_id=<?= urlencode($patient_id) ?>">
-    <span><b></b>ピクトグラム</span>
-    <svg><use href="#i-chevron"></use></svg>
-  </a>
+  <?php if ($is_viewer || $is_discharged): ?>
+    <div class="section-title"><span><b></b>ピクトグラム</span></div>
+  <?php else: ?>
+    <a class="section-title" href="sp_pictogram.php?patient_id=<?= urlencode($patient_id) ?>">
+      <span><b></b>ピクトグラム</span>
+      <svg><use href="#i-chevron"></use></svg>
+    </a>
+  <?php endif; ?>
   <div class="section-body">
     <?php if (empty($pictograms)): ?>
       <p style="padding:10px; font-size:13px; color:var(--muted);">ピクトグラムが設定されていません</p>

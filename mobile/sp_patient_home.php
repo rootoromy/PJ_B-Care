@@ -36,6 +36,11 @@ $mysqli = getDB();
 // 退院処理(Mobileはadmin/userどちらでも実行可)
 // ---------------------------------------------------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['discharge_patient'])) {
+    if (sp_is_viewer()) {
+        header('Location: sp_patient_home.php?patient_id=' . urlencode($patient_id)
+            . '&discharge=error&discharge_msg=' . urlencode('閲覧のみの権限のため、退院処理はできません。'));
+        exit;
+    }
     $stmt_name = $mysqli->prepare("SELECT patient_name FROM patients WHERE patient_id = ?");
     $stmt_name->bind_param('s', $patient_id);
     $stmt_name->execute();
@@ -55,6 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['discharge_patient']))
 }
 $discharge_notice = $_GET['discharge'] ?? '';
 $discharge_msg     = $_GET['discharge_msg'] ?? '';
+$is_viewer = sp_is_viewer();
+$assign_notice = $_GET['assign'] ?? '';
 
 $stmt = $mysqli->prepare("
     SELECT p.*, doc.name AS doctor_name, nur.name AS primary_nurse
@@ -93,6 +100,8 @@ $stmt_dup->bind_param('ss', $patient['patient_name'], $patient_id);
 $stmt_dup->execute();
 $dup_count = (int)($stmt_dup->get_result()->fetch_assoc()['cnt'] ?? 0);
 $stmt_dup->close();
+
+$is_discharged = (int)($patient['is_admitted'] ?? 1) === 0;
 
 $stmt_pic = $mysqli->prepare("
     SELECT p.name, p.image_path
@@ -215,7 +224,7 @@ $active_menu = 'home';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜患者ホーム</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=32">
+  <link rel="stylesheet" href="css/sp_common.css?v=33">
   <link rel="stylesheet" href="css/sp_patient_home.css?v=54">
 </head>
 <body>
@@ -254,6 +263,14 @@ $active_menu = 'home';
         <section class="discharge-notice"><?= h($discharge_msg) ?></section>
       <?php endif; ?>
 
+      <?php if ($assign_notice === 'unassigned'): ?>
+        <section class="discharge-notice discharge-success">ラベルの割り当てを解除しました。</section>
+      <?php elseif ($assign_notice === 'unassign_deliver_error'): ?>
+        <section class="discharge-notice">割り当ての解除は保存しましたが、AIMSへの解除通知に失敗しました。ラベルの表示が残っている可能性があります。時間をおいて再度お試しください。</section>
+      <?php elseif ($assign_notice === 'forbidden'): ?>
+        <section class="discharge-notice">閲覧のみの権限のため、この操作はできません。</section>
+      <?php endif; ?>
+
       <?php if ((int)($patient['is_admitted'] ?? 1) === 0): ?>
         <section class="discharge-notice discharged">この患者は退院済みです(退院日時: <?= h($patient['discharged_at'] ?? '-') ?>)</section>
       <?php endif; ?>
@@ -262,9 +279,9 @@ $active_menu = 'home';
         <?php include __DIR__ . '/includes/blocks/block_' . $block_key . '.php'; ?>
       <?php endforeach; ?>
 
-      <?php if ((int)($patient['is_admitted'] ?? 1) === 1): ?>
+      <?php if ((int)($patient['is_admitted'] ?? 1) === 1 && !$is_viewer): ?>
         <form method="POST" action="sp_patient_home.php?patient_id=<?= urlencode($patient_id) ?>"
-              onsubmit="return confirm('この患者を退院処理しますか？');" style="margin-top:16px;">
+              data-confirm-title="退院処理" data-confirm-message="この患者を退院処理しますか？" style="margin-top:16px;">
           <button type="submit" name="discharge_patient" value="1" class="discharge-btn">退院処理</button>
         </form>
       <?php endif; ?>
@@ -272,6 +289,7 @@ $active_menu = 'home';
   </div>
 
   <script src="js/sp_drawer.js?v=1"></script>
+  <script src="js/sp_confirm.js?v=3"></script>
   <script src="js/sp_patient_home.js?v=3"></script>
 </body>
 </html>

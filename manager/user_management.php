@@ -23,12 +23,18 @@ $errors = [];
 // ---------------------------------------------------
 // 保存処理（新規追加・編集）
 // ---------------------------------------------------
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && mgr_is_viewer()) {
+    header('Location: user_management.php');
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $action    = $_POST['action'];
     $name      = trim($_POST['user_name'] ?? '');
     $mail      = trim($_POST['user_email'] ?? '');
     $ward      = trim($_POST['user_ward'] ?? '');
-    $role_key  = ($_POST['user_role'] ?? '') === '管理者' ? 'admin' : 'user';
+    $role_map  = ['管理者' => 'admin', '閲覧のみ' => 'viewer'];
+    $role_key  = $role_map[$_POST['user_role'] ?? ''] ?? 'user';
     $is_active = ($_POST['user_status'] ?? '') === '有効' ? 1 : 0;
     $password  = $_POST['user_password'] ?? '';
 
@@ -122,14 +128,16 @@ $staffRows = $mysqli->query('
 ')->fetch_all(MYSQLI_ASSOC);
 $mysqli->close();
 
-$usersForJs = array_map(static function (array $row): array {
+$roleLabels = ['admin' => '管理者', 'viewer' => '閲覧のみ'];
+
+$usersForJs = array_map(static function (array $row) use ($roleLabels): array {
     return [
         'staffId'   => $row['staff_id'],
         'id'        => $row['login_id'],
         'name'      => $row['name'],
         'email'     => $row['mail'] ?? '',
         'ward'      => $row['ward_name'] ?? '',
-        'role'      => $row['role_key'] === 'admin' ? '管理者' : 'スタッフ',
+        'role'      => $roleLabels[$row['role_key']] ?? 'スタッフ',
         'status'    => ((int)$row['is_active'] === 1) ? '有効' : '無効',
         'lastLogin' => '-',
         'updatedAt' => date('Y/m/d H:i', strtotime($row['updated_at'])),
@@ -189,6 +197,7 @@ $usersForJs = array_map(static function (array $row): array {
                         <option value="">すべて</option>
                         <option value="管理者">管理者</option>
                         <option value="スタッフ">スタッフ</option>
+                        <option value="閲覧のみ">閲覧のみ</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -250,7 +259,7 @@ $usersForJs = array_map(static function (array $row): array {
             <div class="info-title">ⓘ ユーザー管理のご案内</div>
             <ul>
                 <li>ユーザーIDはログイン時に使用します。登録後の変更はできません。</li>
-                <li>権限は「管理者」と「スタッフ」の2種類です。</li>
+                <li>権限は「管理者」「スタッフ」「閲覧のみ」の3種類です。「閲覧のみ」はピクトグラム変更・預かり品登録/返却・退院処理・ESLラベル割当/解除など、書き込みを伴う操作が一切できません（食事介助者など向け）。</li>
                 <li>ユーザーを無効化すると、B-Careへログインできなくなります。</li>
                 <li>無効化したユーザーは一覧から非表示になりますが、「無効なユーザーも表示する」にチェックを入れると表示できます。</li>
             </ul>
@@ -304,6 +313,7 @@ $usersForJs = array_map(static function (array $row): array {
                     <select name="user_role" id="userRole" required>
                         <option value="スタッフ">スタッフ</option>
                         <option value="管理者">管理者</option>
+                        <option value="閲覧のみ">閲覧のみ（食事介助者など、閲覧専用）</option>
                     </select>
                 </div>
 

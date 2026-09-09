@@ -168,6 +168,7 @@ tbody td {
 }
 .badge-admin { background: var(--danger-bg); color: var(--danger); }
 .badge-staff { background: #dbeafe; color: #1d4ed8; }
+.badge-viewer { background: var(--bg-hover-light); color: var(--text-muted); }
 .badge-active { background: var(--safe-bg); color: var(--safe-text); }
 .badge-inactive { background: var(--bg-hover-light); color: var(--text-muted); }
 

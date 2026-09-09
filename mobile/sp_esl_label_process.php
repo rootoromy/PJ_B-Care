@@ -43,20 +43,32 @@ switch ($_POST['redirect'] ?? '') {
 }
 $redirect_sep = str_contains($redirect_base, '?') ? '&' : '?';
 
+if (sp_is_viewer()) {
+    header('Location: ' . $redirect_base . $redirect_sep . 'assign=forbidden');
+    exit;
+}
+
 $mysqli = getDB();
 
 if (isset($_POST['assign_label'])) {
     $label_code = trim($_POST['label_code'] ?? '');
-    $assign_message = $label_code === '' ? 'error' : assignEslLabelToPatient($mysqli, $patient_id, $label_code);
+    if ($label_code === '') {
+        $assign_message = 'error';
+    } elseif (isPatientDischarged($mysqli, $patient_id)) {
+        $assign_message = 'discharged';
+    } else {
+        $assign_message = assignEslLabelToPatient($mysqli, $patient_id, $label_code);
+    }
     $mysqli->close();
     header('Location: ' . $redirect_base . $redirect_sep . 'assign=' . $assign_message);
     exit;
 }
 
 if (isset($_POST['unassign_label'])) {
-    unassignEslLabelFromPatient($mysqli, $patient_id);
+    $unassign_result = unassignEslLabelFromPatient($mysqli, $patient_id);
     $mysqli->close();
-    header('Location: ' . $redirect_base . $redirect_sep . 'assign=unassigned');
+    $unassign_message = $unassign_result === 'success' ? 'unassigned' : 'unassign_deliver_error';
+    header('Location: ' . $redirect_base . $redirect_sep . 'assign=' . $unassign_message);
     exit;
 }
 

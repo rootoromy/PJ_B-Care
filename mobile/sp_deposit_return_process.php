@@ -16,6 +16,11 @@ if (empty($_SESSION['sp_logged_in'])) {
     exit;
 }
 
+if (sp_is_viewer()) {
+    echo json_encode(['success' => false, 'message' => '閲覧のみの権限のため、この操作はできません。']);
+    exit;
+}
+
 require_once __DIR__ . '/../includes/config.php';
 
 $body = json_decode(file_get_contents('php://input'), true);
@@ -45,6 +50,11 @@ $return_to_other_param = $return_to === 'その他' ? $return_to_other : null;
 $remarks_param = $remarks !== '' ? $remarks : null;
 
 $mysqli = getDB();
+
+if (isPatientDischarged($mysqli, $patient_id)) {
+    echo json_encode(['success' => false, 'message' => '退院済みの患者の預かり品は返却処理できません。']);
+    exit;
+}
 
 $placeholders = implode(',', array_fill(0, count($deposit_ids), '?'));
 $sql = "

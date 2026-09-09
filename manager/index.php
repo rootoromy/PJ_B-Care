@@ -21,6 +21,7 @@ $mysqli = getDB();
 // ---------------------------------------------------
 // フィルター取得
 // ---------------------------------------------------
+$filter_keyword  = isset($_GET['keyword'])  ? trim($_GET['keyword'])  : '';
 $filter_ward     = isset($_GET['ward'])     ? trim($_GET['ward'])     : '';
 $filter_room     = isset($_GET['room'])     ? trim($_GET['room'])     : '';
 $filter_gender   = isset($_GET['gender'])   ? trim($_GET['gender'])   : '';
@@ -45,6 +46,14 @@ $where  = [];
 $params = [];
 $types  = '';
 
+if ($filter_keyword !== '') {
+    $where[]  = '(patient_id LIKE ? OR patient_name LIKE ? OR patient_kana LIKE ?)';
+    $like     = '%' . $filter_keyword . '%';
+    $params[] = $like;
+    $params[] = $like;
+    $params[] = $like;
+    $types   .= 'sss';
+}
 if ($filter_ward !== '') {
     $where[]  = 'ward_name = ?';
     $params[] = $filter_ward;
@@ -126,7 +135,7 @@ function buildQuery(array $extra = []): string {
     <link rel="icon" href="../favicon.ico">
     <link rel="stylesheet" href="css/style.css?v=1">
     <link rel="stylesheet" href="css/common.css?v=2">
-    <link rel="stylesheet" href="css/index.css?v=1">
+    <link rel="stylesheet" href="css/index.css?v=9">
 </head>
 <body>
 
@@ -146,6 +155,15 @@ function buildQuery(array $extra = []): string {
         <!-- フィルターバー -->
         <form method="GET" action="index.php">
             <div class="filter-bar">
+                <div class="filter-group filter-group--keyword">
+                    <label>患者検索(ID/漢字・カナ)
+                        <span class="help-icon" title="患者ID・氏名（漢字またはカナ）の一部を入力して検索できます">?</span>
+                    </label>
+                    <div class="search-input-wrap">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                        <input type="text" name="keyword" value="<?= htmlspecialchars($filter_keyword) ?>" placeholder="患者ID・氏名（漢字・カナ）を入力してください">
+                    </div>
+                </div>
                 <div class="filter-group">
                     <label>病棟</label>
                     <select name="ward">

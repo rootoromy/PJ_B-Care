@@ -1,0 +1,145 @@
+/* ===== 預かり品管理専用スタイル ===== */
+
+.dm-section {
+    margin-bottom: 28px;
+}
+.dm-section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.dm-section-head h2 {
+    margin: 0 0 4px;
+    font-size: 1.05rem;
+    color: var(--green-dark);
+}
+.dm-section-desc {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--text-sub);
+}
+.dm-section-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.dm-master-search {
+    width: 220px;
+}
+
+/* ===== 履歴フィルター ===== */
+.dm-history-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 14px 18px;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 14px;
+}
+.dm-filter-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    gap: 12px;
+    overflow-x: auto;
+}
+.dm-date-range {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.dm-date-range input[type="date"] {
+    padding: 6px 8px;
+    border: 1px solid var(--border-lighter);
+    border-radius: 5px;
+    font-size: 0.82rem;
+    background: #fafafa;
+}
+.dm-date-range span {
+    color: var(--text-sub);
+    font-size: 0.82rem;
+}
+
+/* ===== キーワード検索（患者一覧の検索窓と同じ見た目） ===== */
+.filter-group--keyword {
+    flex: 0 0 auto;
+    width: 260px;
+}
+.search-input-wrap {
+    position: relative;
+}
+.search-input-wrap input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 30px 6px 10px;
+    border: 1px solid var(--border-lighter);
+    border-radius: 5px;
+    font-size: 0.85rem;
+    background: #fafafa;
+}
+.search-input-wrap input:focus {
+    outline: none;
+    border-color: var(--green-mid);
+}
+.search-input-wrap .search-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    color: var(--text-sub);
+    pointer-events: none;
+}
+
+/* ===== マスタ一覧テーブル ===== */
+.dm-row[hidden] { display: none; }
+.dm-hidden-wrap { margin-top: 18px; }
+.dm-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    white-space: nowrap;
+}
+.dm-inline-form { display: inline-flex; }
+
+.btn-edit {
+    padding: 4px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-medium);
+    color: var(--text-body);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+.btn-edit:hover { background: var(--bg-hover-light); }
+
+.btn-hide {
+    padding: 4px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+.btn-hide:hover { background: var(--danger-bg); }
+
+.btn-assign {
+    padding: 4px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--green-dark);
+    color: var(--green-dark);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+.btn-assign:hover { background: var(--green-light); }
+
+.badge-return { background: #dbeafe; color: #1d4ed8; }

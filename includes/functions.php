@@ -76,6 +76,21 @@ function getTransferColor(): array {
 // ---------------------------------------------------
 
 /**
+ * 退院済み(または存在しない)患者かどうかを返す。
+ * ピクトグラム変更・預かり品登録/返却・ESLラベル割当など、書き込み系
+ * エンドポイントで、URLを直接叩かれた場合に退院済み患者への書き込みを
+ * 防ぐためのガードとして使う。存在しない患者IDも安全側に倒してtrueを返す。
+ */
+function isPatientDischarged(mysqli $mysqli, string $patient_id): bool {
+    $stmt = $mysqli->prepare("SELECT is_admitted FROM patients WHERE patient_id = ?");
+    $stmt->bind_param('s', $patient_id);
+    $stmt->execute();
+    $row = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    return $row === null || (int)$row['is_admitted'] !== 1;
+}
+
+/**
  * 未返却(status='stored')の預かり品件数を返す。
  */
 function countStoredDeposits(mysqli $mysqli, string $patient_id): int {

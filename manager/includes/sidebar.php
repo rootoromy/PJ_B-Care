@@ -5,7 +5,7 @@
  *
  * 【呼び出し側で用意しておく変数】
  *   $active_menu : 現在ページのメニューキー
- *                  ('patients' / 'users' / 'esl')
+ *                  ('patients' / 'deposits' / 'users' / 'esl')
  *                  未設定ならどれもハイライトしない
  *
  * 新しいメニュー項目を増やしたい場合は、下の $menu_items 配列に追記するだけでOK。
@@ -21,6 +21,11 @@ $menu_items = [
         'label' => '患者一覧',
         'href'  => 'index.php',
         'icon'  => '<svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    ],
+    'deposits' => [
+        'label' => '預かり品管理',
+        'href'  => 'deposit_management.php',
+        'icon'  => '<svg width="18" height="18" fill="none" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="12" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 8l2-4h14l2 4M9 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     ],
     'users' => [
         'label' => 'ユーザー管理',

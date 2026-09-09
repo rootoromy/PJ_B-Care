@@ -36,6 +36,11 @@ if ($patient_id === '') {
     exit;
 }
 
+if (sp_is_viewer()) {
+    header('Location: sp_patient_home.php?patient_id=' . urlencode($patient_id));
+    exit;
+}
+
 $mysqli = getDB();
 
 // ---------------------------------------------------
@@ -49,6 +54,12 @@ $stmt->close();
 
 if (!$patient) {
     die('<p style="color:red;">患者が見つかりません。</p>');
+}
+
+if ((int)($patient['is_admitted'] ?? 1) === 0) {
+    $mysqli->close();
+    header('Location: sp_patient_home.php?patient_id=' . urlencode($patient_id));
+    exit;
 }
 
 // ---------------------------------------------------
@@ -97,7 +108,7 @@ $active_menu = 'pictogram';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>B-Care Mobile｜ピクトグラム</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=32" />
+  <link rel="stylesheet" href="css/sp_common.css?v=33" />
   <link rel="stylesheet" href="css/sp_pictogram.css?v=14" />
 </head>
 <body>

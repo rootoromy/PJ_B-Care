@@ -30,6 +30,11 @@ if ($patient_id === '') {
     exit;
 }
 
+if (sp_is_viewer()) {
+    header('Location: sp_patient_home.php?patient_id=' . urlencode($patient_id));
+    exit;
+}
+
 $mysqli = getDB();
 
 $stmt = $mysqli->prepare("SELECT * FROM patients WHERE patient_id = ?");
@@ -40,6 +45,12 @@ $stmt->close();
 
 if (!$patient) {
     die('<p style="color:red;">患者が見つかりません。</p>');
+}
+
+if ((int)($patient['is_admitted'] ?? 1) === 0) {
+    $mysqli->close();
+    header('Location: sp_patient_home.php?patient_id=' . urlencode($patient_id));
+    exit;
 }
 
 $stmt_dup = $mysqli->prepare("
@@ -105,7 +116,7 @@ $active_menu = 'home';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜ラベル割当</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=32">
+  <link rel="stylesheet" href="css/sp_common.css?v=33">
   <link rel="stylesheet" href="css/sp_esl_label.css?v=3">
 </head>
 <body>
@@ -137,6 +148,10 @@ $active_menu = 'home';
         <section class="discharge-notice">ラベルの割り当ては保存しましたが、AIMSへの配信に失敗しました。時間をおいて再度お試しください。</section>
       <?php elseif ($assign_message === 'unassigned'): ?>
         <section class="discharge-notice discharge-success">割り当てを解除しました。</section>
+      <?php elseif ($assign_message === 'unassign_deliver_error'): ?>
+        <section class="discharge-notice">割り当ての解除は保存しましたが、AIMSへの解除通知に失敗しました。ラベルの表示が残っている可能性があります。時間をおいて再度お試しください。</section>
+      <?php elseif ($assign_message === 'discharged'): ?>
+        <section class="discharge-notice">退院済みの患者にはラベルを割り当てられません。</section>
       <?php elseif ($assign_message === 'error'): ?>
         <section class="discharge-notice">割り当てに失敗しました。対象のラベルが既に他の患者へ割り当て済みの可能性があります。</section>
       <?php endif; ?>
@@ -159,7 +174,7 @@ $active_menu = 'home';
                   <span class="esl-current-value esl-current-value--muted"><?= h($patient['esl_synced_at'] ?? '-') ?></span>
                 </div>
               </div>
-              <form method="POST" action="sp_esl_label_process.php" onsubmit="return confirm('この患者のラベル割り当てを解除しますか？');">
+              <form method="POST" action="sp_esl_label_process.php" data-confirm-title="ラベル割り当てを解除" data-confirm-message="この患者のラベル割り当てを解除しますか？">
                 <input type="hidden" name="patient_id" value="<?= h($patient_id) ?>">
                 <button type="submit" name="unassign_label" value="1" class="esl-unassign-btn">割当を解除</button>
               </form>
@@ -225,6 +240,7 @@ $active_menu = 'home';
   </div>
 
   <script src="js/sp_drawer.js?v=1"></script>
-  <script src="js/sp_esl_label.js?v=1"></script>
+  <script src="js/sp_confirm.js?v=3"></script>
+  <script src="js/sp_esl_label.js?v=2"></script>
 </body>
 </html>

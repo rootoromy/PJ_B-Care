@@ -22,6 +22,11 @@ if ($patient_id === '') {
     exit;
 }
 
+if (sp_is_viewer()) {
+    header('Location: sp_deposit_list.php?patient_id=' . urlencode($patient_id));
+    exit;
+}
+
 $mysqli = getDB();
 
 $stmt = $mysqli->prepare("SELECT * FROM patients WHERE patient_id = ?");
@@ -34,11 +39,17 @@ if (!$patient) {
     die('<p style="color:red;">患者が見つかりません。</p>');
 }
 
+if ((int)($patient['is_admitted'] ?? 1) === 0) {
+    $mysqli->close();
+    header('Location: sp_deposit_list.php?patient_id=' . urlencode($patient_id));
+    exit;
+}
+
 $dup_count = 0;
 
-$items = $mysqli->query("SELECT item_master_id, name, unit FROM deposit_item_masters WHERE is_active = 1 ORDER BY item_master_id")->fetch_all(MYSQLI_ASSOC);
+$items = $mysqli->query("SELECT item_master_id, name, unit FROM deposit_item_masters WHERE is_active = 1 ORDER BY display_order, item_master_id")->fetch_all(MYSQLI_ASSOC);
 $staff_list = $mysqli->query("SELECT staff_id, name, position FROM staff WHERE is_active = 1 ORDER BY name")->fetch_all(MYSQLI_ASSOC);
-$locations = $mysqli->query("SELECT location_id, name FROM storage_locations WHERE is_active = 1 ORDER BY location_id")->fetch_all(MYSQLI_ASSOC);
+$locations = $mysqli->query("SELECT location_id, name FROM storage_locations WHERE is_active = 1 ORDER BY display_order, location_id")->fetch_all(MYSQLI_ASSOC);
 
 $mysqli->close();
 
@@ -54,7 +65,7 @@ $now_time = date('H:i');
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜預かり品登録</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=32">
+  <link rel="stylesheet" href="css/sp_common.css?v=33">
   <link rel="stylesheet" href="css/sp_deposit.css?v=23">
 </head>
 <body>

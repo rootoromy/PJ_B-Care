@@ -33,6 +33,55 @@
     outline: none;
     border-color: var(--green-mid);
 }
+.filter-group--keyword {
+    flex: 0 0 auto;
+    width: 400px;
+}
+.filter-group--keyword label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.help-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--border-medium);
+    color: #fff;
+    font-size: 0.65rem;
+    line-height: 1;
+    cursor: help;
+    flex-shrink: 0;
+}
+.search-input-wrap {
+    position: relative;
+}
+.search-input-wrap input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 30px 6px 10px;
+    border: 1px solid var(--border-lighter);
+    border-radius: 5px;
+    font-size: 0.85rem;
+    background: #fafafa;
+}
+.search-input-wrap input:focus {
+    outline: none;
+    border-color: var(--green-mid);
+}
+.search-input-wrap .search-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    color: var(--text-sub);
+    pointer-events: none;
+}
 .btn-filter {
     padding: 7px 18px;
     background: var(--green-dark);

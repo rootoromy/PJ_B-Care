@@ -30,6 +30,16 @@ function sp_authenticate(string $loginId, string $password): ?array {
     ];
 }
 
+/**
+ * ログイン中ユーザーが「閲覧のみ」ロールかどうかを返す。
+ * 食事介助者など、書き込み系操作(ピクトグラム変更・預かり品登録/返却・
+ * 退院処理・ESLラベル割当/解除など)を一切行わせたくないユーザー向け。
+ * 患者のピン留め(staff_pinned_patients)は表示上の個人設定のため対象外。
+ */
+function sp_is_viewer(): bool {
+    return ($_SESSION['role'] ?? '') === 'viewer';
+}
+
 function sp_require_login(): void {
     if (empty($_SESSION['sp_logged_in'])) {
         $redirect = $_SERVER['REQUEST_URI'] ?? '';

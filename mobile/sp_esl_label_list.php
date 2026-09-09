@@ -24,6 +24,7 @@ function h($value) {
 }
 
 $assign_message = $_GET['assign'] ?? '';
+$is_viewer = sp_is_viewer();
 
 $mysqli = getDB();
 
@@ -109,7 +110,7 @@ $last_updated = date('Y-m-d H:i');
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜ラベル一覧</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=32">
+  <link rel="stylesheet" href="css/sp_common.css?v=33">
   <link rel="stylesheet" href="css/sp_esl_label_list.css?v=2">
 </head>
 <body>
@@ -131,7 +132,7 @@ $last_updated = date('Y-m-d H:i');
         <div class="list-header-row">
           <div class="list-header-main">
             <h1>ラベル一覧</h1>
-            <p class="list-desc">ESL（電子棚札）に患者を割り当てることができます。</p>
+            <p class="list-desc">ラベルに患者を割り当てることができます。</p>
           </div>
           <div class="list-header-side">
             <a class="page-refresh-btn" href="sp_esl_label_list.php">
@@ -149,8 +150,14 @@ $last_updated = date('Y-m-d H:i');
         <section class="discharge-notice">ラベルの割り当ては保存しましたが、AIMSへの配信に失敗しました。時間をおいて再度お試しください。</section>
       <?php elseif ($assign_message === 'unassigned'): ?>
         <section class="discharge-notice discharge-success">割り当てを解除しました。</section>
+      <?php elseif ($assign_message === 'unassign_deliver_error'): ?>
+        <section class="discharge-notice">割り当ての解除は保存しましたが、AIMSへの解除通知に失敗しました。ラベルの表示が残っている可能性があります。時間をおいて再度お試しください。</section>
+      <?php elseif ($assign_message === 'discharged'): ?>
+        <section class="discharge-notice">退院済みの患者にはラベルを割り当てられません。</section>
       <?php elseif ($assign_message === 'error'): ?>
         <section class="discharge-notice">割り当てに失敗しました。対象のラベルが既に他の患者へ割り当て済みの可能性があります。</section>
+      <?php elseif ($assign_message === 'forbidden'): ?>
+        <section class="discharge-notice">閲覧のみの権限のため、この操作はできません。</section>
       <?php endif; ?>
 
       <?php if ($aims_error !== ''): ?>
@@ -178,31 +185,22 @@ $last_updated = date('Y-m-d H:i');
           </div>
         </div>
 
-        <div class="filter-field">
-          <label for="patientSelect">患者を選択</label>
-          <div class="select-wrap select-wrap--icon">
-            <svg class="select-icon"><use href="#i-user"></use></svg>
-            <select id="patientSelect">
-              <option value="">患者を選択してください</option>
-              <?php foreach ($unassignedPatients as $p): ?>
-                <option value="<?= h($p['patient_id']) ?>"><?= h($p['patient_id']) ?>　<?= h($p['patient_name']) ?></option>
-              <?php endforeach; ?>
-            </select>
+        <?php if (!$is_viewer): ?>
+          <div class="filter-field">
+            <label for="patientSelect">患者を選択</label>
+            <div class="select-wrap select-wrap--icon">
+              <svg class="select-icon"><use href="#i-user"></use></svg>
+              <select id="patientSelect">
+                <option value="">患者を選択してください</option>
+                <?php foreach ($unassignedPatients as $p): ?>
+                  <option value="<?= h($p['patient_id']) ?>"><?= h($p['patient_id']) ?>　<?= h($p['patient_name']) ?></option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+            <p class="filter-hint">割当手順<br>①患者を選択します ②[割当]ボタンを押下します</p>
           </div>
-          <p class="filter-hint">未割当の患者のみ表示しています。「割当」ボタンはここで選んだ患者に割り当てます。</p>
-        </div>
+        <?php endif; ?>
 
-      </section>
-
-      <section class="card list-section">
-        <div class="section-title collapsible" data-target="assignedBody">
-          <span>割当済み<span class="section-count">（<span id="assignedCount">0</span>件）</span></span>
-          <svg class="chevron-icon"><use href="#i-chevron"></use></svg>
-        </div>
-        <div id="assignedBody" class="section-body">
-          <div id="assignedRowList" class="esl-row-list"></div>
-          <p id="assignedEmptyMessage" class="esl-empty-text" hidden>該当するラベルがありません</p>
-        </div>
       </section>
 
       <section class="card list-section">
@@ -213,6 +211,17 @@ $last_updated = date('Y-m-d H:i');
         <div id="unassignedBody" class="section-body">
           <div id="unassignedRowList" class="esl-row-list"></div>
           <p id="unassignedEmptyMessage" class="esl-empty-text" hidden>該当するラベルがありません</p>
+        </div>
+      </section>
+
+      <section class="card list-section">
+        <div class="section-title collapsible" data-target="assignedBody">
+          <span>割当済み<span class="section-count">（<span id="assignedCount">0</span>件）</span></span>
+          <svg class="chevron-icon"><use href="#i-chevron"></use></svg>
+        </div>
+        <div id="assignedBody" class="section-body">
+          <div id="assignedRowList" class="esl-row-list"></div>
+          <p id="assignedEmptyMessage" class="esl-empty-text" hidden>該当するラベルがありません</p>
         </div>
       </section>
     </main>
@@ -235,8 +244,10 @@ $last_updated = date('Y-m-d H:i');
   <script>
     window.ESL_LABEL_ROWS = <?= $labelRows_json ?>;
     window.ESL_UNASSIGNED_PATIENTS = <?= json_encode($unassignedPatients, JSON_UNESCAPED_UNICODE) ?>;
+    window.IS_VIEWER = <?= $is_viewer ? 'true' : 'false' ?>;
   </script>
   <script src="js/sp_drawer.js?v=1"></script>
-  <script src="js/sp_esl_label_list.js?v=5"></script>
+  <script src="js/sp_confirm.js?v=3"></script>
+  <script src="js/sp_esl_label_list.js?v=7"></script>
 </body>
 </html>

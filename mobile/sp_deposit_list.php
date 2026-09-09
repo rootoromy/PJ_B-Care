@@ -72,6 +72,8 @@ function depositQty($item) {
 }
 
 $active_menu = 'deposit';
+$is_viewer = sp_is_viewer();
+$is_discharged = (int)($patient['is_admitted'] ?? 1) === 0;
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -80,7 +82,7 @@ $active_menu = 'deposit';
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>B-Care Mobile｜預かり品一覧</title>
   <link rel="icon" href="../favicon.ico">
-  <link rel="stylesheet" href="css/sp_common.css?v=32">
+  <link rel="stylesheet" href="css/sp_common.css?v=33">
   <link rel="stylesheet" href="css/sp_deposit.css?v=23">
 </head>
 <body>
@@ -106,14 +108,16 @@ $active_menu = 'deposit';
         </div>
       </header>
 
-      <div class="deposit-actions">
-        <a class="deposit-action-btn" href="sp_deposit_register.php?patient_id=<?= urlencode($patient_id) ?>">
-          <svg><use href="#i-plus-circle"></use></svg>登録
-        </a>
-        <a class="deposit-action-btn<?= empty($stored_items) ? ' is-disabled' : '' ?>" href="<?= empty($stored_items) ? '#' : 'sp_deposit_return.php?patient_id=' . urlencode($patient_id) ?>">
-          <svg><use href="#i-return-circle"></use></svg>返却
-        </a>
-      </div>
+      <?php if (!$is_viewer && !$is_discharged): ?>
+        <div class="deposit-actions">
+          <a class="deposit-action-btn" href="sp_deposit_register.php?patient_id=<?= urlencode($patient_id) ?>">
+            <svg><use href="#i-plus-circle"></use></svg>登録
+          </a>
+          <a class="deposit-action-btn<?= empty($stored_items) ? ' is-disabled' : '' ?>" href="<?= empty($stored_items) ? '#' : 'sp_deposit_return.php?patient_id=' . urlencode($patient_id) ?>">
+            <svg><use href="#i-return-circle"></use></svg>返却
+          </a>
+        </div>
+      <?php endif; ?>
 
       <section class="card section-card">
         <div class="section-title">
