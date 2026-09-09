@@ -3,13 +3,23 @@
 // 対応HTML: mobile/sp_esl_label.php
 //
 // 「割り当てるラベルを選択」一覧のクライアント側検索フィルタと、
-// ラベル未選択時は割当ボタンを押せないようにする制御のみを行う。
-// 実際の割当・解除処理は通常のフォーム送信で sp_esl_label_process.php へ渡す。
+// ラベル未選択時は割当ボタンを押せないようにする制御を行う。
+// 実際の割当処理は sp_confirm.js の submitFormViaFetch() で
+// sp_esl_label_process.php へfetch送信する（ネイティブ<form>送信のまま
+// だとhttp運用のためブラウザの「安全でないフォーム送信」警告が出るため）。
 
 const labelSearchInput = document.getElementById("labelSearchInput");
 const labelOptionList = document.getElementById("labelOptionList");
 const labelSearchEmpty = document.getElementById("labelSearchEmpty");
 const assignSubmitBtn = document.getElementById("assignSubmitBtn");
+const assignForm = document.getElementById("assignForm");
+
+if (assignForm) {
+  assignForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    submitFormViaFetch(assignForm, event.submitter);
+  });
+}
 
 function normalize(value) {
   return String(value).replaceAll(" ", "").trim().toLowerCase();

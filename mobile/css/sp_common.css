@@ -175,6 +175,63 @@ main {
 .discharge-notice.discharged { color: #666; background: #f5f5f5; border-color: #e5e5e5; }
 
 /* ==============================================
+   共通確認モーダル（js/sp_confirm.js が制御）
+   ブラウザ標準 confirm() の代わり。ダイアログにページの
+   オリジン（IPアドレス等）を表示させないためのもの。
+   ============================================== */
+
+.confirm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(10, 20, 15, 0.45);
+}
+.confirm-modal-overlay.is-visible { display: flex; }
+
+.confirm-modal {
+  width: min(100%, 340px);
+  padding: 20px 20px 16px;
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .25);
+}
+
+.confirm-modal-title {
+  margin: 0 0 8px;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.confirm-modal-message {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+  white-space: pre-line;
+}
+
+.confirm-modal-actions { display: flex; gap: 8px; }
+
+.confirm-modal-actions button {
+  flex: 1;
+  height: 42px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.confirm-modal-cancel { border: 1px solid #d8ddd9; background: var(--white); color: #333; }
+.confirm-modal-ok { border: 0; background: var(--green-800); color: #fff; }
+
+/* ==============================================
    シンプルヘッダー（患者コンテキストなしの画面用）
    ============================================== */
 
